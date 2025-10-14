@@ -3,10 +3,8 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  template: `<div class="container py-4"><router-outlet></router-outlet></div>`
 })
-export class AppComponent {
-  title = 'stremio-addon-manager-dbl';
-}
+export class AppComponent {}

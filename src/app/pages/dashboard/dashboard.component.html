@@ -1,0 +1,97 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>Instalador rápido de Addons Stremio Web</h4>
+  <div>
+    <button class="btn btn-outline-danger btn-sm me-2" (click)="logout()">
+      Cerrar sesión
+    </button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="reloadAddons()">
+      Recargar addons
+    </button>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <label class="form-label">
+      Token Real-Debrid
+      <small class="text-muted ms-2">
+        (Obtén tu token en
+        <a
+          href="https://real-debrid.com/devices"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          real-debrid.com/devices </a
+        >)
+      </small>
+    </label>
+    <div class="input-group mb-2">
+      <input
+        [(ngModel)]="token"
+        class="form-control"
+        placeholder="Token (52 chars)"
+      />
+
+      <!-- Botón copiar token -->
+      <button class="btn btn-outline-secondary" (click)="copyToken()">
+        <i class="bi bi-clipboard"></i>
+      </button>
+
+      <!-- Botón instalar preconfiguracion recomendada -->
+      <button
+        class="btn btn-danger rounded"
+        style="margin-left: 8px"
+        (click)="configureAll()"
+        [disabled]="isLoading"
+      >
+        <i class="bi bi-cloud-download me-1"></i>
+        Instalar preconfiguración recomendada
+      </button>
+
+      <!-- Botón: Volver al estado de fábrica -->
+      <button
+        class="btn btn-secondary rounded"
+        style="margin-left: 8px"
+        (click)="resetStremio()"
+        [disabled]="isLoading"
+      >
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        Volver al estado de fábrica
+      </button>
+    </div>
+  </div>
+
+  <!-- Overlay de carga global -->
+  <div class="global-overlay" *ngIf="isLoading">
+    <div
+      class="card bg-dark text-light text-center p-4 shadow-lg"
+      style="min-width: 300px"
+    >
+      <div
+        class="spinner-border text-light mb-3"
+        style="width: 3rem; height: 3rem"
+        role="status"
+      ></div>
+      <h5 class="fw-semibold mb-1">Procesando instalación</h5>
+      <p class="mb-0">{{ progressText }}</p>
+    </div>
+  </div>
+
+  <app-addon-tabs [addons]="addons" [token]="token"></app-addon-tabs>
+</div>
+
+<app-addons
+  [stremioAuthKey]="stremioAuthKey"
+  [rdToken]="token"
+  (refreshRequested)="reloadAddons()"
+></app-addons>
+
+<!-- Iframes dinámicos para instalar addons -->
+<div *ngFor="let iframeUrl of iframeUrls" class="mb-3">
+  <iframe
+    [src]="iframeUrl"
+    width="100%"
+    height="480"
+    style="border: 1px solid #ccc; border-radius: 8px"
+  ></iframe>
+</div>
