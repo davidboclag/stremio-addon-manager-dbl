@@ -16,3 +16,4 @@ src/environments/*.ts
 *.ntvs*
 *.vscode
 *.sw?
+.vercel

@@ -56,7 +56,13 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -73,7 +79,8 @@
               "buildTarget": "stremio-addon-manager-dbl:build:production"
             },
             "development": {
-              "buildTarget": "stremio-addon-manager-dbl:build:development"
+              "buildTarget": "stremio-addon-manager-dbl:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

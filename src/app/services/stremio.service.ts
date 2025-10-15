@@ -2,12 +2,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class StremioService {
-  // private base = 'https://api.strem.io/api';
-  // dev-only bases
-  private base = '/stremio-api'; // apuntará a https://api.strem.io/api via proxy
+  private base = environment.stremioApiBase;
 
   constructor(private http: HttpClient) { }
 

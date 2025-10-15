@@ -8,6 +8,7 @@ import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 interface Addon {
   name: string;
@@ -301,7 +302,7 @@ export class DashboardComponent implements OnInit {
         addons: finalJson
       };
 
-      const resp = await fetch('https://api.strem.io/api/addonCollectionSet', {
+      const resp = await fetch(`${environment.stremioApiBase}/addonCollectionSet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(collectionJson)
@@ -362,7 +363,7 @@ export class DashboardComponent implements OnInit {
       this.progressText = 'Enviando configuración de fábrica a Stremio...';
 
       // 🔹 Enviar a la API
-      const resp = await fetch('https://api.strem.io/api/addonCollectionSet', {
+      const resp = await fetch(`${environment.stremioApiBase}/addonCollectionSet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

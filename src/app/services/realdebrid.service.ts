@@ -1,10 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RealDebridService {
-    private base = 'https://api.real-debrid.com/rest/1.0';
+    private base = environment.realDebridApiBase;
 
     constructor(private http: HttpClient) { }
 
