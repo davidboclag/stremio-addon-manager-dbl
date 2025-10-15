@@ -12,6 +12,11 @@
     "serve:ssr:stremio-addon-manager-dbl": "node dist/stremio-addon-manager-dbl/server/server.mjs",
     "deploy": "npm run build:prod && vercel --prod",
     "deploy:preview": "npm run build:prod && vercel",
+    "deploy:advanced": "node deploy.js",
+    "deploy:advanced:preview": "node deploy.js --preview",
+    "deploy:bat": "deploy.bat",
+    "deploy:ps1": "powershell -ExecutionPolicy Bypass -File deploy.ps1",
+    "deploy:ps1:preview": "powershell -ExecutionPolicy Bypass -File deploy.ps1 --preview",
     "vercel:login": "vercel login",
     "vercel:logout": "vercel logout"
   },
