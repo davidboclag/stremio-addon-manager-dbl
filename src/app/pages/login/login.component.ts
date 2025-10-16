@@ -152,13 +152,30 @@ export class LoginComponent {
     }
   }
 
-  useAuthKey(): void {
+  async useAuthKey(): Promise<void> {
     if (!this.authKey.trim()) {
       this.error.set('Introduce authKey.');
       return;
     }
     
-    this.stremio.setAuthKey(this.authKey.trim());
-    this.router.navigate(['/dashboard']);
+    this.loading.set(true);
+    this.error.set('');
+    
+    try {
+      await this.stremio.setAuthKeyAndFetchUser(this.authKey.trim());
+      await this.router.navigate(['/dashboard']);
+    } catch (error) {
+      console.error('Error setting authKey:', error);
+      // Fallback: usar método anterior
+      this.stremio.setAuthKey(this.authKey.trim());
+      const user = {
+        authKey: this.authKey.trim(),
+        email: 'Usuario AuthKey'
+      };
+      this.stremio.setUser(user);
+      await this.router.navigate(['/dashboard']);
+    } finally {
+      this.loading.set(false);
+    }
   }
 }

@@ -4,7 +4,11 @@ import { environment } from '../../environments/environment';
 
 export interface StremioUser {
   authKey: string;
-  email?: string;
+  email: string;
+  fullname?: string;
+  dateRegistered?: string;
+  premium_expire?: string;
+  user?: any;
 }
 
 export interface AddonCollection {
@@ -39,9 +43,23 @@ export class StremioService {
   private readonly apiBase = environment.stremioApiBase;
   
   private readonly _authKey = signal<string | null>(this.getStoredAuthKey());
+  private readonly _user = signal<StremioUser | null>(this.getStoredUser());
   
   readonly authKey = this._authKey.asReadonly();
+  readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => !!this._authKey());
+
+  constructor() {
+    // Si hay authKey pero no hay usuario, intentar obtener la información
+    const authKey = this._authKey();
+    const user = this._user();
+    
+    if (authKey && !user) {
+      this.fetchUserInfo(authKey).catch(error => {
+        console.warn('Error fetching user info on init:', error);
+      });
+    }
+  }
 
   async login(email: string, password: string): Promise<{ success: boolean; authKey?: string; error?: string }> {
     try {
@@ -52,8 +70,13 @@ export class StremioService {
       }).toPromise();
 
       if (response?.result?.authKey) {
-        this.setAuthKey(response.result.authKey);
-        return { success: true, authKey: response.result.authKey };
+        const authKey = response.result.authKey;
+        this.setAuthKey(authKey);
+        
+        // Fetch and store user information
+        await this.fetchUserInfo(authKey, email);
+        
+        return { success: true, authKey };
       }
       
       return { success: false, error: 'Credenciales inválidas' };
@@ -67,9 +90,53 @@ export class StremioService {
     localStorage.setItem('stremio_authkey', authKey);
   }
 
+  async setAuthKeyAndFetchUser(authKey: string): Promise<void> {
+    this.setAuthKey(authKey);
+    await this.fetchUserInfo(authKey);
+  }
+
+  setUser(user: StremioUser): void {
+    this._user.set(user);
+    localStorage.setItem('stremio_user', JSON.stringify(user));
+  }
+
+  async fetchUserInfo(authKey: string, email?: string): Promise<void> {
+    try {
+      // Usar getUser que sabemos que funciona
+      const response = await this.http.post<{ result?: any }>(`${this.apiBase}/getUser`, {
+        type: 'GetUser',
+        authKey
+      }).toPromise();
+
+      if (response?.result?.email) {
+        const user: StremioUser = {
+          authKey,
+          email: response.result.email,
+          fullname: response.result.fullname || '',
+          dateRegistered: response.result.dateRegistered,
+          premium_expire: response.result.premium_expire,
+          user: response.result
+        };
+        this.setUser(user);
+        return;
+      }
+    } catch (error) {
+      console.warn('Error fetching user info from getUser:', error);
+    }
+
+    // Fallback: usar el email del login o placeholder
+    const user: StremioUser = {
+      authKey,
+      email: email || 'Email no disponible'
+    };
+    this.setUser(user);
+  }
+
   clearAuth(): void {
     this._authKey.set(null);
+    this._user.set(null);
     localStorage.removeItem('stremio_authkey');
+    localStorage.removeItem('stremio_user');
   }
 
   async getAddonCollection(): Promise<AddonCollection | null> {
@@ -109,5 +176,11 @@ export class StremioService {
   private getStoredAuthKey(): string | null {
     if (typeof localStorage === 'undefined') return null;
     return localStorage.getItem('stremio_authkey');
+  }
+
+  private getStoredUser(): StremioUser | null {
+    if (typeof localStorage === 'undefined') return null;
+    const stored = localStorage.getItem('stremio_user');
+    return stored ? JSON.parse(stored) : null;
   }
 }
