@@ -117,8 +117,26 @@ import { StremioService } from '../../services/stremio.service';
                   <!-- Preview del drag -->
                   <div *cdkDragPreview class="addon-drag-preview">
                     <div class="addon-preview-content">
-                      <i class="bi bi-grip-vertical me-2"></i>
-                      {{ addon.manifest?.name || addon.transportName }}
+                      <div class="addon-preview-icon">
+                        @if (addon?.manifest?.logo || addon?.manifest?.icon) {
+                          <img
+                            [src]="addon.manifest.logo || addon.manifest.icon"
+                            [alt]="addon.manifest?.name || 'Addon'"
+                            class="addon-preview-logo"
+                          />
+                        } @else {
+                          <div class="addon-preview-placeholder">
+                            <i class="bi bi-puzzle"></i>
+                          </div>
+                        }
+                      </div>
+                      <div class="addon-preview-info">
+                        <div class="addon-preview-name">{{ addon.manifest?.name || addon.transportName }}</div>
+                        <div class="addon-preview-description">{{ addon.manifest?.description || 'Arrastrando addon...' }}</div>
+                      </div>
+                      <div class="addon-preview-grip">
+                        <i class="bi bi-grip-vertical"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
