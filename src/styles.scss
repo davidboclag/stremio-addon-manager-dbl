@@ -1,1 +1,90 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importar Bootstrap */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* Variables únicamente para casos no cubiertos por Bootstrap */
+:root {
+  --transition-fast: 0.15s ease;
+  --border-radius-xl: 1rem;
+}
+
+/* Estilos únicos no cubiertos por Bootstrap */
+body {
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+/* Loading overlay global */
+.global-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(3px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Estados hover únicos */
+.list-group-item:hover {
+  transform: translateY(-2px);
+  transition: transform var(--transition-fast);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  transition: transform var(--transition-fast);
+}
+
+/* Optimizaciones de performance mejoradas */
+.card, .btn, .badge {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Optimización para listas largas */
+.addon-list {
+  contain: layout style paint;
+}
+
+.addon-card {
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Optimización de animaciones */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .addon-card {
+    &:hover {
+      transform: none;
+    }
+    
+    &.drag-over {
+      transform: none;
+    }
+  }
+  
+  .drag-handle {
+    &:hover {
+      transform: none;
+    }
+    
+    &:active {
+      transform: none;
+    }
+  }
+}

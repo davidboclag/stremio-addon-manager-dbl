@@ -1,4 +1,12 @@
-/* Estilos para drag and drop */
+/* Estilos para drag and drop como el original */
+
+/* Input file como botón */
+label[for="importFile"] {
+  cursor: pointer;
+  margin-bottom: 0 !important;
+}
+
+/* CDK Drag & Drop estilos originales */
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;

@@ -1,97 +1,126 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4>Instalador rápido de Addons Stremio Web</h4>
-  <div>
-    <button class="btn btn-outline-danger btn-sm me-2" (click)="logout()">
+<!-- Dashboard optimizado con Bootstrap 5.3 -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 fw-bold text-primary">
+    <i class="bi bi-puzzle me-2"></i>
+    Instalador rápido de Addons Stremio Web
+  </h4>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-danger btn-sm" (click)="logout()" type="button">
+      <i class="bi bi-box-arrow-right me-1"></i>
       Cerrar sesión
     </button>
-    <button class="btn btn-outline-secondary btn-sm" (click)="reloadAddons()">
+    <button class="btn btn-outline-secondary btn-sm" (click)="reloadAddons()" type="button">
+      <i class="bi bi-arrow-clockwise me-1"></i>
       Recargar addons
     </button>
   </div>
 </div>
 
-<div class="card mb-3">
+<!-- Token Real-Debrid -->
+<div class="card shadow-sm mb-4">
   <div class="card-body">
-    <label class="form-label">
-      Token Real-Debrid
+    <div class="d-flex align-items-center mb-3">
+      <i class="bi bi-shield-check text-success me-2 fs-5"></i>
+      <label class="form-label mb-0 fw-semibold">
+        Token Real-Debrid
+      </label>
       <small class="text-muted ms-2">
         (Obtén tu token en
-        <a
-          href="https://real-debrid.com/devices"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          real-debrid.com/devices </a
-        >)
+        <a href="https://real-debrid.com/devices" target="_blank" rel="noopener noreferrer" 
+           class="text-decoration-none">
+          real-debrid.com/devices
+          <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>)
       </small>
-    </label>
-    <div class="input-group mb-2">
+    </div>
+    
+    <div class="input-group mb-3">
+      <span class="input-group-text">
+        <i class="bi bi-key"></i>
+      </span>
       <input
-        [(ngModel)]="token"
+        [(ngModel)]="rdTokenInput"
         class="form-control"
-        placeholder="Token (52 chars)"
+        placeholder="Token (52 caracteres)"
+        (input)="onTokenChange($event)"
+        type="password"
       />
-
-      <!-- Botón copiar token -->
-      <button class="btn btn-outline-secondary" (click)="copyToken()">
+      <button class="btn btn-outline-secondary" (click)="copyToken()" type="button">
         <i class="bi bi-clipboard"></i>
       </button>
+    </div>
 
-      <!-- Botón instalar preconfiguracion recomendada -->
+    @if (rdService.user(); as user) {
+      <div class="alert alert-success py-2 d-flex align-items-center" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Conectado como:</strong> {{ user.username }}
+      </div>
+    }
+
+    <div class="d-flex gap-2 flex-wrap">
       <button
-        class="btn btn-danger rounded"
-        style="margin-left: 8px"
+        class="btn btn-primary"
         (click)="configureAll()"
-        [disabled]="isLoading"
+        [disabled]="isLoading()"
+        type="button"
       >
-        <i class="bi bi-cloud-download me-1"></i>
+        <i class="bi bi-cloud-download me-2"></i>
         Instalar preconfiguración recomendada
       </button>
-
-      <!-- Botón: Volver al estado de fábrica -->
+      
       <button
-        class="btn btn-secondary rounded"
-        style="margin-left: 8px"
+        class="btn btn-outline-warning"
         (click)="resetStremio()"
-        [disabled]="isLoading"
+        [disabled]="isLoading()"
+        type="button"
       >
-        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        <i class="bi bi-arrow-counterclockwise me-2"></i>
         Volver al estado de fábrica
       </button>
     </div>
   </div>
+</div>
 
-  <!-- Overlay de carga global -->
-  <div class="global-overlay" *ngIf="isLoading">
-    <div
-      class="card bg-dark text-light text-center p-4 shadow-lg"
-      style="min-width: 300px"
-    >
-      <div
-        class="spinner-border text-light mb-3"
-        style="width: 3rem; height: 3rem"
-        role="status"
-      ></div>
-      <h5 class="fw-semibold mb-1">Procesando instalación</h5>
-      <p class="mb-0">{{ progressText }}</p>
+<!-- Overlay de carga -->
+@if (isLoading()) {
+  <div class="global-overlay">
+    <div class="card bg-dark text-light shadow-lg border-0" style="min-width: 320px; max-width: 400px;">
+      <div class="card-body text-center p-4">
+        <div class="d-flex justify-content-center mb-3">
+          <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+        <h5 class="fw-semibold mb-2">{{ loadingTitle() }}</h5>
+        <p class="mb-0 text-light-emphasis">{{ progressText() }}</p>
+      </div>
     </div>
   </div>
-</div>
+}
 
-<app-addons
-  [stremioAuthKey]="stremioAuthKey"
-  [rdToken]="token"
+<!-- Componente de addons -->
+<app-addons 
+  [stremioAuthKey]="stremio.authKey() || ''" 
+  [rdToken]="rdService.token() || ''"
   (refreshRequested)="reloadAddons()"
-></app-addons>
+/>
 
 <!-- Iframes dinámicos para instalar addons -->
-<div *ngFor="let iframeUrl of iframeUrls" class="mb-3">
-  <iframe
-    [src]="iframeUrl"
-    width="100%"
-    height="480"
-    style="border: 1px solid #ccc; border-radius: 8px"
-  ></iframe>
-</div>
+@for (iframeUrl of iframeUrls; track iframeUrl) {
+  <div class="card shadow-sm mb-3">
+    <div class="card-body p-0">
+      <iframe
+        [src]="iframeUrl"
+        class="w-100 border-0 rounded"
+        height="480"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </div>
+}
 
-<app-addon-tabs [addons]="addons" [token]="token"></app-addon-tabs>
+<!-- Tabs de addons -->
+<app-addon-tabs 
+  [addons]="addons" 
+  [token]="rdService.token() || ''"
+/>

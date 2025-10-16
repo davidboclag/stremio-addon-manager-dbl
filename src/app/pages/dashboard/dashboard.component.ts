@@ -1,4 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { 
+  Component, 
+  inject, 
+  signal, 
+  computed, 
+  effect, 
+  OnInit, 
+  ChangeDetectionStrategy 
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,8 +15,6 @@ import { RealDebridService } from '../../services/realdebrid.service';
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 interface Addon {
   name: string;
@@ -25,13 +31,29 @@ interface Addon {
   standalone: true,
   imports: [CommonModule, FormsModule, AddonsComponent, AddonTabsComponent],
   templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
-  token = '';
-  isLoading = false;
-  progressText = '';
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  
+  readonly stremio = inject(StremioService);
+  readonly rdService = inject(RealDebridService);
 
-  http = inject(HttpClient);
+  // Signals para estado reactivo
+  readonly isLoading = signal(false);
+  readonly progressText = signal('');
+  readonly loadingTitle = signal('Procesando');
+  
+  rdTokenInput = this.rdService.token() || '';
+
+  // Computed signals
+  readonly canInstall = computed(() => 
+    this.stremio.isAuthenticated() && !this.isLoading()
+  );
+
+  iframeUrls: string[] = [];
 
   addons: Addon[] = [
     // {
@@ -190,47 +212,57 @@ export class DashboardComponent implements OnInit {
     },
   ];
 
-  stremioAuthKey = '';
-  iframeUrls: string[] = [];
-
-  constructor(
-    private router: Router,
-    private rd: RealDebridService,
-    private stremio: StremioService
-  ) { }
+  constructor() {
+    // Effect para validar token cuando cambia
+    effect(() => {
+      const token = this.rdService.token();
+      if (token) {
+        this.validateRdToken(token);
+      }
+    });
+  }
 
   ngOnInit() {
-    this.token = this.rd.getToken() || '';
-    this.stremioAuthKey = localStorage.getItem('stremio_authkey') || '';
+    this.rdTokenInput = this.rdService.token() || '';
   }
 
-  copyToken() {
-    if (!this.token) return alert('No hay token');
-    navigator.clipboard.writeText(this.token).then(() => alert('Token copiado'));
+  private isValidTokenFormat(token: string): boolean {
+    return /^[A-Za-z0-9]{20,}$/.test(token);
   }
 
-  abrirComet() {
-    if (!this.token) return alert('Introduce un token válido');
-    this.rd.abrirCometConToken(this.token);
-    this.iframeUrls.push(`https://comet.strem.io/install?token=${this.token}`);
+  private async validateRdToken(token: string): Promise<void> {
+    const result = await this.rdService.validateToken(token);
+    if (!result.valid) {
+      console.warn('Token Real-Debrid inválido:', result.error);
+    }
   }
 
-  abrirJackettio() {
-    if (!this.token) return alert('Introduce un token válido');
-    this.rd.abrirJackettioConToken(this.token);
-    this.iframeUrls.push(`https://jackettio.strem.io/install?token=${this.token}`);
+  async onTokenChange(event: Event): Promise<void> {
+    const target = event.target as HTMLInputElement;
+    const token = target.value.trim();
+    
+    if (token && this.isValidTokenFormat(token)) {
+      this.rdService.setToken(token);
+    }
   }
 
-  configurarMediaFusion() {
-    if (!this.token) return alert('Introduce un token válido');
-    this.rd.configurarMediaFusion(this.token);
-    const payload = btoa(JSON.stringify({ token: this.token }));
-    this.iframeUrls.push(`https://mediafusion.strem.io/install?data=${payload}`);
+  copyToken(): void {
+    const token = this.rdService.token();
+    if (!token) {
+      alert('No hay token');
+      return;
+    }
+    
+    navigator.clipboard.writeText(token).then(() => {
+      alert('Token copiado');
+    });
   }
 
   async configureAll() {
-    if (!this.stremioAuthKey)
-      return alert('⚠️ Debes iniciar sesión correctamente primero.');
+    if (!this.canInstall()) {
+      alert('⚠️ Debes iniciar sesión correctamente primero.');
+      return;
+    }
 
     const confirmacion = confirm(
       '⚠️ ATENCIÓN: Si continúas, tu configuración actual de addons en Stremio será REEMPLAZADA por la recomendada.\n\n¿Deseas continuar?'
@@ -238,104 +270,110 @@ export class DashboardComponent implements OnInit {
 
     if (!confirmacion) return;
 
-    const token = this.token.trim();
-    if (token && !this.validarToken(token)) return alert('❌ Token inválido.');
+    const token = this.rdService.token()?.trim();
+    if (token && !this.validarToken(token)) {
+      alert('❌ Token inválido.');
+      return;
+    }
 
-    this.isLoading = true; // 🔹 ACTIVAR overlay
-    this.progressText = 'Preparando instalación...';
-
-    const finalJson: any[] = [];
-    const totalAddons = this.addons.length;
-    let currentIndex = 0;
+    this.isLoading.set(true);
+    this.loadingTitle.set('Instalando addons');
+    this.progressText.set('Preparando instalación...');
 
     try {
+      const finalJson: any[] = [];
+      const totalAddons = this.addons.length;
+      let currentIndex = 0;
+
       for (const addon of this.addons) {
         currentIndex++;
-        this.progressText = `Descargando manifest ${currentIndex} de ${totalAddons} (${addon.name})...`;
+        this.progressText.set(`Procesando ${currentIndex} de ${totalAddons} (${addon.name})...`);
 
-        let url: string | null = null;
-
-        if (addon.name === 'Anime Kitsu') {
-          url = 'https://anime-kitsu.strem.fun/manifest.json';
-        } else if (addon.name === "Animes' Season") {
-          url = 'https://victorgveloso.github.io/animes-season-addon/manifest.json';
-        } else if (addon.name === 'ThePirateBay+') {
-          url = 'https://thepiratebay-plus.strem.fun/manifest.json';
-        } else {
-          if (addon.url) {
-            url = addon.url.replace('/configure', '/manifest.json');
-          } else if (typeof (addon as any).getUrl === 'function') {
-            let generated = await (addon as any).getUrl(token);
-            if (generated) url = generated.replace('/configure', '/manifest.json');
-          }
-        }
-
+        const url = await this.resolveAddonUrl(addon, token);
         if (!url) continue;
 
-        let manifestObj: any = {};
-        try {
-          const response = await fetch(url);
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          manifestObj = await response.json();
-        } catch (err: any) {
-          manifestObj = { error: err.message };
+        const manifest = await this.fetchManifest(url);
+        if (manifest) {
+          const isOfficial = ['cinemeta', 'watchhub'].includes(
+            addon.name?.toLowerCase() || ''
+          );
+          const flags = { official: isOfficial, protected: isOfficial };
+
+          finalJson.push({
+            transportUrl: url,
+            name: addon.transportName || addon.name,
+            manifest,
+            flags
+          });
         }
-
-        const isOfficial = ['cinemeta', 'watchhub'].includes(
-          addon.name?.toLowerCase() || ''
-        );
-        const flags = { official: isOfficial, protected: isOfficial };
-
-        finalJson.push({
-          transportUrl: url,
-          name: addon.transportName,
-          manifest: manifestObj,
-          flags
-        });
       }
 
-      this.progressText = 'Enviando configuración a Stremio...';
-
-      const collectionJson = {
-        type: 'AddonCollectionSet',
-        authKey: this.stremioAuthKey,
-        addons: finalJson
-      };
-
-      const resp = await fetch(`${environment.stremioApiBase}/addonCollectionSet`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(collectionJson)
-      });
-
-      const data = await resp.json();
-
-      if (data.result && data.result.success) {
-        this.progressText = '✅ Configuración completada correctamente.';
-        await new Promise((res) => setTimeout(res, 2000)); // pequeña pausa visual
-        alert(
-          '✅ Los addons han sido enviados y configurados correctamente en Stremio.'
-        );
-        this.reloadAddons();
+      this.progressText.set('Enviando configuración a Stremio...');
+      
+      const result = await this.stremio.setAddonCollection(finalJson);
+      
+      if (result.success) {
+        this.progressText.set('✅ Configuración completada correctamente.');
+        setTimeout(() => this.reloadAddons(), 2000);
       } else {
-        this.progressText = '❌ Error al enviar los addons.';
-        alert('❌ Error al enviar los addons a Stremio.');
+        throw new Error(result.error || 'Error desconocido');
       }
-    } catch (err) {
-      console.error(err);
-      this.progressText = '❌ Error de conexión.';
+
+    } catch (error) {
+      console.error('Error en configureAll:', error);
+      this.progressText.set('❌ Error en la configuración');
       alert('❌ Error de conexión al enviar los addons a Stremio.');
     } finally {
-      await new Promise((res) => setTimeout(res, 500)); // para transición suave
-      this.isLoading = false; // 🔹 DESACTIVAR overlay siempre
-      this.progressText = '';
+      setTimeout(() => this.isLoading.set(false), 500);
     }
   }
 
+  private async resolveAddonUrl(addon: Addon, token?: string): Promise<string | null> {
+    if (addon.name === 'Anime Kitsu') {
+      return 'https://anime-kitsu.strem.fun/manifest.json';
+    } else if (addon.name === "Animes' Season") {
+      return 'https://victorgveloso.github.io/animes-season-addon/manifest.json';
+    } else if (addon.name === 'ThePirateBay+') {
+      return 'https://thepiratebay-plus.strem.fun/manifest.json';
+    } else {
+      if (addon.url) {
+        return addon.url.replace('/configure', '/manifest.json');
+      } else if (typeof addon.getUrl === 'function') {
+        const generated = await addon.getUrl(token);
+        return generated ? generated.replace('/configure', '/manifest.json') : null;
+      }
+    }
+    return null;
+  }
 
+  private async fetchManifest(url: string): Promise<any | null> {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching manifest:', url, error);
+      return { error: 'Failed to fetch manifest' };
+    }
+  }
+
+  validarToken(token: string): boolean {
+    const regex = /^[A-Za-z0-9]{20,}$/;
+    return regex.test(token);
+  }
+
+  logout() {
+    this.stremio.clearAuth();
+    this.rdService.clearToken();
+    this.router.navigate(['/']);
+  }
+
+  reloadAddons() {
+    location.reload();
+  }
 
   async resetStremio() {
-    if (!this.stremioAuthKey) {
+    if (!this.stremio.isAuthenticated()) {
       alert('⚠️ Debes iniciar sesión correctamente primero.');
       return;
     }
@@ -345,66 +383,29 @@ export class DashboardComponent implements OnInit {
     );
     if (!confirmacion) return;
 
-    this.isLoading = true;
-    this.progressText = 'Cargando configuración de fábrica...';
+    this.isLoading.set(true);
+    this.loadingTitle.set('Reseteando Stremio');
+    this.progressText.set('Cargando configuración de fábrica...');
 
     try {
-      // 🔹 Cargar JSON desde assets
-      const fileContent: any = await firstValueFrom(
-        this.http.get('/assets/reset-stremio.json')
-      );
+      const fileContent: any = await this.http.get('/assets/reset-stremio.json').toPromise();
 
-      // 🔹 Reemplazar dinámicamente authKey
-      const payload = {
-        ...fileContent,
-        authKey: this.stremioAuthKey
-      };
+      this.progressText.set('Enviando configuración de fábrica a Stremio...');
 
-      this.progressText = 'Enviando configuración de fábrica a Stremio...';
+      const result = await this.stremio.setAddonCollection(fileContent.addons || []);
 
-      // 🔹 Enviar a la API
-      const resp = await fetch(`${environment.stremioApiBase}/addonCollectionSet`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await resp.json();
-
-      if (data.result && data.result.success) {
-        this.progressText = '✅ Stremio reseteado correctamente.';
-        await new Promise(res => setTimeout(res, 1500));
-        alert('✅ Stremio ha sido reseteado a su configuración de fábrica.');
-        this.reloadAddons();
+      if (result.success) {
+        this.progressText.set('✅ Stremio reseteado correctamente.');
+        setTimeout(() => this.reloadAddons(), 1500);
       } else {
-        this.progressText = '❌ Error al resetear Stremio.';
-        alert('❌ Error al resetear Stremio.');
+        throw new Error(result.error);
       }
-    } catch (err) {
-      console.error(err);
-      this.progressText = '❌ Error de conexión.';
+    } catch (error) {
+      console.error('Error resetting Stremio:', error);
+      this.progressText.set('❌ Error al resetear Stremio.');
       alert('❌ Error de conexión al resetear Stremio.');
     } finally {
-      await new Promise(res => setTimeout(res, 500));
-      this.isLoading = false;
-      this.progressText = '';
+      setTimeout(() => this.isLoading.set(false), 500);
     }
-  }
-
-
-  validarToken(token: string): boolean {
-    const regex = /^[A-Za-z0-9]{20,}$/;
-    return regex.test(token);
-  }
-
-
-
-  logout() {
-    localStorage.removeItem('stremio_authkey');
-    this.router.navigate(['/']);
-  }
-
-  reloadAddons() {
-    location.reload();
   }
 }
