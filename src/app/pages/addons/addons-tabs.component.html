@@ -1,45 +1,46 @@
 <div class="addon-tabs-container">
   <!-- Tabs -->
   <ul class="nav nav-tabs mb-3" role="tablist">
-    <li
-      class="nav-item"
-      *ngFor="let addon of addons; let i = index"
-      [hidden]="addon.hideTab"
-    >
-      <a
-        href="#"
-        class="nav-link"
-        [class.active]="i === activeIndex"
-        (click)="selectTab(i); $event.preventDefault()"
-      >
-        {{ addon.name }}
-      </a>
-    </li>
+    @for (addon of visibleAddons(); track addon.name; let i = $index) {
+      <li class="nav-item">
+        <a
+          href="#"
+          class="nav-link"
+          [class.active]="i === activeIndex()"
+          (click)="selectTab(i); $event.preventDefault()"
+        >
+          {{ addon.name }}
+        </a>
+      </li>
+    }
   </ul>
 
   <!-- Loader -->
   <div class="iframe-wrapper position-relative mb-3">
-    <div class="loader-overlay" *ngIf="loading">
-      <div
-        class="spinner-border text-primary"
-        role="status"
-        aria-hidden="true"
-      ></div>
-      <span class="ms-2">Cargando addon...</span>
-    </div>
+    @if (loading()) {
+      <div class="loader-overlay">
+        <div
+          class="spinner-border text-primary"
+          role="status"
+          aria-hidden="true"
+        ></div>
+        <span class="ms-2">Cargando addon...</span>
+      </div>
+    }
 
     <!-- Iframes -->
-    <ng-container *ngFor="let url of iframeUrls; let i = index">
-      <iframe
-        *ngIf="i === activeIndex && url"
-        class="addon-iframe"
-        width="100%"
-        height="600"
-        [src]="url"
-        frameborder="0"
-        (load)="onIframeLoaded()"
-      ></iframe>
-    </ng-container>
+    @for (url of iframeUrls(); track url; let i = $index) {
+      @if (i === activeIndex() && url) {
+        <iframe
+          class="addon-iframe"
+          width="100%"
+          height="600"
+          [src]="url"
+          frameborder="0"
+          (load)="onIframeLoaded()"
+        ></iframe>
+      }
+    }
   </div>
 
   <!-- Notas -->

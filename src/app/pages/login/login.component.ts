@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,26 +16,61 @@ import { StremioService } from '../../services/stremio.service';
       <form (ngSubmit)="onSubmit()" #f="ngForm">
         <div class="mb-2">
           <label class="form-label">Email</label>
-          <input class="form-control" [(ngModel)]="email" name="email" type="email" />
+          <input 
+            class="form-control" 
+            [(ngModel)]="email" 
+            name="email" 
+            type="email" 
+            [disabled]="loading()"
+          />
         </div>
 
         <div class="mb-2">
           <label class="form-label">Password</label>
-          <input class="form-control" [(ngModel)]="password" name="password" type="password" />
+          <input 
+            class="form-control" 
+            [(ngModel)]="password" 
+            name="password" 
+            type="password" 
+            [disabled]="loading()"
+          />
         </div>
 
         <div class="mb-3">
           <label class="form-label">o AuthKey (opcional)</label>
-          <input class="form-control" [(ngModel)]="authKey" name="authKey" />
+          <input 
+            class="form-control" 
+            [(ngModel)]="authKey" 
+            name="authKey" 
+            [disabled]="loading()"
+          />
+          <div class="form-text">
+            Si tienes tu AuthKey, puedes usarlo directamente
+          </div>
         </div>
 
-        <div *ngIf="error" class="alert alert-danger py-1">{{ error }}</div>
+        @if (error()) {
+          <div class="alert alert-danger py-2">{{ error() }}</div>
+        }
 
         <div class="d-flex gap-2">
-          <button class="btn btn-primary" [disabled]="loading" type="submit">
-            {{ loading ? 'Conectando...' : 'Login' }}
+          <button 
+            class="btn btn-primary" 
+            [disabled]="loading() || f.invalid" 
+            type="submit"
+          >
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            }
+            {{ loading() ? 'Conectando...' : 'Login' }}
           </button>
-          <button class="btn btn-outline-secondary" type="button" (click)="useAuthKey()">
+          
+          <button 
+            class="btn btn-outline-secondary" 
+            type="button" 
+            (click)="useAuthKey()"
+            [disabled]="loading() || !authKey"
+          >
             Usar AuthKey
           </button>
         </div>
@@ -45,48 +80,51 @@ import { StremioService } from '../../services/stremio.service';
   `,
 })
 export class LoginComponent {
+  private readonly stremio = inject(StremioService);
+  private readonly router = inject(Router);
+
   email = '';
   password = '';
   authKey = '';
-  loading = false;
-  error = '';
+  
+  readonly loading = signal(false);
+  readonly error = signal('');
 
-  constructor(private stremio: StremioService, private router: Router) {}
-
-  async onSubmit() {
-    this.error = '';
+  async onSubmit(): Promise<void> {
+    this.error.set('');
+    
     if (this.authKey) {
-      // usar authKey directamente
-      localStorage.setItem('stremio_authkey', this.authKey);
-      this.router.navigate(['/dashboard']);
+      this.useAuthKey();
       return;
     }
 
     if (!this.email || !this.password) {
-      this.error = 'Proporciona email y contraseña o authKey';
+      this.error.set('Proporciona email y contraseña o authKey');
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
+    
     try {
-      const res: any = await this.stremio.login(this.email, this.password);
-      if (res?.result?.authKey) {
-        localStorage.setItem('stremio_authkey', res.result.authKey);
-        this.router.navigate(['/dashboard']);
+      const result = await this.stremio.login(this.email, this.password);
+      
+      if (result.success) {
+        await this.router.navigate(['/dashboard']);
       } else {
-        this.error = 'Login fallido. Revisa credenciales.';
+        this.error.set(result.error || 'Error de login');
       }
-    } catch (err: any) {
-      console.error(err);
-      this.error = 'Error al conectar con Stremio (CORS o credenciales).';
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 
-  useAuthKey() {
-    if (!this.authKey) { this.error = 'Introduce authKey.'; return; }
-    localStorage.setItem('stremio_authkey', this.authKey);
+  useAuthKey(): void {
+    if (!this.authKey.trim()) {
+      this.error.set('Introduce authKey.');
+      return;
+    }
+    
+    this.stremio.setAuthKey(this.authKey.trim());
     this.router.navigate(['/dashboard']);
   }
 }
