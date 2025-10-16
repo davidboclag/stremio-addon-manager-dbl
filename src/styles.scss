@@ -2,68 +2,19 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
-/* Variables CSS modernas */
+/* Variables únicamente para casos no cubiertos por Bootstrap */
 :root {
-  --primary-color: #0d6efd;
-  --success-color: #198754;
-  --danger-color: #dc3545;
-  --warning-color: #ffc107;
-  --info-color: #0dcaf0;
-  --dark-color: #212529;
-  --border-radius: 8px;
-  --border-radius-lg: 12px;
-  --transition: all 0.2s ease-in-out;
-  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --transition-fast: 0.15s ease;
+  --border-radius-xl: 1rem;
 }
 
-/* Reset y base */
-* {
-  box-sizing: border-box;
-}
-
+/* Estilos únicos no cubiertos por Bootstrap */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
   background-color: #f8f9fa;
   padding: 1rem;
 }
 
-/* Utilidades modernas */
-.btn {
-  transition: var(--transition);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
-}
-
-.card {
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow);
-  border: none;
-  transition: var(--transition);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-.form-control {
-  border-radius: var(--border-radius);
-  border: 1px solid #dee2e6;
-  transition: var(--transition);
-}
-
-.form-control:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-/* Loading states */
+/* Loading overlay global */
 .global-overlay {
   position: fixed;
   inset: 0;
@@ -73,7 +24,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -81,132 +32,59 @@ body {
   to { opacity: 1; }
 }
 
-/* Focus management para accesibilidad */
-:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+/* Estados hover únicos */
+.list-group-item:hover {
+  transform: translateY(-2px);
+  transition: transform var(--transition-fast);
 }
 
-/* Componente específicos */
-.addon-tabs-container {
-  margin-top: 2rem;
+.btn:hover {
+  transform: translateY(-1px);
+  transition: transform var(--transition-fast);
+}
+
+/* Optimizaciones de performance mejoradas */
+.card, .btn, .badge {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Optimización para listas largas */
+.addon-list {
+  contain: layout style paint;
+}
+
+.addon-card {
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Optimización de animaciones */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   
-  .nav-tabs {
-    border-bottom: 2px solid #dee2e6;
+  .addon-card {
+    &:hover {
+      transform: none;
+    }
     
-    .nav-link {
-      border-radius: var(--border-radius) var(--border-radius) 0 0;
-      font-weight: 500;
-      transition: var(--transition);
-      
-      &:hover {
-        border-color: #e9ecef #e9ecef var(--primary-color);
-      }
-      
-      &.active {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-      }
+    &.drag-over {
+      transform: none;
     }
   }
   
-  .iframe-wrapper {
-    position: relative;
-    min-height: 600px;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-  }
-  
-  .loader-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    border-radius: var(--border-radius);
-  }
-  
-  .addon-iframe {
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-    border: 1px solid #ccc;
-  }
-}
-
-/* Lista de addons */
-.list-group-item {
-  border-radius: var(--border-radius);
-  margin-bottom: 0.5rem;
-  border: 1px solid #dee2e6;
-  transition: var(--transition);
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-  }
-  
-  &.cdk-drag-preview {
-    box-shadow: var(--shadow-lg);
-    transform: rotate(5deg);
-  }
-  
-  &.cdk-drag-placeholder {
-    opacity: 0.5;
-  }
-}
-
-/* Alertas mejoradas */
-.alert {
-  border-radius: var(--border-radius);
-  border: none;
-  font-weight: 500;
-}
-
-/* Input groups */
-.input-group {
-  .form-control {
-    border-right: none;
-    
-    &:focus {
-      z-index: 3;
+  .drag-handle {
+    &:hover {
+      transform: none;
     }
-  }
-  
-  .btn {
-    border-left: none;
-    z-index: 2;
-  }
-}
-
-/* Badges */
-.badge {
-  font-weight: 500;
-  padding: 0.5em 0.75em;
-}
-
-/* Responsive mejoras */
-@media (max-width: 768px) {
-  .d-flex.gap-2 {
-    flex-direction: column;
     
-    .btn {
-      width: 100%;
-    }
-  }
-  
-  .addon-tabs-container .nav-tabs {
-    flex-wrap: wrap;
-    
-    .nav-link {
-      font-size: 0.875rem;
-      padding: 0.5rem 0.75rem;
+    &:active {
+      transform: none;
     }
   }
 }

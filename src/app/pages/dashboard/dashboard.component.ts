@@ -1,4 +1,12 @@
-import { Component, inject, signal, computed, effect, OnInit } from '@angular/core';
+import { 
+  Component, 
+  inject, 
+  signal, 
+  computed, 
+  effect, 
+  OnInit, 
+  ChangeDetectionStrategy 
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,8 +15,6 @@ import { RealDebridService } from '../../services/realdebrid.service';
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 interface Addon {
   name: string;
@@ -25,6 +31,8 @@ interface Addon {
   standalone: true,
   imports: [CommonModule, FormsModule, AddonsComponent, AddonTabsComponent],
   templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
   private readonly router = inject(Router);
@@ -44,21 +52,6 @@ export class DashboardComponent implements OnInit {
   readonly canInstall = computed(() => 
     this.stremio.isAuthenticated() && !this.isLoading()
   );
-
-  // Propiedades para compatibilidad con el template existente
-  get token(): string {
-    return this.rdService.token() || '';
-  }
-
-  set token(value: string) {
-    if (value && this.isValidTokenFormat(value)) {
-      this.rdService.setToken(value);
-    }
-  }
-
-  get stremioAuthKey(): string {
-    return this.stremio.authKey() || '';
-  }
 
   iframeUrls: string[] = [];
 
@@ -265,37 +258,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  abrirComet() {
-    const token = this.rdService.token();
-    if (!token) {
-      alert('Introduce un token válido');
-      return;
-    }
-    this.rdService.abrirCometConToken(token);
-    this.iframeUrls.push(`https://comet.strem.io/install?token=${token}`);
-  }
-
-  abrirJackettio() {
-    const token = this.rdService.token();
-    if (!token) {
-      alert('Introduce un token válido');
-      return;
-    }
-    this.rdService.abrirJackettioConToken(token);
-    this.iframeUrls.push(`https://jackettio.strem.io/install?token=${token}`);
-  }
-
-  configurarMediaFusion() {
-    const token = this.rdService.token();
-    if (!token) {
-      alert('Introduce un token válido');
-      return;
-    }
-    this.rdService.configurarMediaFusion(token);
-    const payload = btoa(JSON.stringify({ token }));
-    this.iframeUrls.push(`https://mediafusion.strem.io/install?data=${payload}`);
-  }
-
   async configureAll() {
     if (!this.canInstall()) {
       alert('⚠️ Debes iniciar sesión correctamente primero.');
@@ -395,7 +357,20 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  validarToken(token: string): boolean {
+    const regex = /^[A-Za-z0-9]{20,}$/;
+    return regex.test(token);
+  }
 
+  logout() {
+    this.stremio.clearAuth();
+    this.rdService.clearToken();
+    this.router.navigate(['/']);
+  }
+
+  reloadAddons() {
+    location.reload();
+  }
 
   async resetStremio() {
     if (!this.stremio.isAuthenticated()) {
@@ -413,9 +388,7 @@ export class DashboardComponent implements OnInit {
     this.progressText.set('Cargando configuración de fábrica...');
 
     try {
-      const fileContent: any = await firstValueFrom(
-        this.http.get('/assets/reset-stremio.json')
-      );
+      const fileContent: any = await this.http.get('/assets/reset-stremio.json').toPromise();
 
       this.progressText.set('Enviando configuración de fábrica a Stremio...');
 
@@ -434,20 +407,5 @@ export class DashboardComponent implements OnInit {
     } finally {
       setTimeout(() => this.isLoading.set(false), 500);
     }
-  }
-
-  validarToken(token: string): boolean {
-    const regex = /^[A-Za-z0-9]{20,}$/;
-    return regex.test(token);
-  }
-
-  logout() {
-    this.stremio.clearAuth();
-    this.rdService.clearToken();
-    this.router.navigate(['/']);
-  }
-
-  reloadAddons() {
-    location.reload();
   }
 }

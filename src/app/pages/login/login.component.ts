@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,75 +9,109 @@ import { StremioService } from '../../services/stremio.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-  <div class="card shadow mx-auto mt-5" style="max-width:520px">
-    <div class="card-body">
-      <h4 class="card-title mb-3">Login Stremio / AuthKey</h4>
-
-      <form (ngSubmit)="onSubmit()" #f="ngForm">
-        <div class="mb-2">
-          <label class="form-label">Email</label>
-          <input 
-            class="form-control" 
-            [(ngModel)]="email" 
-            name="email" 
-            type="email" 
-            [disabled]="loading()"
-          />
+    <div class="card shadow mx-auto mt-5" style="max-width:520px">
+      <div class="card-body">
+        <div class="text-center mb-4">
+          <i class="bi bi-shield-lock display-4 text-primary"></i>
+          <h4 class="card-title mt-3">Acceso a Stremio</h4>
+          <p class="text-muted">Introduce tus credenciales o AuthKey</p>
         </div>
 
-        <div class="mb-2">
-          <label class="form-label">Password</label>
-          <input 
-            class="form-control" 
-            [(ngModel)]="password" 
-            name="password" 
-            type="password" 
-            [disabled]="loading()"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">o AuthKey (opcional)</label>
-          <input 
-            class="form-control" 
-            [(ngModel)]="authKey" 
-            name="authKey" 
-            [disabled]="loading()"
-          />
-          <div class="form-text">
-            Si tienes tu AuthKey, puedes usarlo directamente
+        <form (ngSubmit)="onSubmit()" #f="ngForm">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-envelope"></i>
+              </span>
+              <input 
+                class="form-control" 
+                [(ngModel)]="email" 
+                name="email" 
+                type="email" 
+                placeholder="tu@email.com"
+                [disabled]="loading()"
+                required
+              />
+            </div>
           </div>
-        </div>
 
-        @if (error()) {
-          <div class="alert alert-danger py-2">{{ error() }}</div>
-        }
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-lock"></i>
+              </span>
+              <input 
+                class="form-control" 
+                [(ngModel)]="password" 
+                name="password" 
+                type="password" 
+                placeholder="Tu contraseña"
+                [disabled]="loading()"
+                required
+              />
+            </div>
+          </div>
 
-        <div class="d-flex gap-2">
-          <button 
-            class="btn btn-primary" 
-            [disabled]="loading() || f.invalid" 
-            type="submit"
-          >
-            @if (loading()) {
-              <span class="spinner-border spinner-border-sm me-2"></span>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">AuthKey <small class="text-muted">(opcional)</small></label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-key"></i>
+              </span>
+              <input 
+                class="form-control" 
+                [(ngModel)]="authKey" 
+                name="authKey" 
+                placeholder="Si ya tienes tu AuthKey..."
+                [disabled]="loading()"
+              />
+            </div>
+            <div class="form-text">
+              Si tienes tu AuthKey, puedes usarlo directamente sin email/contraseña
+            </div>
+          </div>
+
+          @if (error()) {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error() }}
+            </div>
+          }
+
+          <div class="d-grid gap-2">
+            <button 
+              class="btn btn-primary btn-lg" 
+              [disabled]="loading() || (!authKey && f.invalid)" 
+              type="submit"
+            >
+              @if (loading()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Conectando...
+              } @else {
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Iniciar sesión
+              }
+            </button>
+            
+            @if (authKey) {
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button" 
+                (click)="useAuthKey()"
+                [disabled]="loading()"
+              >
+                <i class="bi bi-key me-2"></i>
+                Usar solo AuthKey
+              </button>
             }
-            {{ loading() ? 'Conectando...' : 'Login' }}
-          </button>
-          
-          <button 
-            class="btn btn-outline-secondary" 
-            type="button" 
-            (click)="useAuthKey()"
-            [disabled]="loading() || !authKey"
-          >
-            Usar AuthKey
-          </button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   private readonly stremio = inject(StremioService);
