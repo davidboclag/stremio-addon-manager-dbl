@@ -26,6 +26,24 @@ import { StremioService } from '../../services/stremio.service';
           </button>
           <button
             class="btn btn-outline-light"
+            (click)="exportConfig()"
+            [disabled]="addons().length === 0"
+            title="Exportar configuración"
+          >
+            <i class="bi bi-download"></i>
+          </button>
+          <label class="btn btn-outline-light mb-0" for="importFile" title="Importar configuración">
+            <i class="bi bi-upload"></i>
+          </label>
+          <input
+            type="file"
+            id="importFile"
+            class="d-none"
+            accept=".json"
+            (change)="importConfig($event)"
+          />
+          <button
+            class="btn btn-outline-light"
             (click)="toggleView()"
             title="Cambiar vista"
           >
@@ -216,27 +234,6 @@ import { StremioService } from '../../services/stremio.service';
               <i class="bi bi-trash me-1"></i>
               Eliminar todos
             </button>
-            
-            <button
-              class="btn btn-outline-info"
-              (click)="exportConfig()"
-              [disabled]="addons().length === 0"
-            >
-              <i class="bi bi-download me-1"></i>
-              Exportar configuración
-            </button>
-
-            <label class="btn btn-outline-primary" for="importFile">
-              <i class="bi bi-upload me-1"></i>
-              Importar configuración
-            </label>
-            <input
-              type="file"
-              id="importFile"
-              class="d-none"
-              accept=".json"
-              (change)="importConfig($event)"
-            />
           </div>
         }
       </div>

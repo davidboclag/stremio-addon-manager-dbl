@@ -1,4 +1,15 @@
 // Estilos optimizados para el componente de addons
+
+// Input file como botón en el header
+label[for="importFile"] {
+  cursor: pointer;
+  margin-bottom: 0 !important;
+  
+  &:hover {
+    transform: none; // Evitar transformación del label
+  }
+}
+
 .addon-list {
   .addon-item {
     background: white;
