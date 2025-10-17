@@ -16,11 +16,11 @@ export interface LanguageConfig {
 
 // Información sobre compatibilidad de addons por idioma
 export const ADDON_LANGUAGE_SUPPORT: Record<string, Language[]> = {
-  'Torrentio (RD)': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
-  'Comet (RD)': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
-  'MediaFusion (RD)': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
-  'Peerflix (RD)': ['spanish', 'english'], // Solo disponible en español e inglés
-  'Jackettio (RD)': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
+  'Torrentio': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
+  'Comet': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
+  'MediaFusion': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
+  'Peerflix': ['spanish', 'english', 'mexican'], // Solo disponible en español, inglés y mexicano
+  'Jackettio': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
 };
 
 export const LANGUAGES: Record<Language, LanguageConfig> = {

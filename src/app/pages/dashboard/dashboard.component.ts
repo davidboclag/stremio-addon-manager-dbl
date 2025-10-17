@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StremioService } from '../../services/stremio.service';
 import { RealDebridService } from '../../services/realdebrid.service';
-import { PreferencesService, Language, LANGUAGES } from '../../services/preferences.service';
+import { PreferencesService, Language, LANGUAGES, ADDON_LANGUAGE_SUPPORT } from '../../services/preferences.service';
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
 import { HttpClient } from '@angular/common/http';
@@ -72,6 +72,39 @@ export class DashboardComponent implements OnInit {
       config
     }))
   );
+
+  // Computed que filtra los addons basándose en el idioma seleccionado
+  readonly filteredAddons = computed(() => {
+    const currentLang = this.preferences.selectedLanguage();
+    return this.addons.filter(addon => {
+      // Verificar si el addon tiene soporte de idioma definido
+      const supportedLanguages = ADDON_LANGUAGE_SUPPORT[addon.name];
+      if (supportedLanguages) {
+        return supportedLanguages.includes(currentLang);
+      }
+      // Si no está definido en ADDON_LANGUAGE_SUPPORT, se muestra por defecto
+      return true;
+    });
+  });
+
+  // Computed que obtiene la lista de addons no disponibles para el idioma actual
+  readonly unavailableAddons = computed(() => {
+    const currentLang = this.preferences.selectedLanguage();
+    return this.addons
+      .filter(addon => {
+        const supportedLanguages = ADDON_LANGUAGE_SUPPORT[addon.name];
+        return supportedLanguages && !supportedLanguages.includes(currentLang);
+      })
+      .map(addon => addon.name);
+  });
+
+  // Computed que obtiene estadísticas de disponibilidad de addons
+  readonly addonStats = computed(() => {
+    const total = this.addons.length;
+    const available = this.filteredAddons().length;
+    const unavailable = this.unavailableAddons().length;
+    return { total, available, unavailable };
+  });
 
   iframeUrls: string[] = [];
 
@@ -304,10 +337,11 @@ export class DashboardComponent implements OnInit {
 
     try {
       const finalJson: any[] = [];
-      const totalAddons = this.addons.length;
+      const addonsToProcess = this.filteredAddons();
+      const totalAddons = addonsToProcess.length;
       let currentIndex = 0;
 
-      for (const addon of this.addons) {
+      for (const addon of addonsToProcess) {
         currentIndex++;
         this.progressText.set(`Procesando ${currentIndex} de ${totalAddons} (${addon.name})...`);
 

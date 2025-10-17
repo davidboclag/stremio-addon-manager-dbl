@@ -169,7 +169,7 @@
 
 <!-- Tabs de addons -->
 <app-addon-tabs 
-  [addons]="addons" 
+  [addons]="filteredAddons()" 
   [token]="rdService.token() || ''"
   [language]="preferences.selectedLanguage()"
 />
