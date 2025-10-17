@@ -27,8 +27,7 @@
         
         <select 
           class="form-select"
-          [value]="preferences.selectedLanguage()"
-          (change)="onLanguageChange($event)"
+          [(ngModel)]="selectedLanguage"
         >
           @for (lang of languageOptions(); track lang.key) {
             <option [value]="lang.key">

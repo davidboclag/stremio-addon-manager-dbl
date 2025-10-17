@@ -49,6 +49,15 @@ export class DashboardComponent implements OnInit {
   readonly loadingTitle = signal('Procesando');
   
   rdTokenInput = this.rdService.token() || '';
+  
+  // Propiedad para el selector de idioma con getter/setter
+  get selectedLanguage(): Language {
+    return this.preferences.selectedLanguage();
+  }
+  
+  set selectedLanguage(value: Language) {
+    this.preferences.setLanguage(value);
+  }
 
   // Computed signals
   readonly canInstall = computed(() => 
@@ -261,12 +270,6 @@ export class DashboardComponent implements OnInit {
     const token = target.value.trim();
     
     this.rdService.setToken(token);
-  }
-
-  onLanguageChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const language = target.value as Language;
-    this.preferences.setLanguage(language);
   }
 
   copyToken(): void {
