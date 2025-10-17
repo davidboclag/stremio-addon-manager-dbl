@@ -16,16 +16,16 @@ import { PreferencesService, Language, LANGUAGES, ADDON_LANGUAGE_SUPPORT } from 
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
 import { HttpClient } from '@angular/common/http';
-
-interface Addon {
-  name: string;
-  hideTab?: boolean;
-  requiresToken?: boolean;
-  url?: string;
-  transportName?: string;
-  transportUrl?: string;
-  getUrl?: (token?: string, language?: string) => string | Promise<string>;
-}
+import { 
+  Addon, 
+  JackettioConfig, 
+  CometConfig, 
+  MediaFusionConfig, 
+  TorrentioConfig,
+  AddonPreset,
+  PresetType,
+  ADDON_PRESETS
+} from '../../types';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,7 +48,31 @@ export class DashboardComponent implements OnInit {
   readonly progressText = signal('');
   readonly loadingTitle = signal('Procesando');
   
+  // Signal para la configuración predefinida seleccionada
+  readonly selectedPreset = signal<PresetType>('complete');
+  
   rdTokenInput = this.rdService.token() || '';
+  
+  // Helper function para construir URLs de Torrentio de forma tipada
+  private buildTorrentioUrl(config: TorrentioConfig): string {
+    const baseUrl = 'https://torrentio.strem.fun';
+    const params: string[] = [];
+    
+    if (config.sort) params.push(`sort=${config.sort}`);
+    if (config.language) params.push(`language=${config.language}`);
+    if (config.qualityFilter.length > 0) params.push(`qualityfilter=${config.qualityFilter.join(',')}`);
+    if (config.limit) params.push(`limit=${config.limit}`);
+    if (config.debridOptions && config.debridOptions.length > 0) params.push(`debridoptions=${config.debridOptions.join(',')}`);
+    if (config.realdebrid) params.push(`realdebrid=${config.realdebrid}`);
+    
+    return `${baseUrl}/${params.join('%7C')}/configure`;
+  }
+
+  // Helper function para acceso seguro a configuración de idioma
+  private getLanguageConfig(language?: string) {
+    const lang = (language as Language) || 'spanish';
+    return LANGUAGES[lang] || LANGUAGES['spanish'];
+  }
   
   // Propiedad para el selector de idioma con getter/setter
   get selectedLanguage(): Language {
@@ -72,6 +96,21 @@ export class DashboardComponent implements OnInit {
       config
     }))
   );
+
+  // Computed para configuraciones predefinidas
+  readonly availablePresets = computed(() => Object.values(ADDON_PRESETS));
+  
+  readonly currentPreset = computed(() => ADDON_PRESETS[this.selectedPreset()]);
+  
+  readonly presetAddons = computed(() => {
+    const preset = this.currentPreset();
+    return this.addons.filter(addon => preset.addonNames.includes(addon.name));
+  });
+
+  readonly canInstallPreset = computed(() => {
+    const preset = this.currentPreset();
+    return this.canInstall() && (!preset.requiresToken || this.hasValidToken());
+  });
 
   // Computed que filtra los addons basándose en el idioma seleccionado
   readonly filteredAddons = computed(() => {
@@ -127,26 +166,34 @@ export class DashboardComponent implements OnInit {
     {
       name: "Torrentio",
       getUrl: (token, language) => {
-        const langConfig = this.preferences.currentLanguageConfig();
-        const langParam = langConfig.torrentioCode;
+        const langConfig = this.getLanguageConfig(language);
+        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
         
-        return token && this.rdService.isValidToken()
-          ? `https://torrentio.strem.fun/sort=qualitysize%7Clanguage=${langParam}%7Cqualityfilter=threed,480p,other,scr,cam,unknown%7Climit=5%7Cdebridoptions=nocatalog%7Crealdebrid=${token}/configure`
-          : `https://torrentio.strem.fun/sort=qualitysize%7Clanguage=${langParam}%7Cqualityfilter=threed,480p,other,scr,cam,unknown%7Climit=5/configure`;
+        const config: TorrentioConfig = {
+          sort: 'qualitysize',
+          language: langConfig.torrentioCode,
+          qualityFilter: ['threed', '480p', 'other', 'scr', 'cam', 'unknown'],
+          limit: 5,
+          debridOptions: hasValidToken ? ['nocatalog'] : undefined,
+          realdebrid: hasValidToken ? token : undefined
+        };
+        
+        return this.buildTorrentioUrl(config);
       },
       requiresToken: false,
     },
     {
       name: "Comet",
       getUrl: (token, language) => {
-        const langConfig = this.preferences.currentLanguageConfig();
+        const langConfig = this.getLanguageConfig(language);
         const base64Original =
           "eyJtYXhSZXN1bHRzUGVyUmVzb2x1dGlvbiI6NSwibWF4U2l6ZSI6MCwiY2FjaGVkT25seSI6ZmFsc2UsInJlbW92ZVRyYXNoIjp0cnVlLCJyZXN1bHRGb3JtYXQiOlsiYWxsIl0sImRlYnJpZFNlcnZpY2UiOiJyZWFsZGVicmlkIiwiZGVicmlkQXBpS2V5IjoiIiwiZGVicmlkU3RyZWFtUHJveHlQYXNzd29yZCI6IiIsImxhbmd1YWdlcyI6eyJleGNsdWRlIjpbXSwicHJlZmVycmVkIjpbImVzIl19LCJyZXNvbHV0aW9ucyI6eyJyNDgwcCI6ZmFsc2UsInIzNjBwIjpmYWxzZSwidW5rbm93biI6ZmFsc2V9LCJvcHRpb25zIjp7InJlbW92ZV9yYW5rc191bmRlciI6LTEwMDAwMDAwMDAwLCJhbGxvd19lbmdsaXNoX2luX2xhbmd1YWdlcyI6ZmFsc2UsInJlbW92ZV91bmtub3duX2xhbmd1YWdlcyI6ZmFsc2V9fQ==";
         
-        let cometConfig = JSON.parse(atob(base64Original));
+        let cometConfig: CometConfig = JSON.parse(atob(base64Original));
         cometConfig.languages.preferred = [langConfig.cometCode];
         
-        if (token && this.rdService.isValidToken()) {
+        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        if (hasValidToken) {
           cometConfig.debridApiKey = token;
         }
         
@@ -157,9 +204,11 @@ export class DashboardComponent implements OnInit {
     {
       name: "MediaFusion",
       getUrl: async (token, language) => {
-        const langConfig = this.preferences.currentLanguageConfig();
-        const payload = {
-          streaming_provider: (token && this.rdService.isValidToken())
+        const langConfig = this.getLanguageConfig(language);
+        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        
+        const payload: MediaFusionConfig = {
+          streaming_provider: hasValidToken
             ? {
                 token: token,
                 service: "realdebrid",
@@ -240,14 +289,15 @@ export class DashboardComponent implements OnInit {
     {
       name: "Jackettio",
       getUrl: (token, language) => {
-        const langConfig = this.preferences.currentLanguageConfig();
+        const langConfig = this.getLanguageConfig(language);
         const base64Original =
           "eyJtYXhUb3JyZW50cyI6NSwicHJpb3RpemVQYWNrVG9ycmVudHMiOjIsImV4Y2x1ZGVLZXl3b3JkcyI6WyJjYW0iLCJzY3JlZW5lciJdLCJkZWJyaWRJZCI6InJlYWxkZWJyaWQiLCJoaWRlVW5jYWNoZWQiOmZhbHNlLCJzb3J0Q2FjaGVkIjpbWyJxdWFsaXR5Iix0cnVlXSxbInNpemUiLHRydWVdXSwic29ydFVuY2FjaGVkIjpbWyJxdWFsaXR5Iix0cnVlXSxbInNlZWRlcnMiLHRydWVdXSwiZm9yY2VDYWNoZU5leHRFcGlzb2RlIjpmYWxzZSwicHJpb3RpemVMYW5ndWFnZXMiOlsic3BhbmlzaCJdLCJpbmRleGVyVGltZW91dFNlYyI6NjAsIm1ldGFMYW5ndWFnZSI6IiIsImVuYWJsZU1lZGlhRmxvdyI6ZmFsc2UsIm1lZGlhZmxvd1Byb3h5VXJsIjoiIiwibWVkaWFmbG93QXBpUGFzc3dvcmQiOiIiLCJtZWRpYWZsb3dQdWJsaWNJcCI6IiIsInVzZVN0cmVtVGhydSI6dHJ1ZSwic3RyZW10aHJ1VXJsIjoiaHR0cDovL2VsZmhvc3RlZC1pbnRlcm5hbC5zdHJlbXRocnUiLCJxdWFsaXRpZXMiOls3MjAsMTA4MCwyMTYwXSwiaW5kZXhlcnMiOlsiZXp0diIsInRoZXBpcmF0ZWJheSIsInl0cyJdLCJkZWJyaWRBcGlLZXkiOiIzRDJXNzNRQ01RSDZDT1BCSktZRVlLRTVJSEw1UEVYVEVIRkZZQ1g0R1VKNUZHNDNCNkRBIn0=";
         
-        let jackettioConfig = JSON.parse(atob(base64Original));
-        jackettioConfig.priotizeLanguages = [langConfig.jackettioCode];
+        let jackettioConfig: JackettioConfig = JSON.parse(atob(base64Original));
+        jackettioConfig.priotizeLanguages = [langConfig.jackettioCode || 'spanish'];
         
-        if (token && this.rdService.isValidToken()) {
+        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        if (hasValidToken) {
           jackettioConfig.debridApiKey = token;
         }
         
@@ -318,13 +368,27 @@ export class DashboardComponent implements OnInit {
   }
 
   async configureAll() {
+    return this.installPreset(this.selectedPreset());
+  }
+
+  async installPreset(presetType: PresetType) {
+    const preset = ADDON_PRESETS[presetType];
+    
     if (!this.canInstall()) {
       alert('⚠️ Debes iniciar sesión correctamente primero.');
       return;
     }
 
+    if (preset.requiresToken && !this.hasValidToken()) {
+      alert(`⚠️ La configuración "${preset.name}" requiere un token de Real-Debrid válido.`);
+      return;
+    }
+
     const confirmacion = confirm(
-      '⚠️ ATENCIÓN: Si continúas, tu configuración actual de addons en Stremio será REEMPLAZADA por la recomendada.\n\n¿Deseas continuar?'
+      `⚠️ ATENCIÓN: Se instalará la configuración "${preset.name}".\n\n` +
+      `Descripción: ${preset.description}\n\n` +
+      `Addons incluidos: ${preset.addonNames.join(', ')}\n\n` +
+      '¿Deseas continuar?'
     );
 
     if (!confirmacion) return;
@@ -332,12 +396,13 @@ export class DashboardComponent implements OnInit {
     const token = this.rdService.token()?.trim();
 
     this.isLoading.set(true);
-    this.loadingTitle.set('Instalando addons');
+    this.loadingTitle.set(`Instalando ${preset.name}`);
     this.progressText.set('Preparando instalación...');
 
     try {
       const finalJson: any[] = [];
-      const addonsToProcess = this.filteredAddons();
+      // Usar los addons de la configuración predefinida en lugar de filteredAddons
+      const addonsToProcess = this.addons.filter(addon => preset.addonNames.includes(addon.name));
       const totalAddons = addonsToProcess.length;
       let currentIndex = 0;
 
@@ -458,5 +523,12 @@ export class DashboardComponent implements OnInit {
     } finally {
       setTimeout(() => this.isLoading.set(false), 500);
     }
+  }
+
+  getFilteredAddonNames(): string[] {
+    const currentPreset = this.currentPreset();
+    return this.filteredAddons()
+      .filter(addon => currentPreset.addonNames.includes(addon.name))
+      .map(addon => addon.name);
   }
 }

@@ -1,8 +1,8 @@
 import { 
   Component, 
   EventEmitter, 
-  Input, 
-  Output, 
+  output, 
+  input, 
   inject, 
   signal, 
   effect, 
@@ -22,9 +22,10 @@ import { StremioService, StremioAddon } from '../../services/stremio.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddonsComponent implements OnInit {
-  @Input() stremioAuthKey = '';
-  @Input() rdToken = '';
-  @Output() refreshRequested = new EventEmitter<void>();
+  // Input y Output signals
+  readonly stremioAuthKey = input<string>('');
+  readonly rdToken = input<string>('');
+  readonly refreshRequested = output<void>();
 
   private readonly stremio = inject(StremioService);
   
@@ -36,7 +37,7 @@ export class AddonsComponent implements OnInit {
   constructor() {
     // Effect para cargar addons cuando cambia el authKey
     effect(() => {
-      if (this.stremioAuthKey) {
+      if (this.stremioAuthKey()) {
         this.loadAddons();
       }
     });
@@ -51,7 +52,7 @@ export class AddonsComponent implements OnInit {
   }
 
   async loadAddons(): Promise<void> {
-    if (!this.stremioAuthKey) return;
+    if (!this.stremioAuthKey()) return;
     
     this.loading.set(true);
     try {

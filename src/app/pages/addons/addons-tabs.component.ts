@@ -1,4 +1,4 @@
-import { Component, Input, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -20,9 +20,10 @@ interface Addon {
   templateUrl: './addons-tabs.component.html',
 })
 export class AddonTabsComponent {
-  @Input() addons: Addon[] = [];
-  @Input() token: string = '';
-  @Input() language: Language = 'spanish';
+  // Input signals para mayor reactividad
+  readonly addons = input<Addon[]>([]);
+  readonly token = input<string>('');
+  readonly language = input<Language>('spanish');
 
   private readonly sanitizer = inject(DomSanitizer);
   private readonly rdService = inject(RealDebridService);
@@ -34,7 +35,7 @@ export class AddonTabsComponent {
 
   // Computed para obtener addons visibles (sin hideTab)
   readonly visibleAddons = computed(() => 
-    this.addons.filter(addon => !addon.hideTab)
+    this.addons().filter(addon => !addon.hideTab)
   );
 
   // Computed para verificar si el token es válido
@@ -51,8 +52,8 @@ export class AddonTabsComponent {
 
     // Effect para actualizar iframes cuando cambie el token o idioma
     effect(() => {
-      const token = this.token;
-      const language = this.language;
+      const token = this.token();
+      const language = this.language();
       const activeIdx = this.activeIndex();
       
       if (activeIdx !== null) {
@@ -122,7 +123,7 @@ export class AddonTabsComponent {
       }
 
       // Pasar token solo si es válido
-      const validToken = this.hasValidToken() ? this.token : undefined;
+      const validToken = this.hasValidToken() ? this.token() : undefined;
       const currentLanguage = this.preferences.selectedLanguage();
       
       let url = addon.getUrl(validToken, currentLanguage);
