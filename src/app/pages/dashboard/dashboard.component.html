@@ -15,53 +15,92 @@
 <!-- Token Real-Debrid -->
 <div class="card shadow-sm mb-4">
   <div class="card-body">
-    <div class="d-flex align-items-center mb-3">
-      <i class="bi bi-shield-check text-success me-2 fs-5"></i>
-      <label class="form-label mb-0 fw-semibold">
-        Token Real-Debrid
-      </label>
-      <small class="text-muted ms-2">
-        (Obtén tu token en
-        <a href="https://real-debrid.com/devices" target="_blank" rel="noopener noreferrer" 
-           class="text-decoration-none">
-          real-debrid.com/devices
-          <i class="bi bi-box-arrow-up-right ms-1"></i>
-        </a>)
-      </small>
-    </div>
-    
-    <div class="input-group mb-3">
-      <span class="input-group-text">
-        <i class="bi bi-key"></i>
-      </span>
-      <input
-        [(ngModel)]="rdTokenInput"
-        class="form-control"
-        placeholder="Token (52 caracteres)"
-        (input)="onTokenChange($event)"
-        type="password"
-      />
-      <button class="btn btn-outline-secondary" (click)="copyToken()" type="button">
-        <i class="bi bi-clipboard"></i>
-      </button>
+    <div class="row g-3">
+      <!-- Selector de idioma -->
+      <div class="col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-translate text-info me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Idioma de los addons
+          </label>
+        </div>
+        
+        <select 
+          class="form-select"
+          [value]="preferences.selectedLanguage()"
+          (change)="onLanguageChange($event)"
+        >
+          @for (lang of languageOptions(); track lang.key) {
+            <option [value]="lang.key">
+              {{ lang.config.flag }} {{ lang.config.nativeName }}
+            </option>
+          }
+        </select>
+        <div class="form-text">
+          Los addons se configurarán con el idioma seleccionado
+        </div>
+      </div>
+
+      <!-- Token Real-Debrid -->
+      <div class="col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-shield-check text-success me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Token Real-Debrid
+          </label>
+          <small class="text-muted ms-2">
+            (Obtén tu token en
+            <a href="https://real-debrid.com/devices" target="_blank" rel="noopener noreferrer" 
+               class="text-decoration-none">
+              real-debrid.com/devices
+              <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>)
+          </small>
+        </div>
+        
+        <div class="input-group mb-3">
+          <span class="input-group-text">
+            <i class="bi bi-key"></i>
+          </span>
+          <input
+            [(ngModel)]="rdTokenInput"
+            class="form-control"
+            placeholder="Token (52 caracteres)"
+            (input)="onTokenChange($event)"
+            type="password"
+            [class.is-valid]="hasValidToken()"
+            [class.is-invalid]="rdTokenInput && !hasValidToken()"
+          />
+          <button class="btn btn-outline-secondary" (click)="copyToken()" type="button">
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+
+        @if (rdTokenInput && !hasValidToken()) {
+          <div class="text-danger small">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            El token debe tener exactamente 52 caracteres alfanuméricos
+          </div>
+        }
+      </div>
     </div>
 
     <!-- Información de usuarios conectados -->
-    <div class="row g-2 mb-3">
-      @if (rdService.user(); as user) {
-        <div class="col-md-6">
-          <div class="alert alert-success py-2 d-flex align-items-center mb-0" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <small><strong>Real-Debrid:</strong> {{ user.username }}</small>
-          </div>
-        </div>
-      }
-      
+    <div class="row g-2 mb-3">      
       @if (stremio.user(); as stremioUser) {
         <div class="col-md-6">
           <div class="alert alert-info py-2 d-flex align-items-center mb-0" role="alert">
             <i class="bi bi-person-check-fill me-2"></i>
             <small><strong>Stremio:</strong> {{ stremioUser.email }}</small>
+          </div>
+        </div>
+      }
+
+      @if (rdService.user(); as user) {
+        <div class="col-md-6">
+          <div class="alert alert-success py-2 d-flex align-items-center mb-0" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <small><strong>Real-Debrid:</strong> {{ user.username }}</small>
           </div>
         </div>
       }
@@ -133,4 +172,5 @@
 <app-addon-tabs 
   [addons]="addons" 
   [token]="rdService.token() || ''"
+  [language]="preferences.selectedLanguage()"
 />

@@ -18,12 +18,25 @@ export class RealDebridService {
   
   readonly token = this._token.asReadonly();
   readonly user = this._user.asReadonly();
-  readonly isAuthenticated = computed(() => !!this._token());
+  
+  // Validación mejorada del token
+  readonly isValidToken = computed(() => {
+    const token = this._token();
+    return token ? this.validateTokenFormat(token) : false;
+  });
+  
+  readonly isAuthenticated = computed(() => this.isValidToken());
 
   setToken(token: string): void {
-    this._token.set(token);
+    const cleanToken = token.trim();
+    this._token.set(cleanToken);
     this._user.set(null);
-    localStorage.setItem('rd_token', token);
+    
+    if (cleanToken) {
+      localStorage.setItem('rd_token', cleanToken);
+    } else {
+      localStorage.removeItem('rd_token');
+    }
   }
 
   clearToken(): void {
@@ -32,7 +45,17 @@ export class RealDebridService {
     localStorage.removeItem('rd_token');
   }
 
+  validateTokenFormat(token: string): boolean {
+    // Token Real-Debrid tiene exactamente 52 caracteres alfanuméricos
+    const regex = /^[A-Za-z0-9]{52}$/;
+    return regex.test(token);
+  }
+
   async validateToken(token: string): Promise<{ valid: boolean; user?: RealDebridUser; error?: string }> {
+    if (!this.validateTokenFormat(token)) {
+      return { valid: false, error: 'Formato de token inválido (debe tener 52 caracteres)' };
+    }
+
     try {
       const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
       const user = await this.http.get<RealDebridUser>(`${this.apiBase}/user`, { headers }).toPromise();
@@ -50,6 +73,7 @@ export class RealDebridService {
 
   private getStoredToken(): string | null {
     if (typeof localStorage === 'undefined') return null;
-    return localStorage.getItem('rd_token');
+    const token = localStorage.getItem('rd_token');
+    return token && this.validateTokenFormat(token) ? token : null;
   }
 }
