@@ -112,7 +112,7 @@ export interface Addon {
 }
 
 // Tipos para configuraciones predefinidas
-export type PresetType = 'basic' | 'complete' | 'premium' | 'streaming';
+export type PresetType = 'basic' | 'complete' | 'premium' | 'recommended';
 
 export interface AddonPreset {
   id: PresetType;
@@ -131,49 +131,44 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Configuración Básica',
     description: 'Addons esenciales para uso general sin servicios premium',
     icon: '🎬',
-    addonNames: ['watchhub', 'Torrentio', 'ThePirateBay+', 'Anime Kitsu'],
+    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet'],
     requiresToken: false,
     benefits: [
-      'Ideal para principiantes',
-      'No requiere servicios premium',
-      'Contenido básico de calidad'
+      'Funciona sin y con Real-Debrid',
     ]
   },
   complete: {
     id: 'complete',
     name: 'Configuración Completa',
-    description: 'Todos los addons principales con funcionalidad completa',
+    description: 'Todos los addons principales para uso general sin servicios premium',
     icon: '🎯',
-    addonNames: ['watchhub', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'ThePirateBay+', 'Nuvio', 'Anime Kitsu', 'Webstreamr'],
+    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion'],
     requiresToken: false,
     benefits: [
-      'Máxima cobertura de contenido',
       'Funciona sin y con Real-Debrid',
-      'Ideal para usuarios avanzados'
     ]
   },
   premium: {
     id: 'premium',
     name: 'Configuración Premium',
-    description: 'Addons optimizados para Real-Debrid con máxima calidad',
+    description: 'Todos los addons recomendados para la mejor experiencia',
     icon: '💎',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Anime Kitsu', 'Webstreamr', "Animes' Season"],
-    requiresToken: true,
-    benefits: [
-      'Máxima calidad de video',
-      'Enlaces premium garantizados',
-      'Velocidad de descarga optimizada'
-    ]
-  },
-  streaming: {
-    id: 'streaming',
-    name: 'Solo Streaming',
-    description: 'Addons de streaming directo sin descargas',
-    icon: '📺',
-    addonNames: ['watchhub', 'Nuvio', 'Webstreamr', 'Anime Kitsu', "Animes' Season"],
+    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'Anime Kitsu', "Animes' Season"],
     requiresToken: false,
     benefits: [
-      'No requiere descargas',
+      'Mayor cobertura de contenido',
+      'Funciona sin y con Real-Debrid',
+    ]
+  },
+  recommended: {
+    id: 'recommended',
+    name: 'Recomendada',
+    description: 'Todos los addons recomendados para la mejor experiencia con Real-Debrid (Streaming instantáneo)',
+    icon: '📺',
+    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'Anime Kitsu', "Animes' Season"],
+    requiresToken: true,
+    benefits: [
+      'Mayor cobertura de contenido',
       'Streaming instantáneo',
       'Menor uso de ancho de banda'
     ]

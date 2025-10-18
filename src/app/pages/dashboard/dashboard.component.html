@@ -128,7 +128,7 @@
 
         <div class="row g-2">
           @for (preset of availablePresets(); track preset.id) {
-          <div class="col-md-6 col-lg-3">
+          <div class="col-md-6 col-lg-3 d-flex">
             <input
               type="radio"
               class="btn-check"
@@ -139,13 +139,13 @@
             />
             <label
               [for]="'preset-' + preset.id"
-              class="btn btn-outline-primary w-100 text-start p-3"
+              class="btn btn-outline-primary w-100 text-start p-3 d-flex h-100"
             >
-              <div class="d-flex align-items-start">
+              <div class="d-flex align-items-center w-100">
                 <span class="fs-4 me-2">{{ preset.icon }}</span>
                 <div class="flex-grow-1">
                   <div class="fw-semibold">{{ preset.name }}</div>
-                  <small class="text-muted">{{ preset.description }}</small>
+                  <!-- <small class="text-muted">{{ preset.description }}</small> -->
                   @if (preset.requiresToken) {
                   <div class="mt-1">
                     <span class="badge bg-warning text-dark">

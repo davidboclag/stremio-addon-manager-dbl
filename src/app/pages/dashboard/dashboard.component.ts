@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit {
   readonly loadingTitle = signal('Procesando');
   
   // Signal para la configuración predefinida seleccionada
-  readonly selectedPreset = signal<PresetType>('complete');
+  readonly selectedPreset = signal<PresetType>('recommended');
   
   rdTokenInput = this.rdService.token() || '';
   
