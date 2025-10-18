@@ -153,7 +153,7 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Configuración Premium',
     description: 'Todos los addons recomendados para la mejor experiencia',
     icon: '💎',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'Anime Kitsu', "Animes' Season"],
+    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr'],
     requiresToken: false,
     benefits: [
       'Mayor cobertura de contenido',
@@ -165,7 +165,7 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Recomendada',
     description: 'Todos los addons recomendados para la mejor experiencia con Real-Debrid (Streaming instantáneo)',
     icon: '📺',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'Anime Kitsu', "Animes' Season"],
+    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr'],
     requiresToken: true,
     benefits: [
       'Mayor cobertura de contenido',

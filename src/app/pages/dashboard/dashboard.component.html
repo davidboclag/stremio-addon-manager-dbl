@@ -191,6 +191,45 @@
             </div>
           </div>
         </div>
+
+        <!-- Opciones adicionales -->
+        <div class="card bg-light mt-3">
+          <div class="card-body p-3">
+            <h6 class="fw-semibold mb-3">
+              <i class="bi bi-gear-fill me-2"></i>
+              Opciones adicionales
+            </h6>
+            
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="includeAnimeAddons"
+                [(ngModel)]="includeAnimeAddons"
+              >
+              <label class="form-check-label" for="includeAnimeAddons">
+                <i class="bi bi-tv me-2 text-info"></i>
+                <strong>Incluir addons de anime</strong>
+                <small class="text-muted d-block">
+                  Agregar "Anime Kitsu" y "Animes' Season" a la configuración seleccionada
+                </small>
+              </label>
+            </div>
+            
+            @if (includeAnimeAddons()) {
+              <div class="mt-2 ms-4">
+                <span class="badge bg-info text-white me-1">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Anime Kitsu
+                </span>
+                <span class="badge bg-info text-white">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Animes' Season
+                </span>
+              </div>
+            }
+          </div>
+        </div>
       </div>
     </div>
 
