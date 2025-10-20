@@ -58,34 +58,12 @@ export class DebridService {
       this._selectedProvider.set(storedProvider);
     }
     
-    // Cargar el token específico para este proveedor
-    const currentProvider = this._selectedProvider();
-    const storedToken = localStorage.getItem(`debrid-token-${currentProvider}`);
-    
-    if (storedToken) {
-      this._token.set(storedToken);
-      
-      // Si el token no es válido para el proveedor actual, limpiar
-      if (!this.validateTokenFormat(storedToken)) {
-        const currentService = this.currentService();
-        console.warn(`Token almacenado no es válido para ${currentService?.displayName || 'el servicio seleccionado'}, limpiando...`);
-        this.clearToken();
-      }
-    }
+    // Ya no cargar tokens desde localStorage - solo mantienen en memoria durante la sesión
   }
 
   setProvider(provider: DebridProviderType): void {
     if (provider && !DEBRID_SERVICES[provider]) {
       throw new Error(`Proveedor de debrid no soportado: ${provider}`);
-    }
-    
-    // Guardar el token actual antes de cambiar proveedor
-    const currentToken = this._token();
-    const currentProvider = this._selectedProvider();
-    
-    // Solo guardar el token si hay un proveedor actual válido
-    if (currentToken && currentProvider) {
-      localStorage.setItem(`debrid-token-${currentProvider}`, currentToken);
     }
     
     // Cambiar proveedor
@@ -98,19 +76,8 @@ export class DebridService {
       localStorage.removeItem('debrid-provider');
     }
     
-    // Cargar token del nuevo proveedor (solo si provider no es null)
-    if (provider) {
-      const savedToken = localStorage.getItem(`debrid-token-${provider}`);
-      if (savedToken && this.validateTokenFormat(savedToken)) {
-        this._token.set(savedToken);
-      } else {
-        this.clearToken();
-      }
-    } else {
-      this.clearToken();
-    }
-    
-    // Limpiar usuario al cambiar proveedor
+    // Limpiar token y usuario al cambiar proveedor (ya no se persisten tokens)
+    this._token.set(null);
     this._user.set(null);
   }
 
@@ -118,13 +85,7 @@ export class DebridService {
     const cleanToken = token.trim();
     this._token.set(cleanToken || null);
     
-    const currentProvider = this._selectedProvider();
-    
-    if (cleanToken) {
-      localStorage.setItem(`debrid-token-${currentProvider}`, cleanToken);
-    } else {
-      localStorage.removeItem(`debrid-token-${currentProvider}`);
-    }
+    // Ya no guardar tokens en localStorage - solo mantener en memoria durante la sesión
     
     // Limpiar usuario al cambiar token
     this._user.set(null);
@@ -134,8 +95,7 @@ export class DebridService {
     this._token.set(null);
     this._user.set(null);
     
-    const currentProvider = this._selectedProvider();
-    localStorage.removeItem(`debrid-token-${currentProvider}`);
+    // Ya no eliminar tokens de localStorage - solo limpiar memoria
   }
 
   validateTokenFormat(token: string): boolean {
@@ -143,195 +103,6 @@ export class DebridService {
     if (!service || !service.tokenPattern) return false; // Sin servicio = token inválido
     return service.tokenPattern.test(token);
   }
-
-  async validateToken(token?: string): Promise<DebridValidationResult> {
-    const tokenToValidate = token || this._token();
-    const service = this.currentService();
-    
-    if (!service) {
-      return { valid: false, error: 'No hay servicio debrid seleccionado' };
-    }
-    
-    if (!tokenToValidate) {
-      return { valid: false, error: 'No hay token proporcionado' };
-    }
-
-    if (!this.validateTokenFormat(tokenToValidate)) {
-      return { 
-        valid: false, 
-        error: `Token inválido para ${service.displayName}. Debe tener ${service.tokenLength} caracteres alfanuméricos.`
-      };
-    }
-
-    try {
-      const user = await this.fetchUserInfo(tokenToValidate);
-      if (user) {
-        this._user.set(user);
-        return { valid: true, user };
-      } else {
-        return { valid: false, error: 'Token inválido o usuario no encontrado' };
-      }
-    } catch (error) {
-      console.error('Error validating token:', error);
-      return { 
-        valid: false, 
-        error: error instanceof Error ? error.message : 'Error de conexión'
-      };
-    }
-  }
-
-  private async fetchUserInfo(token: string): Promise<DebridUser | null> {
-    const service = this.currentService();
-    
-    if (!service) {
-      console.error('No hay servicio seleccionado');
-      return null;
-    }
-    
-    const headers = this.getAuthHeaders(token);
-    
-    try {
-      switch (service.id) {
-        case 'realdebrid':
-          return await this.fetchRealDebridUser(token, headers);
-        case 'alldebrid':
-          return await this.fetchAllDebridUser(token, headers);
-        case 'premiumize':
-          return await this.fetchPremiumizeUser(token, headers);
-        case 'debridlink':
-          return await this.fetchDebridLinkUser(token, headers);
-        case 'easydebrid':
-          return await this.fetchEasyDebridUser(token, headers);
-        case 'torbox':
-          return await this.fetchTorBoxUser(token, headers);
-        default:
-          throw new Error(`Método de validación no implementado para ${service.displayName}`);
-      }
-    } catch (error) {
-      console.error(`Error fetching user info for ${service.displayName}:`, error);
-      return null;
-    }
-  }
-
-  private getAuthHeaders(token: string): HttpHeaders {
-    const service = this.currentService();
-    
-    if (!service) {
-      return new HttpHeaders();
-    }
-    
-    switch (service.id) {
-      case 'realdebrid':
-        return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-      case 'alldebrid':
-        return new HttpHeaders(); // AllDebrid usa el token como parámetro
-      case 'premiumize':
-        return new HttpHeaders(); // Premiumize usa el token como parámetro
-      case 'debridlink':
-        return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-      case 'easydebrid':
-        return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-      case 'torbox':
-        return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-      default:
-        return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-    }
-  }
-
-  private async fetchRealDebridUser(token: string, headers: HttpHeaders): Promise<DebridUser | null> {
-    const service = this.currentService();
-    if (!service) return null;
-    
-    const response = await this.http.get<any>(`${service.apiBaseUrl}/user`, { headers }).toPromise();
-    return {
-      id: response.id,
-      username: response.username,
-      email: response.email,
-      premium: true,
-      expiration: response.expiration
-    };
-  }
-
-  private async fetchAllDebridUser(token: string, headers: HttpHeaders): Promise<DebridUser | null> {
-    const service = this.currentService();
-    if (!service) return null;
-    
-    const response = await this.http.get<any>(`${service.apiBaseUrl}/user?agent=stremio-addon-manager&apikey=${token}`).toPromise();
-    if (response.status === 'success') {
-      return {
-        id: response.data.user.id,
-        username: response.data.user.username,
-        email: response.data.user.email,
-        premium: response.data.user.isPremium,
-        expiration: response.data.user.premiumUntil
-      };
-    }
-    return null;
-  }
-
-  private async fetchPremiumizeUser(token: string, headers: HttpHeaders): Promise<DebridUser | null> {
-    const service = this.currentService();
-    if (!service) return null;
-    
-    const response = await this.http.get<any>(`${service.apiBaseUrl}/account/info?apikey=${token}`).toPromise();
-    if (response.status === 'success') {
-      return {
-        id: response.customer_id,
-        username: response.customer_id,
-        email: response.email,
-        premium: true,
-        expiration: response.premium_until
-      };
-    }
-    return null;
-  }
-
-  private async fetchDebridLinkUser(token: string, headers: HttpHeaders): Promise<DebridUser | null> {
-    const service = this.currentService();
-    if (!service) return null;
-    
-    const response = await this.http.get<any>(`${service.apiBaseUrl}/account/infos`, { headers }).toPromise();
-    if (response.success) {
-      return {
-        id: response.value.id,
-        username: response.value.username,
-        email: response.value.email,
-        premium: response.value.accountType === 'premium',
-        expiration: response.value.premiumLeft
-      };
-    }
-    return null;
-  }
-
-  private async fetchEasyDebridUser(token: string, headers: HttpHeaders): Promise<DebridUser | null> {
-    const service = this.currentService();
-    if (!service) return null;
-    
-    const response = await this.http.get<any>(`${service.apiBaseUrl}/user`, { headers }).toPromise();
-    return {
-      id: response.id,
-      username: response.username,
-      email: response.email,
-      premium: true
-    };
-  }
-
-  private async fetchTorBoxUser(token: string, headers: HttpHeaders): Promise<DebridUser | null> {
-    const service = this.currentService();
-    if (!service) return null;
-    
-    const response = await this.http.get<any>(`${service.apiBaseUrl}/user/me`, { headers }).toPromise();
-    if (response.success) {
-      return {
-        id: response.data.id,
-        username: response.data.email,
-        email: response.data.email,
-        premium: response.data.plan !== 'free'
-      };
-    }
-    return null;
-  }
-
   // Método para obtener el nombre del servicio en formato para addons
   getServiceNameForAddon(): string {
     const service = this.currentService();

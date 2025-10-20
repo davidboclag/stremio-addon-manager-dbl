@@ -13,7 +13,7 @@ export class RealDebridService {
   private readonly http = inject(HttpClient);
   private readonly apiBase = environment.realDebridApiBase;
   
-  private readonly _token = signal<string | null>(this.getStoredToken());
+  private readonly _token = signal<string | null>(null);
   private readonly _user = signal<RealDebridUser | null>(null);
   
   readonly token = this._token.asReadonly();
@@ -32,17 +32,14 @@ export class RealDebridService {
     this._token.set(cleanToken);
     this._user.set(null);
     
-    if (cleanToken) {
-      localStorage.setItem('rd_token', cleanToken);
-    } else {
-      localStorage.removeItem('rd_token');
-    }
+    // Ya no guardar tokens en localStorage - solo mantener en memoria durante la sesión
   }
 
   clearToken(): void {
     this._token.set(null);
     this._user.set(null);
-    localStorage.removeItem('rd_token');
+    
+    // Ya no eliminar tokens de localStorage - solo limpiar memoria
   }
 
   validateTokenFormat(token: string): boolean {
@@ -71,9 +68,5 @@ export class RealDebridService {
     }
   }
 
-  private getStoredToken(): string | null {
-    if (typeof localStorage === 'undefined') return null;
-    const token = localStorage.getItem('rd_token');
-    return token && this.validateTokenFormat(token) ? token : null;
-  }
+  // Ya no cargar tokens desde localStorage - solo mantener en memoria durante la sesión
 }

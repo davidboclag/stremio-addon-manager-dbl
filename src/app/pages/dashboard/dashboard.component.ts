@@ -416,37 +416,15 @@ export class DashboardComponent implements OnInit {
       localStorage.setItem('include-anime-addons', includeAnime.toString());
     });
 
-    // Effect para validar token cuando cambia
-    effect(() => {
-      const token = this.debridService.token();
-      if (token && this.debridService.isValidToken()) {
-        this.validateDebridToken(token);
-      }
-    });
-
     // Effect para sincronizar el input del token con el servicio
     effect(() => {
       const serviceToken = this.debridService.token();
-      const currentProvider = this.debridService.selectedProvider();
       this.debridTokenInput = serviceToken || '';
     }, { allowSignalWrites: true });
-
-    // Effect adicional para forzar detección de cambios en el selector
-    effect(() => {
-      const currentProvider = this.debridService.selectedProvider();
-      // Este effect asegura que Angular detecte el cambio en el getter
-    });
   }
 
   ngOnInit() {
     // La inicialización se hace a través del effect
-  }
-
-  private async validateDebridToken(token: string): Promise<void> {
-    const result = await this.debridService.validateToken(token);
-    if (!result.valid) {
-      console.warn('Token de debrid inválido:', result.error);
-    }
   }
 
   async onTokenChange(event: Event): Promise<void> {
