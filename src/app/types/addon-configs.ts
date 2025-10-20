@@ -97,7 +97,12 @@ export interface TorrentioConfig {
   qualityFilter: string[];
   limit: number;
   debridOptions?: string[];
+  // Servicios debrid opcionales
   realdebrid?: string;
+  alldebrid?: string;
+  premiumize?: string;
+  debridlink?: string;
+  torbox?: string;
 }
 
 // Interface base para addons
@@ -172,5 +177,153 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
       'Streaming instantáneo',
       'Menor uso de ancho de banda'
     ]
+  }
+};
+
+// Tipos para servicios de debrid
+export type DebridProviderType = 'realdebrid' | 'alldebrid' | 'premiumize' | 'debridlink' | 'easydebrid' | 'torbox' | null;
+
+export interface DebridProviderConfig {
+  id: DebridProviderType;
+  name: string;
+  displayName: string;
+  icon: string;
+  color: string;
+  apiBaseUrl: string;
+  tokenLength?: number;
+  tokenPattern?: RegExp;
+  authUrl: string;
+  signupUrl: string;
+  features: {
+    streaming: boolean;
+    downloads: boolean;
+    torrents: boolean;
+    usenet: boolean;
+  };
+}
+
+export interface DebridUser {
+  id: string | number;
+  username: string;
+  email?: string;
+  premium?: boolean;
+  expiration?: string;
+}
+
+export interface DebridValidationResult {
+  valid: boolean;
+  user?: DebridUser;
+  error?: string;
+}
+
+// Configuración de servicios de debrid disponibles
+export const DEBRID_SERVICES: Record<Exclude<DebridProviderType, null>, DebridProviderConfig> = {
+  realdebrid: {
+    id: 'realdebrid',
+    name: 'realdebrid',
+    displayName: 'Real-Debrid',
+    icon: '🔴',
+    color: '#4CAF50',
+    apiBaseUrl: 'https://api.real-debrid.com/rest/1.0',
+    tokenLength: 52,
+    tokenPattern: /^[A-Za-z0-9]{52}$/,
+    authUrl: 'https://real-debrid.com/devices',
+    signupUrl: 'https://real-debrid.com',
+    features: {
+      streaming: true,
+      downloads: true,
+      torrents: true,
+      usenet: false
+    }
+  },
+  alldebrid: {
+    id: 'alldebrid',
+    name: 'alldebrid',
+    displayName: 'AllDebrid',
+    icon: '🟢',
+    color: '#2196F3',
+    apiBaseUrl: 'https://api.alldebrid.com/v4',
+    tokenLength: 40,
+    tokenPattern: /^[A-Za-z0-9]{40}$/,
+    authUrl: 'https://alldebrid.com/apikeys',
+    signupUrl: 'https://alldebrid.com',
+    features: {
+      streaming: true,
+      downloads: true,
+      torrents: true,
+      usenet: true
+    }
+  },
+  premiumize: {
+    id: 'premiumize',
+    name: 'premiumize',
+    displayName: 'Premiumize',
+    icon: '🟡',
+    color: '#FF9800',
+    apiBaseUrl: 'https://www.premiumize.me/api',
+    tokenLength: 32,
+    tokenPattern: /^[A-Za-z0-9]{32}$/,
+    authUrl: 'https://www.premiumize.me/account',
+    signupUrl: 'https://www.premiumize.me',
+    features: {
+      streaming: true,
+      downloads: true,
+      torrents: true,
+      usenet: true
+    }
+  },
+  debridlink: {
+    id: 'debridlink',
+    name: 'debridlink',
+    displayName: 'Debrid-Link',
+    icon: '🔵',
+    color: '#673AB7',
+    apiBaseUrl: 'https://debrid-link.com/api/v2',
+    tokenLength: 64,
+    tokenPattern: /^[A-Za-z0-9]{64}$/,
+    authUrl: 'https://debrid-link.com/webapp/apikey',
+    signupUrl: 'https://debrid-link.com',
+    features: {
+      streaming: true,
+      downloads: true,
+      torrents: true,
+      usenet: true
+    }
+  },
+  easydebrid: {
+    id: 'easydebrid',
+    name: 'easydebrid',
+    displayName: 'EasyDebrid',
+    icon: '🟣',
+    color: '#E91E63',
+    apiBaseUrl: 'https://easydebrid.com/api/v1',
+    tokenLength: 48,
+    tokenPattern: /^[A-Za-z0-9]{48}$/,
+    authUrl: 'https://easydebrid.com/account',
+    signupUrl: 'https://easydebrid.com',
+    features: {
+      streaming: true,
+      downloads: true,
+      torrents: true,
+      usenet: false
+    }
+  },
+  torbox: {
+    id: 'torbox',
+    name: 'torbox',
+    displayName: 'TorBox',
+    icon: '📦',
+    color: '#FF5722',
+    apiBaseUrl: 'https://api.torbox.app/v1/api',
+    tokenLength: 64,
+    tokenPattern: /^[A-Za-z0-9]{64}$/,
+    authUrl: 'https://torbox.app/settings',
+    signupUrl: 'https://torbox.app',
+    features: {
+      streaming: true,
+      downloads: true,
+      torrents: true,
+      usenet: true
+    }
   }
 };

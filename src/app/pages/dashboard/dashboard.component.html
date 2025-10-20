@@ -16,12 +16,12 @@
   </div>
 </div>
 
-<!-- Token Real-Debrid -->
+<!-- Token Debrid -->
 <div class="card shadow-sm mb-4">
   <div class="card-body">
     <div class="row g-3">
       <!-- Selector de idioma -->
-      <div class="col-md-6">
+      <div class="col-md-4">
         <div class="d-flex align-items-center mb-3">
           <i class="bi bi-translate text-info me-2 fs-5"></i>
           <label class="form-label mb-0 fw-semibold">
@@ -41,37 +41,71 @@
         </div>
       </div>
 
-      <!-- Token Real-Debrid -->
-      <div class="col-md-6">
+      <!-- Selector de proveedor Debrid -->
+      <div class="col-md-4">
         <div class="d-flex align-items-center mb-3">
-          <i class="bi bi-shield-check text-success me-2 fs-5"></i>
-          <label class="form-label mb-0 fw-semibold"> Token Real-Debrid </label>
-          <small class="text-muted ms-2">
-            (Obtén tu token en
-            <a
-              href="https://real-debrid.com/devices"
-              target="_blank"
+          <i class="bi bi-cloud-arrow-down text-primary me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Proveedor Debrid
+          </label>
+        </div>
+
+        <select 
+          class="form-select" 
+          [(ngModel)]="selectedDebridProvider"
+          (ngModelChange)="onDebridProviderChange($event)"
+        >
+          <option value="">
+            🚫 Ningún servicio (solo addons gratuitos)
+          </option>
+          @for (service of debridService.availableServices(); track service.id) {
+          <option [value]="service.id">
+            {{ service.displayName }}
+          </option>
+          }
+        </select>
+        <div class="form-text">
+          @if (debridService.currentService()) {
+          <small>
+            <a 
+              [href]="debridService.currentService()!.signupUrl" 
+              target="_blank" 
               rel="noopener noreferrer"
               class="text-decoration-none"
             >
-              real-debrid.com/devices
-              <i class="bi bi-box-arrow-up-right ms-1"></i> </a
-            >)
+              Registrarse en {{ debridService.currentService()!.displayName }}
+              <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+          </small>
+          }
+        </div>
+      </div>
+
+      <!-- Token del proveedor -->
+      @if (debridService.currentService()) {
+      <div class="col-md-4">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-shield-check text-success me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Token {{ debridService.currentService()!.displayName }}
+          </label>
+          <small class="text-muted ms-2">
+            ({{ debridService.currentService()!.tokenLength }} caracteres)
           </small>
         </div>
-
+        
         <div class="input-group mb-3">
           <span class="input-group-text">
             <i class="bi bi-key"></i>
           </span>
           <input
-            [(ngModel)]="rdTokenInput"
+            [(ngModel)]="debridTokenInput"
             class="form-control"
-            placeholder="Token (52 caracteres)"
+            [placeholder]="'Token (' + debridService.currentService()!.tokenLength + ' caracteres)'"
             (input)="onTokenChange($event)"
             type="password"
             [class.is-valid]="hasValidToken()"
-            [class.is-invalid]="rdTokenInput && !hasValidToken()"
+            [class.is-invalid]="debridTokenInput && !hasValidToken()"
           />
           <button
             class="btn btn-outline-secondary"
@@ -82,13 +116,14 @@
           </button>
         </div>
 
-        @if (rdTokenInput && !hasValidToken()) {
+        @if (debridTokenInput && !hasValidToken()) {
         <div class="text-danger small">
           <i class="bi bi-exclamation-circle me-1"></i>
-          El token debe tener exactamente 52 caracteres alfanuméricos
+          El token debe tener exactamente {{ debridService.currentService()!.tokenLength }} caracteres alfanuméricos
         </div>
         }
       </div>
+      }
     </div>
 
     <!-- Información de usuarios conectados -->
@@ -103,14 +138,14 @@
           <small><strong>Stremio:</strong> {{ stremioUser.email }}</small>
         </div>
       </div>
-      } @if (rdService.user(); as user) {
+      } @if (debridService.user(); as user) {
       <div class="col-md-6">
         <div
           class="alert alert-success py-2 d-flex align-items-center mb-0"
           role="alert"
         >
           <i class="bi bi-check-circle-fill me-2"></i>
-          <small><strong>Real-Debrid:</strong> {{ user.username }}</small>
+          <small><strong>{{ debridService.currentService()!.displayName }}:</strong> {{ user.username }}</small>
         </div>
       </div>
       }
@@ -146,11 +181,11 @@
                 <div class="flex-grow-1">
                   <div class="fw-semibold">{{ preset.name }}</div>
                   <!-- <small class="text-muted">{{ preset.description }}</small> -->
-                  @if (preset.requiresToken) {
+                  @if (preset.requiresToken && debridService.currentService()) {
                   <div class="mt-1">
                     <span class="badge bg-warning text-dark">
                       <i class="bi bi-key me-1"></i>
-                      Requiere Real-Debrid
+                      Requiere {{ debridService.currentService()!.displayName }}
                     </span>
                   </div>
                   }
@@ -284,7 +319,7 @@
 <!-- Componente de addons -->
 <app-addons
   [stremioAuthKey]="stremio.authKey() || ''"
-  [rdToken]="rdService.token() || ''"
+  [rdToken]="debridService.token() || ''"
   (refreshRequested)="reloadAddons()"
 />
 
@@ -305,6 +340,6 @@
 <!-- Tabs de addons -->
 <app-addon-tabs
   [addons]="filteredAddons()"
-  [token]="rdService.token() || ''"
+  [token]="debridService.token() || ''"
   [language]="preferences.selectedLanguage()"
 />

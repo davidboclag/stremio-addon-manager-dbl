@@ -2,7 +2,7 @@ import { Component, inject, signal, computed, effect, input } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { RealDebridService } from '../../services/realdebrid.service';
+import { DebridService } from '../../services/debrid.service';
 import { PreferencesService, Language } from '../../services/preferences.service';
 
 interface Addon {
@@ -26,7 +26,7 @@ export class AddonTabsComponent {
   readonly language = input<Language>('spanish');
 
   private readonly sanitizer = inject(DomSanitizer);
-  private readonly rdService = inject(RealDebridService);
+  private readonly debridService = inject(DebridService);
   private readonly preferences = inject(PreferencesService);
 
   readonly activeIndex = signal<number | null>(null);
@@ -39,7 +39,7 @@ export class AddonTabsComponent {
   );
 
   // Computed para verificar si el token es válido
-  readonly hasValidToken = computed(() => this.rdService.isValidToken());
+  readonly hasValidToken = computed(() => this.debridService.isValidToken());
 
   constructor() {
     // Effect para activar el primer tab cuando cambien los addons
@@ -50,12 +50,15 @@ export class AddonTabsComponent {
       }
     });
 
-    // Effect para actualizar iframes cuando cambie el token o idioma
+    // Effect consolidado para actualizar iframe cuando cambien factores relevantes
     effect(() => {
       const token = this.token();
       const language = this.language();
+      const debridToken = this.debridService.token();
+      const selectedProvider = this.debridService.selectedProvider();
       const activeIdx = this.activeIndex();
       
+      // Recargar iframe activo cuando cambie cualquier factor relevante
       if (activeIdx !== null) {
         this.updateActiveIframe();
       }
@@ -107,6 +110,8 @@ export class AddonTabsComponent {
         currentUrls[activeIdx] = this.sanitizer.bypassSecurityTrustResourceUrl(url);
         this.iframeUrls.set([...currentUrls]);
       }
+    } catch (error) {
+      console.error('❌ Error al actualizar iframe:', error);
     } finally {
       this.loading.set(false);
     }
@@ -118,12 +123,16 @@ export class AddonTabsComponent {
     if (typeof addon.getUrl === 'function') {
       // Verificar si requiere token válido
       if (addon.requiresToken && !this.hasValidToken()) {
-        alert('⚠️ Este addon requiere un token de Real-Debrid válido (52 caracteres).');
+        const currentService = this.debridService.currentService();
+        const serviceName = currentService?.displayName || 'un servicio debrid';
+        alert(`⚠️ Este addon requiere un token de ${serviceName} válido.`);
         return null;
       }
 
-      // Pasar token solo si es válido
-      const validToken = this.hasValidToken() ? this.token() : undefined;
+      // Para addons gratuitos (requiresToken: false), pasar token solo si es válido
+      // Para addons premium (requiresToken: true), pasar token obligatorio
+      const shouldPassToken = addon.requiresToken || this.hasValidToken();
+      const validToken = shouldPassToken ? (this.debridService.token() || undefined) : undefined;
       const currentLanguage = this.preferences.selectedLanguage();
       
       let url = addon.getUrl(validToken, currentLanguage);

@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StremioService } from '../../services/stremio.service';
-import { RealDebridService } from '../../services/realdebrid.service';
+import { DebridService } from '../../services/debrid.service';
 import { PreferencesService, Language, LANGUAGES, ADDON_LANGUAGE_SUPPORT } from '../../services/preferences.service';
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
@@ -24,7 +24,8 @@ import {
   TorrentioConfig,
   AddonPreset,
   PresetType,
-  ADDON_PRESETS
+  ADDON_PRESETS,
+  DebridProviderType
 } from '../../types';
 
 @Component({
@@ -40,7 +41,7 @@ export class DashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   
   readonly stremio = inject(StremioService);
-  readonly rdService = inject(RealDebridService);
+  readonly debridService = inject(DebridService);
   readonly preferences = inject(PreferencesService);
 
   // Signals para estado reactivo
@@ -54,7 +55,27 @@ export class DashboardComponent implements OnInit {
   // Signal para incluir addons de anime opcionales
   readonly includeAnimeAddons = signal<boolean>(false);
   
-  rdTokenInput = this.rdService.token() || '';
+  // Señal para el token de debrid del proveedor actual
+  debridTokenInput = this.debridService.token() || '';
+  
+  // Signal reactivo para el proveedor seleccionado
+  readonly currentDebridProvider = computed(() => this.debridService.selectedProvider());
+  
+  // Property para el selector con getter/setter que se sincroniza con el servicio
+  get selectedDebridProvider(): string {
+    // Convertir null a cadena vacía para el HTML
+    const provider = this.debridService.selectedProvider();
+    return provider === null ? '' : provider;
+  }
+  
+  set selectedDebridProvider(value: string | DebridProviderType) {
+    // Convertir cadena vacía a null para representar "ningún servicio"
+    const normalizedValue: DebridProviderType = value === '' ? null : value as DebridProviderType;
+    
+    if (normalizedValue !== this.debridService.selectedProvider()) {
+      this.debridService.setProvider(normalizedValue);
+    }
+  }
   
   // Helper function para construir URLs de Torrentio de forma tipada
   private buildTorrentioUrl(config: TorrentioConfig): string {
@@ -66,7 +87,13 @@ export class DashboardComponent implements OnInit {
     if (config.qualityFilter.length > 0) params.push(`qualityfilter=${config.qualityFilter.join(',')}`);
     if (config.limit) params.push(`limit=${config.limit}`);
     if (config.debridOptions && config.debridOptions.length > 0) params.push(`debridoptions=${config.debridOptions.join(',')}`);
+    
+    // Manejar dinámicamente cualquier servicio debrid
     if (config.realdebrid) params.push(`realdebrid=${config.realdebrid}`);
+    if (config.alldebrid) params.push(`alldebrid=${config.alldebrid}`);
+    if (config.premiumize) params.push(`premiumize=${config.premiumize}`);
+    if (config.debridlink) params.push(`debridlink=${config.debridlink}`);
+    if (config.torbox) params.push(`torbox=${config.torbox}`);
     
     return `${baseUrl}/${params.join('%7C')}/configure`;
   }
@@ -91,7 +118,7 @@ export class DashboardComponent implements OnInit {
     this.stremio.isAuthenticated() && !this.isLoading()
   );
 
-  readonly hasValidToken = computed(() => this.rdService.isValidToken());
+  readonly hasValidToken = computed(() => this.debridService.isValidToken());
 
   readonly languageOptions = computed(() => 
     Object.entries(LANGUAGES).map(([key, config]) => ({
@@ -194,7 +221,25 @@ export class DashboardComponent implements OnInit {
       name: "Torrentio",
       getUrl: (token, language) => {
         const langConfig = this.getLanguageConfig(language);
-        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        const hasValidToken = token && this.debridService.validateTokenFormat(token);
+        const currentService = this.debridService.currentService();
+        
+        // Si no hay servicio seleccionado, usar configuración básica sin debrid
+        if (!currentService) {
+          const config: TorrentioConfig = {
+            sort: 'qualitysize',
+            language: langConfig.torrentioCode,
+            qualityFilter: ['threed', '480p', 'other', 'scr', 'cam', 'unknown'],
+            limit: 5,
+            debridOptions: undefined,
+            realdebrid: undefined,
+            alldebrid: undefined,
+            premiumize: undefined,
+            debridlink: undefined,
+            torbox: undefined
+          };
+          return this.buildTorrentioUrl(config);
+        }
         
         const config: TorrentioConfig = {
           sort: 'qualitysize',
@@ -202,7 +247,8 @@ export class DashboardComponent implements OnInit {
           qualityFilter: ['threed', '480p', 'other', 'scr', 'cam', 'unknown'],
           limit: 5,
           debridOptions: hasValidToken ? ['nocatalog'] : undefined,
-          realdebrid: hasValidToken ? token : undefined
+          // Usar el nombre del servicio dinámicamente
+          [currentService.name]: hasValidToken ? token : undefined
         };
         
         return this.buildTorrentioUrl(config);
@@ -219,9 +265,10 @@ export class DashboardComponent implements OnInit {
         let cometConfig: CometConfig = JSON.parse(atob(base64Original));
         cometConfig.languages.preferred = [langConfig.cometCode];
         
-        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        const hasValidToken = token && this.debridService.validateTokenFormat(token);
         if (hasValidToken) {
           cometConfig.debridApiKey = token;
+          cometConfig.debridService = this.debridService.getServiceNameForAddon();
         }
         
         return `https://comet.elfhosted.com/${btoa(JSON.stringify(cometConfig))}/configure`;
@@ -232,13 +279,13 @@ export class DashboardComponent implements OnInit {
       name: "MediaFusion",
       getUrl: async (token, language) => {
         const langConfig = this.getLanguageConfig(language);
-        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        const hasValidToken = token && this.debridService.validateTokenFormat(token);
         
         const payload: MediaFusionConfig = {
           streaming_provider: hasValidToken
             ? {
                 token: token,
-                service: "realdebrid",
+                service: this.debridService.getServiceNameForAddon(),
                 enable_watchlist_catalogs: false,
                 download_via_browser: false,
                 only_show_cached_streams: false,
@@ -306,9 +353,15 @@ export class DashboardComponent implements OnInit {
       getUrl: (token, language) => {
         const langConfig = this.preferences.currentLanguageConfig();
         const langParam = langConfig.peerflixCode || 'en';
+        const currentService = this.debridService.currentService();
         
-        return token && this.rdService.isValidToken()
-          ? `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Cdebridoptions=nocatalog%7Crealdebrid=${token}%7Csort=quality-desc,language-desc,size-desc/configure`
+        // Si no hay servicio, devolver URL básica sin debrid
+        if (!currentService) {
+          return `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Csort=quality-desc,language-desc,size-desc/configure`;
+        }
+        
+        return token && this.debridService.isValidToken()
+          ? `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Cdebridoptions=nocatalog%7C${currentService.name}=${token}%7Csort=quality-desc,language-desc,size-desc/configure`
           : `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Csort=quality-desc,language-desc,size-desc/configure`;
       },
       requiresToken: false,
@@ -323,9 +376,10 @@ export class DashboardComponent implements OnInit {
         let jackettioConfig: JackettioConfig = JSON.parse(atob(base64Original));
         jackettioConfig.priotizeLanguages = [langConfig.jackettioCode || 'spanish'];
         
-        const hasValidToken = token && /^[A-Za-z0-9]{52}$/.test(token);
+        const hasValidToken = token && this.debridService.validateTokenFormat(token);
         if (hasValidToken) {
           jackettioConfig.debridApiKey = token;
+          jackettioConfig.debridId = this.debridService.getServiceNameForAddon();
         }
         
         return `https://jackettio.elfhosted.com/${btoa(JSON.stringify(jackettioConfig))}/configure`;
@@ -361,21 +415,34 @@ export class DashboardComponent implements OnInit {
 
     // Effect para validar token cuando cambia
     effect(() => {
-      const token = this.rdService.token();
-      if (token && this.rdService.isValidToken()) {
-        this.validateRdToken(token);
+      const token = this.debridService.token();
+      if (token && this.debridService.isValidToken()) {
+        this.validateDebridToken(token);
       }
+    });
+
+    // Effect para sincronizar el input del token con el servicio
+    effect(() => {
+      const serviceToken = this.debridService.token();
+      const currentProvider = this.debridService.selectedProvider();
+      this.debridTokenInput = serviceToken || '';
+    }, { allowSignalWrites: true });
+    
+    // Effect adicional para forzar detección de cambios en el selector
+    effect(() => {
+      const currentProvider = this.debridService.selectedProvider();
+      // Este effect asegura que Angular detecte el cambio en el getter
     });
   }
 
   ngOnInit() {
-    this.rdTokenInput = this.rdService.token() || '';
+    // La inicialización se hace a través del effect
   }
 
-  private async validateRdToken(token: string): Promise<void> {
-    const result = await this.rdService.validateToken(token);
+  private async validateDebridToken(token: string): Promise<void> {
+    const result = await this.debridService.validateToken(token);
     if (!result.valid) {
-      console.warn('Token Real-Debrid inválido:', result.error);
+      console.warn('Token de debrid inválido:', result.error);
     }
   }
 
@@ -383,11 +450,16 @@ export class DashboardComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     const token = target.value.trim();
     
-    this.rdService.setToken(token);
+    this.debridService.setToken(token);
+  }
+
+  onDebridProviderChange(provider: DebridProviderType): void {
+    // Cambiar el proveedor (el AddonTabsComponent se actualizará automáticamente vía effects)
+    this.debridService.setProvider(provider);
   }
 
   copyToken(): void {
-    const token = this.rdService.token();
+    const token = this.debridService.token();
     if (!token) {
       alert('No hay token');
       return;
@@ -411,7 +483,9 @@ export class DashboardComponent implements OnInit {
     }
 
     if (preset.requiresToken && !this.hasValidToken()) {
-      alert(`⚠️ La configuración "${preset.name}" requiere un token de Real-Debrid válido.`);
+      const currentService = this.debridService.currentService();
+      const serviceName = currentService?.displayName || 'un servicio debrid';
+      alert(`⚠️ La configuración "${preset.name}" requiere un token de ${serviceName} válido.`);
       return;
     }
 
@@ -424,7 +498,7 @@ export class DashboardComponent implements OnInit {
 
     if (!confirmacion) return;
 
-    const token = this.rdService.token()?.trim();
+    const token = this.debridService.token()?.trim();
 
     this.isLoading.set(true);
     this.loadingTitle.set(`Instalando ${preset.name}`);
@@ -511,7 +585,7 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     this.stremio.clearAuth();
-    this.rdService.clearToken();
+    this.debridService.clearToken();
     this.router.navigate(['/']);
   }
 
