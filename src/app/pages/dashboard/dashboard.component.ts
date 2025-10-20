@@ -1,10 +1,8 @@
 import {
   Component,
   inject,
-  signal,
   computed,
   effect,
-  OnInit,
   ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -12,20 +10,15 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StremioService } from '../../services/stremio.service';
 import { DebridService } from '../../services/debrid.service';
-import { PreferencesService, Language, LANGUAGES, ADDON_LANGUAGE_SUPPORT } from '../../services/preferences.service';
+import { PreferencesService, Language } from '../../services/preferences.service';
+import { AddonConfigService } from '../../services/addon-config.service';
+import { AddonInstallationService } from '../../services/addon-installation.service';
+import { DashboardStateService } from '../../services/dashboard-state.service';
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
-import { HttpClient } from '@angular/common/http';
 import {
-  Addon,
-  JackettioConfig,
-  CometConfig,
-  MediaFusionConfig,
-  TorrentioConfig,
-  AddonPreset,
-  PresetType,
-  ADDON_PRESETS,
-  DebridProviderType
+  DebridProviderType,
+  PresetType
 } from '../../types';
 
 @Component({
@@ -36,75 +29,62 @@ import {
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
 
+  // Servicios inyectados
   readonly stremio = inject(StremioService);
   readonly debridService = inject(DebridService);
   readonly preferences = inject(PreferencesService);
+  readonly addonConfig = inject(AddonConfigService);
+  readonly installation = inject(AddonInstallationService);
+  readonly dashboardState = inject(DashboardStateService);
 
-  // Signals para estado reactivo
-  readonly isLoading = signal(false);
-  readonly progressText = signal('');
-  readonly loadingTitle = signal('Procesando');
-
-  // Signal para la configuración predefinida seleccionada
-  readonly selectedPreset = signal<PresetType>('recommended');
-
-  // Signal para incluir addons de anime opcionales
-  readonly includeAnimeAddons = signal<boolean>(false);
-
-  // Señal para el token de debrid del proveedor actual
+  // Token input para el debrid provider
   debridTokenInput = this.debridService.token() || '';
 
-  // Signal reactivo para el proveedor seleccionado
-  readonly currentDebridProvider = computed(() => this.debridService.selectedProvider());
+  // Computed properties delegadas a los servicios
+  readonly isLoading = computed(() => this.installation.progress().isLoading);
+  readonly progressText = computed(() => this.installation.progress().message);
+  readonly loadingTitle = computed(() => this.installation.progress().title);
 
-  // Property para el selector con getter/setter que se sincroniza con el servicio
+  readonly canInstall = computed(() =>
+    this.stremio.isAuthenticated() && !this.isLoading()
+  );
+
+  readonly hasValidToken = computed(() => this.debridService.isValidToken());
+
+  readonly languageOptions = computed(() => this.dashboardState.languageOptions());
+
+  readonly availablePresets = computed(() => this.installation.getAvailablePresets());
+
+  readonly currentPreset = computed(() => this.dashboardState.currentPreset());
+
+  readonly canInstallPreset = computed(() => {
+    const preset = this.currentPreset();
+    return this.canInstall() && (!preset.requiresToken || this.hasValidToken());
+  });
+
+  readonly effectivePresetAddons = computed(() => this.dashboardState.effectivePresetAddons());
+
+  readonly filteredAddons = computed(() => this.dashboardState.filteredAddons());
+
+  // Computed signal para el estado de incluir anime addons
+  readonly showAnimeAddons = computed(() => this.dashboardState.includeAnimeAddons());
+
+  // Propiedades para selectores con getter/setter
   get selectedDebridProvider(): string {
-    // Convertir null a cadena vacía para el HTML
     const provider = this.debridService.selectedProvider();
     return provider === null ? '' : provider;
   }
 
   set selectedDebridProvider(value: string | DebridProviderType) {
-    // Convertir cadena vacía a null para representar "ningún servicio"
     const normalizedValue: DebridProviderType = value === '' ? null : value as DebridProviderType;
-
     if (normalizedValue !== this.debridService.selectedProvider()) {
       this.debridService.setProvider(normalizedValue);
     }
   }
 
-  // Helper function para construir URLs de Torrentio de forma tipada
-  private buildTorrentioUrl(config: TorrentioConfig): string {
-    const baseUrl = 'https://torrentio.strem.fun';
-    const params: string[] = [];
-
-    if (config.sort) params.push(`sort=${config.sort}`);
-    if (config.language) params.push(`language=${config.language}`);
-    if (config.qualityFilter.length > 0) params.push(`qualityfilter=${config.qualityFilter.join(',')}`);
-    if (config.limit) params.push(`limit=${config.limit}`);
-    if (config.debridOptions && config.debridOptions.length > 0) params.push(`debridoptions=${config.debridOptions.join(',')}`);
-
-    // Manejar dinámicamente cualquier servicio debrid
-    if (config.realdebrid) params.push(`realdebrid=${config.realdebrid}`);
-    if (config.alldebrid) params.push(`alldebrid=${config.alldebrid}`);
-    if (config.premiumize) params.push(`premiumize=${config.premiumize}`);
-    if (config.debridlink) params.push(`debridlink=${config.debridlink}`);
-    if (config.torbox) params.push(`torbox=${config.torbox}`);
-
-    return `${baseUrl}/${params.join('%7C')}/configure`;
-  }
-
-  // Helper function para acceso seguro a configuración de idioma
-  private getLanguageConfig(language?: string) {
-    const lang = (language as Language) || 'spanish';
-    return LANGUAGES[lang] || LANGUAGES['spanish'];
-  }
-
-  // Propiedad para el selector de idioma con getter/setter
   get selectedLanguage(): Language {
     return this.preferences.selectedLanguage();
   }
@@ -113,309 +93,27 @@ export class DashboardComponent implements OnInit {
     this.preferences.setLanguage(value);
   }
 
-  // Computed signals
-  readonly canInstall = computed(() =>
-    this.stremio.isAuthenticated() && !this.isLoading()
-  );
+  get selectedPreset() {
+    return this.dashboardState.selectedPreset();
+  }
 
-  readonly hasValidToken = computed(() => this.debridService.isValidToken());
+  set selectedPreset(value: PresetType) {
+    this.dashboardState.setSelectedPreset(value);
+  }
 
-  readonly languageOptions = computed(() =>
-    Object.entries(LANGUAGES).map(([key, config]) => ({
-      key: key as Language,
-      config
-    }))
-  );
+  // Getter/setter para includeAnimeAddons
+  get includeAnimeAddons() {
+    return this.dashboardState.includeAnimeAddons();
+  }
 
-  // Computed para configuraciones predefinidas
-  readonly availablePresets = computed(() => Object.values(ADDON_PRESETS));
+  set includeAnimeAddons(value: boolean) {
+    this.dashboardState.setIncludeAnimeAddons(value);
+  }
 
-  readonly currentPreset = computed(() => ADDON_PRESETS[this.selectedPreset()]);
-
-  readonly presetAddons = computed(() => {
-    const preset = this.currentPreset();
-    return this.addons.filter(addon => preset.addonNames.includes(addon.name));
-  });
-
-  readonly canInstallPreset = computed(() => {
-    const preset = this.currentPreset();
-    return this.canInstall() && (!preset.requiresToken || this.hasValidToken());
-  });
-
-  // Lista de addons considerados "de anime"
-  private readonly animeAddons = ['Anime Kitsu', "Animes' Season"];
-
-  // Computed que obtiene los addons de la configuración actual incluyendo o excluyendo anime
-  readonly effectivePresetAddons = computed(() => {
-    const preset = this.currentPreset();
-    let addonNames = [...preset.addonNames];
-
-    if (this.includeAnimeAddons()) {
-      // Agregar addons de anime si están activados
-      addonNames = [...addonNames, ...this.animeAddons];
-    }
-
-    return this.addons.filter(addon => addonNames.includes(addon.name));
-  });
-
-  // Computed que filtra los addons basándose en el idioma seleccionado
-  readonly filteredAddons = computed(() => {
-    const currentLang = this.preferences.selectedLanguage();
-    return this.addons.filter(addon => {
-      // Verificar si el addon tiene soporte de idioma definido
-      const supportedLanguages = ADDON_LANGUAGE_SUPPORT[addon.name];
-      if (supportedLanguages) {
-        return supportedLanguages.includes(currentLang);
-      }
-      // Si no está definido en ADDON_LANGUAGE_SUPPORT, se muestra por defecto
-      return true;
-    });
-  });
-
-  // Computed que obtiene la lista de addons no disponibles para el idioma actual
-  readonly unavailableAddons = computed(() => {
-    const currentLang = this.preferences.selectedLanguage();
-    return this.addons
-      .filter(addon => {
-        const supportedLanguages = ADDON_LANGUAGE_SUPPORT[addon.name];
-        return supportedLanguages && !supportedLanguages.includes(currentLang);
-      })
-      .map(addon => addon.name);
-  });
-
-  // Computed que obtiene estadísticas de disponibilidad de addons
-  readonly addonStats = computed(() => {
-    const total = this.addons.length;
-    const available = this.filteredAddons().length;
-    const unavailable = this.unavailableAddons().length;
-    return { total, available, unavailable };
-  });
-
+  // Iframes dinámicos (legacy - se puede eliminar si no se usa)
   iframeUrls: string[] = [];
 
-  addons: Addon[] = [
-    // {
-    //   name: "cinemeta",
-    //   url: "https://v3-cinemeta.strem.io/manifest.json",
-    //   hideTab: true, // <--- ocultar tab
-    // },
-    {
-      name: "watchhub",
-      url: "https://watchhub.strem.io/manifest.json",
-      hideTab: true, // <--- ocultar tab}
-    },
-    {
-      name: "Aiolists",
-      // URL original tal cual
-      url: "https://aiolists.elfhosted.com/H4sIAAAAAAAAA7UbXXLiPPIqlF4XT0H-dsZvJEwSsgPMBDIJmUptCVtgTfzDSnYIpHKR7w7f0x5hLrYlWzK2JGOx5TwlanVL6la7u9XdvAG4wv9CG2AD0AZk5c57Yhx3rAVByGJA0AZx4M7PESSITKNnFAIboM2NN79y8BjfDO62g-4I33z5xIDu_Q8G9B6v7l5HwY-T8f3d8TAYHA-ns9NR3_89m94G4-nX9ezo0Zv9PvfGkwEdBKf4EQ_OhlOnM-ovt-P-j81ocnI6nD6vh_3e67eLm617P8BjPDga93vr4f3sdTxdbmfbR380nR3Ptu7zePrzeXT1FTPc2dGX9ePDEI99imcP56uH4xt_dv8DP0zW2A1-bpwj_2XO9nvofHq9vLGmQ-clmJ59WwweOlfzfnj6cHnx2__P0XjrPV5PF9ECXV1OvDsuiAmiFEfhwM3kxkA9x4mSMC6C7igiIQxQBglQDF0Yw0mUEIfBGArH_AbDZQKXDIoogxH4HPccB1EqpC2gt2hBEPVk8NfXFSaI9mJgh4nvc2j5BD6m8Zi4iAD7FwjcORsnxP93HK2sbocdsQAjKHRxuLTCaG1RL1rT8rwPY0Rjy8VLHEPfIshHkCI9UvyiW4HtGkQvGFErWlixh6w1Qs9lnBDFCx-_cjz9nGZpF9MQbbRUfEpDBAO4jUJrRXCAtKQlBM0CXuInWsJ0Qkcwj6rAumW4sFaQwICpmrXyEwnFmVML-r4FU9WRjr9a-YjdhZY3PilBnRhHoQRzX1AYJ6RCRiEOoErkRAFyNxKMyVG6nMhJAhTGkEi4LoEBLIMWMMC-_o4XMIwh1c95mMaRvLwXERIRSdobGiOiX4REAQwd6fDUwdYCSzruEez7SFp6DQl4agMf0vhu5cIYMZtx1Dk6tbodq9udHh3bp6f2ydGn05POI_9u6ZCbD2C_AYijFGatYex47F_rnsE9SIfZce0F9ClqM8gk1TABYJteeMh53m3aOWObds_Ypp0vnz6fdR7B-3sbeNh1UfiNbQTsX09tQFAQvSC3AHESGkcBA4xgwLZ9M7ERNvjzlx_jANLWd-T_-dtJfCjrkaxlNuhlEEUNSndtg8sU8OdvuPc6bTDEDICjag20QV-MfFXFitrHdg2wj6U9uV21wY7L1hSFLgodBVU1tzaYIIJRJYlsXAtSzQiNzG3pcC5q-bA1QQEMpc0kQ2yDUQaovMCydd7h645WNtc26KfjyqVLJjzH1i2sM-k26KXQ1ncGrVZA1dhLlLoNiy7ABteJn1RuUHAKHFO74M4X2OD6fFy9XO5LMjzdYnoHYoPvAvCPyuUlx1Ki0UpecjY26DFIa_qzeo_cBxWRtYtnbskGPcfBf_4rO6jcBdmgx_7X4HB_ZIML9o_8ZWWeyQYX7K9EmXkiG_RVjyRciw2u0__kZbmXscG1xt0Il2KD2z3OxQYXODUFrUus4z33NzaYVroeG1wliBAI3llQSpa5RX97FxZ9yIQy3ayQMOvvbYCDVURi5PZcNworTP3OGL0BzBzM3mCQR6bf0onW9Gdrwif2-bGYJKgNMB32z9mx74g_SA8mZviOaRxeGX8W4uIlJBuHwPUiIu7S2aFM_GSpXSLerNjBfgGaqebTu5GdVQVSGQDzk02jVSsTQ2u8aE091LrP5gviyXhWvLyZeOoicHMpVa6UCyudlWUlexVVRsoDgJ9HuJOhgDclk6oXh7kslBXMZFD53cjvHEkCTX8zFc-qw_k3_F4k56_yLz_m-Cm4229cASrejub8ywvsv_5yMFPJvXT5IuZp-O71j-ODWTe8eW10pkpA_y7nBypFZI3rwt6UgLlY9Mvs1wtd_FkjG0lHysFqw5qyLxfyfwrGUGsqH5WVEYcmR1WOPM79pHULN63bHUJTGlSbJisI6xmSuPTwKocgmjX2q1DpMaJKp5yu4mdIHyKNf0fazJi5mpTJDZiu_F5Kmbgiy01_H7qU34EMG34PxReihuFiLlEwPI8-4Io1ScsCw9SDSQjjZxzSblflt0hcc7-7d66eW_l251Hzl6vmbQ-42wJxzdVWvNdVvqsyw_xEhbd64_dek5QuqgBedj__87MikKoV9uuBnJBQhaLkwlVpNK0YVel3AykopHXBk5xg0QQHSsJfRAZ5dqX5iKmqyFAUgY8D6uFtqMYDCnVNkJRnjKq517HdeDSkVE8K7EIXBhGdRyREHdX0FUjrbpxnvTSsijKNYFSMG7tVqQ50QIQnKGsuUkn3a7hUC0-CXzHzAfpcWe0qyIDgLUELHzkxVQWgLlAjil36UiODQnlNMF8ANca1WsUzZbdAWWPAeQpWY7hFsZDvdyHGTbEnVyPN1TmnrOEtSyBrWOM1T8EZHzbGWLmkegBfnLAmV5HlvjVJCp4MF9kJPmwsJVPOtR-Qj-CE-9mSS4gqf0pBmW-f1Ro_IAlVVcE2_AoV8pqYmhcmNAG1qFSIaFqMG3s2SKWQA-JoQbmfN7nuqwme5UI_33-YwT8gZK7oLDC8XIV8vwDywpLK-a6NgW-7Kz01xavSKWHI5I5uP3eiLqYyl7dj8N0mDrYucYOsyf0e5qqbU-7nbVfM09SOdtU9US3aQRqrDyklxAMqQjvaGqdS7LjQuJZSS5BwMCVgY25G131kqK9l2hpzK-rEGnubdycJg5sDGrO4cgPUASY3J93PYFpkVplj4Jyxe9ikpmZLH8xQRlYXHZQ6fXTBQbkRLY8NGPgjQgNt35txZFCmrrFAvIFJX7tOW0YLtep03GRtutiTashfTlbDmKbdSsOkrgdWMMznWqNo3Xg-YV_zrakgdEuoGYb3NqARib8TtEAEhU6m4rt7p-kJAa85uKANoqyBGLiIOqyDRC_KejpNx4gxka74Y3DSys6Melq1U8Gc5gD-9FW_A-kOOaNSfTcmOeB0UiHKkOCQDUo1EDP8A5avzMPXk6ppaoPLVFO75kSG2Hku0QBXk5szoCqmsQzklGeDDHBFdsVAV8vBpQGBSHHUoyqBgQmJnGkw0NVdtGiAnL_kDbRaeRnX0xQek_XIu7eZgW0uvHXqsXmAWYeYGSs499EVCgm6xH7MZjN_i0I2cQtDN2tgv0SQKXnuuUk6I7w1d7qZ8_SidYwDdNI9A201xPRxCOkqITjEaUzg-ml35VMbUASJ42W__0lXcnCI2M-C-K-AGE7WkDmRMJ-yDwpl8K_p0d1CRHURhSFy0h8S5G2ZO07YD7g41-k2YiL9iVA-SlY0htTj4_f3_wEPCzzbGzYAAA/configure",
-    },
-    {
-      name: "Animes' Season",
-      url: "https://stremio-addons.com/animes-season.html",
-    },
-    {
-      name: "Anime Kitsu",
-      url: "https://anime-kitsu.strem.fun",
-    },
-    {
-      name: "Torrentio",
-      getUrl: (token, language) => {
-        const langConfig = this.getLanguageConfig(language);
-        const hasValidToken = token && this.debridService.validateTokenFormat(token);
-        const currentService = this.debridService.currentService();
-
-        // Si no hay servicio seleccionado, usar configuración básica sin debrid
-        if (!currentService) {
-          const config: TorrentioConfig = {
-            sort: 'qualitysize',
-            language: langConfig.torrentioCode,
-            qualityFilter: ['threed', '480p', 'other', 'scr', 'cam', 'unknown'],
-            limit: 5,
-            debridOptions: undefined,
-            realdebrid: undefined,
-            alldebrid: undefined,
-            premiumize: undefined,
-            debridlink: undefined,
-            torbox: undefined
-          };
-          return this.buildTorrentioUrl(config);
-        }
-
-        const config: TorrentioConfig = {
-          sort: 'qualitysize',
-          language: langConfig.torrentioCode,
-          qualityFilter: ['threed', '480p', 'other', 'scr', 'cam', 'unknown'],
-          limit: 5,
-          debridOptions: hasValidToken ? ['nocatalog'] : undefined,
-          // Usar el nombre del servicio dinámicamente
-          [currentService.name]: hasValidToken ? token : undefined
-        };
-
-        return this.buildTorrentioUrl(config);
-      },
-      requiresToken: false,
-    },
-    {
-      name: "Comet",
-      getUrl: (token, language) => {
-        const langConfig = this.getLanguageConfig(language);
-        const base64Original =
-          "eyJtYXhSZXN1bHRzUGVyUmVzb2x1dGlvbiI6NSwibWF4U2l6ZSI6MCwiY2FjaGVkT25seSI6ZmFsc2UsInJlbW92ZVRyYXNoIjp0cnVlLCJyZXN1bHRGb3JtYXQiOlsiYWxsIl0sImRlYnJpZFNlcnZpY2UiOiJyZWFsZGVicmlkIiwiZGVicmlkQXBpS2V5IjoiIiwiZGVicmlkU3RyZWFtUHJveHlQYXNzd29yZCI6IiIsImxhbmd1YWdlcyI6eyJleGNsdWRlIjpbXSwicHJlZmVycmVkIjpbImVzIl19LCJyZXNvbHV0aW9ucyI6eyJyNDgwcCI6ZmFsc2UsInIzNjBwIjpmYWxzZSwidW5rbm93biI6ZmFsc2V9LCJvcHRpb25zIjp7InJlbW92ZV9yYW5rc191bmRlciI6LTEwMDAwMDAwMDAwLCJhbGxvd19lbmdsaXNoX2luX2xhbmd1YWdlcyI6ZmFsc2UsInJlbW92ZV91bmtub3duX2xhbmd1YWdlcyI6ZmFsc2V9fQ==";
-
-        let cometConfig: CometConfig = JSON.parse(atob(base64Original));
-        cometConfig.languages.preferred = [langConfig.cometCode];
-
-        const hasValidToken = token && this.debridService.validateTokenFormat(token);
-        if (hasValidToken) {
-          cometConfig.debridApiKey = token;
-          cometConfig.debridService = this.debridService.getServiceNameForAddon();
-        }
-
-        return `https://comet.elfhosted.com/${btoa(JSON.stringify(cometConfig))}/configure`;
-      },
-      requiresToken: false,
-    },
-    {
-      name: "MediaFusion",
-      getUrl: async (token, language) => {
-        const langConfig = this.getLanguageConfig(language);
-        const hasValidToken = token && this.debridService.validateTokenFormat(token);
-
-        const payload: MediaFusionConfig = {
-          streaming_provider: hasValidToken
-            ? {
-              token: token,
-              service: this.debridService.getServiceNameForAddon(),
-              enable_watchlist_catalogs: false,
-              download_via_browser: false,
-              only_show_cached_streams: false,
-            }
-            : null,
-          selected_catalogs: [],
-          selected_resolutions: ["4k", "2160p", "1440p", "1080p", "720p"],
-          enable_catalogs: false,
-          enable_imdb_metadata: false,
-          max_size: "inf",
-          max_streams_per_resolution: "10",
-          torrent_sorting_priority: [
-            { key: "language", direction: "desc" },
-            { key: "cached", direction: "desc" },
-            { key: "resolution", direction: "desc" },
-            { key: "quality", direction: "desc" },
-            { key: "size", direction: "desc" },
-            { key: "seeders", direction: "desc" },
-            { key: "created_at", direction: "desc" },
-          ],
-          show_full_torrent_name: true,
-          show_language_country_flag: true,
-          nudity_filter: ["Disable"],
-          certification_filter: ["Disable"],
-          language_sorting: langConfig.mediafusionPriority,
-          quality_filter: ["BluRay/UHD", "WEB/HD", "DVD/TV/SAT"],
-          api_password: null,
-          mediaflow_config: null,
-          rpdb_config: null,
-          live_search_streams: false,
-          contribution_streams: false,
-          mdblist_config: null,
-        };
-
-        try {
-          const response = await fetch(
-            "https://mediafusion.elfhosted.com/encrypt-user-data",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(payload),
-            }
-          );
-
-          const data = await response.json();
-          if (data.status === "success" && data.encrypted_str) {
-            return `https://mediafusion.elfhosted.com/${data.encrypted_str}/configure`;
-          } else {
-            console.error(data);
-            alert("❌ Error al generar la configuración de MediaFusion. Revise el token que puede ser incorrecto");
-            return "";
-          }
-        } catch (err) {
-          console.error(err);
-          alert("❌ Error de conexión al configurar MediaFusion.");
-          return "";
-        }
-      },
-      requiresToken: false,
-    },
-    {
-      name: "Peerflix",
-      getUrl: (token, language) => {
-        const langConfig = this.preferences.currentLanguageConfig();
-        const langParam = langConfig.peerflixCode || 'en';
-        const currentService = this.debridService.currentService();
-
-        // Si no hay servicio, devolver URL básica sin debrid
-        if (!currentService) {
-          return `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Csort=quality-desc,language-desc,size-desc/configure`;
-        }
-
-        return token && this.debridService.isValidToken()
-          ? `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Cdebridoptions=nocatalog%7C${currentService.name}=${token}%7Csort=quality-desc,language-desc,size-desc/configure`
-          : `https://addon.peerflix.mov/language=${langParam}%7Cqualityfilter=unknown,screener,vhs,sd,480p,540p,threed%7Csort=quality-desc,language-desc,size-desc/configure`;
-      },
-      requiresToken: false,
-    },
-    {
-      name: "Jackettio",
-      getUrl: (token, language) => {
-        const langConfig = this.getLanguageConfig(language);
-        const base64Original =
-          "ewogICJtYXhUb3JyZW50cyI6IDUsCiAgInByaW9yaXRpemVQYWNrVG9ycmVudHMiOiAyLAogICJleGNsdWRlS2V5d29yZHMiOiBbImNhbSIsICJzY3JlZW5lciJdLAogICJkZWJyaWRJZCI6ICIiLAogICJoaWRlVW5jYWNoZWQiOiBmYWxzZSwKICAic29ydENhY2hlZCI6IFsKICAgIFsicXVhbGl0eSIsIHRydWVdLAogICAgWyJzaXplIiwgdHJ1ZV0KICBdLAogICJzb3J0VW5jYWNoZWQiOiBbCiAgICBbInF1YWxpdHkiLCB0cnVlXSwKICAgIFsic2VlZGVycyIsIHRydWVdCiAgXSwKICAiZm9yY2VDYWNoZU5leHRFcGlzb2RlIjogZmFsc2UsCiAgInByaW9yaXRpemVMYW5ndWFnZXMiOiBbInNwYW5pc2giXSwKICAiaW5kZXhlclRpbWVvdXRTZWMiOiA2MCwKICAibWV0YUxhbmd1YWdlIjogIiIsCiAgImVuYWJsZU1lZGlhRmxvdyI6IGZhbHNlLAogICJtZWRpYWZsb3dQcm94eVVybCI6ICIiLAogICJtZWRpYWZsb3dBcGlQYXNzd29yZCI6ICIiLAogICJtZWRpYWZsb3dQdWJsaWNJcCI6ICIiLAogICJ1c2VTdHJlbVRocnUiOiB0cnVlLAogICJzdHJlbXRocnVVcmwiOiAiaHR0cDovL2VsZmhvc3RlZC1pbnRlcm5hbC5zdHJlbXRocnUiLAogICJxdWFsaXRpZXMiOiBbNzIwLCAxMDgwLCAyMTYwXSwKICAiaW5kZXhlcnMiOiBbImV6dHYiLCAidGhlcGlyYXRlYmF5IiwgInl0cyJdLAogICJkZWJyaWRBcGlLZXkiOiAiIgogIH0=";
-
-        let jackettioConfig: JackettioConfig = JSON.parse(atob(base64Original));
-        jackettioConfig.priotizeLanguages = [langConfig.jackettioCode || 'spanish'];
-
-        const hasValidToken = token && this.debridService.validateTokenFormat(token);
-        if (hasValidToken) {
-          jackettioConfig.debridApiKey = token;
-          jackettioConfig.debridId = this.debridService.getServiceNameForAddon();
-        } else {
-          jackettioConfig.debridId = "realdebrid";
-          jackettioConfig.debridApiKey = "";
-        }
-
-        return `https://jackettio.elfhosted.com/${btoa(JSON.stringify(jackettioConfig))}/configure`;
-      },
-      requiresToken: false,
-    },
-    {
-      name: "ThePirateBay+",
-      url: "https://thepiratebay-plus.strem.fun",
-    },
-    {
-      name: "Nuvio",
-      url: "https://nuviostreams.hayd.uk/providers=showbox,vidzee,vidsrc,mp4hydra,uhdmovies,moviesmod,4khdhub,dramadrip,topmovies/min_qualities=%7B%22showbox%22%3A%22480p%22%2C%22vidsrc%22%3A%22480p%22%2C%22mp4hydra%22%3A%22480p%22%2C%22uhdmovies%22%3A%22720p%22%2C%22moviesmod%22%3A%22720p%22%2C%224khdhub%22%3A%22720p%22%2C%22dramadrip%22%3A%22720p%22%2C%22topmovies%22%3A%22720p%22%7D/configure",
-    },
-    {
-      name: "Webstreamr",
-      url: "https://webstreamr.hayd.uk/%7B%22en%22%3A%22on%22%2C%22es%22%3A%22on%22%2C%22mediaFlowProxyUrl%22%3A%22%22%2C%22mediaFlowProxyPassword%22%3A%22%22%2C%22proxyConfig%22%3A%22%22%7D/configure",
-    }
-  ];
-
   constructor() {
-    // Cargar preferencia de addons de anime desde localStorage
-    const savedAnimePreference = localStorage.getItem('include-anime-addons');
-    if (savedAnimePreference !== null) {
-      this.includeAnimeAddons.set(savedAnimePreference === 'true');
-    }
-
-    // Effect para guardar preferencia de addons de anime
-    effect(() => {
-      const includeAnime = this.includeAnimeAddons();
-      localStorage.setItem('include-anime-addons', includeAnime.toString());
-    });
-
     // Effect para sincronizar el input del token con el servicio
     effect(() => {
       const serviceToken = this.debridService.token();
@@ -423,22 +121,25 @@ export class DashboardComponent implements OnInit {
     }, { allowSignalWrites: true });
   }
 
-  ngOnInit() {
-    // La inicialización se hace a través del effect
-  }
-
+  /**
+   * Maneja el cambio de token
+   */
   async onTokenChange(event: Event): Promise<void> {
     const target = event.target as HTMLInputElement;
     const token = target.value.trim();
-
     this.debridService.setToken(token);
   }
 
+  /**
+   * Maneja el cambio de proveedor debrid
+   */
   onDebridProviderChange(provider: DebridProviderType): void {
-    // Cambiar el proveedor (el AddonTabsComponent se actualizará automáticamente vía effects)
     this.debridService.setProvider(provider);
   }
 
+  /**
+   * Copia el token al portapapeles
+   */
   copyToken(): void {
     const token = this.debridService.token();
     if (!token) {
@@ -451,167 +152,73 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  async configureAll() {
-    return this.installPreset(this.selectedPreset());
-  }
-
-  async installPreset(presetType: PresetType) {
-    const preset = ADDON_PRESETS[presetType];
-
-    if (!this.canInstall()) {
-      alert('⚠️ Debes iniciar sesión correctamente primero.');
-      return;
-    }
-
-    if (preset.requiresToken && !this.hasValidToken()) {
-      const currentService = this.debridService.currentService();
-      const serviceName = currentService?.displayName || 'un servicio debrid';
-      alert(`⚠️ La configuración "${preset.name}" requiere un token de ${serviceName} válido.`);
-      return;
-    }
-
-    const confirmacion = confirm(
-      `⚠️ ATENCIÓN: Se instalará la configuración "${preset.name}".\n\n` +
-      `Descripción: ${preset.description}\n\n` +
-      `Addons incluidos: ${preset.addonNames.join(', ')}\n\n` +
-      '¿Deseas continuar?'
+  /**
+   * Instala el preset seleccionado
+   */
+  async configureAll(): Promise<void> {
+    const result = await this.installation.installPreset(
+      this.selectedPreset,
+      this.includeAnimeAddons
     );
 
-    if (!confirmacion) return;
-
-    const token = this.debridService.token()?.trim();
-
-    this.isLoading.set(true);
-    this.loadingTitle.set(`Instalando ${preset.name}`);
-    this.progressText.set('Preparando instalación...');
-
-    try {
-      const finalJson: any[] = [];
-      // Usar los addons efectivos (con o sin anime según configuración)
-      const addonsToProcess = this.effectivePresetAddons();
-      const totalAddons = addonsToProcess.length;
-      let currentIndex = 0;
-
-      for (const addon of addonsToProcess) {
-        currentIndex++;
-        this.progressText.set(`Procesando ${currentIndex} de ${totalAddons} (${addon.name})...`);
-
-        const url = await this.resolveAddonUrl(addon, token);
-        if (!url) continue;
-
-        const manifest = await this.fetchManifest(url);
-        if (manifest) {
-          const isOfficial = ['cinemeta', 'watchhub'].includes(
-            addon.name?.toLowerCase() || ''
-          );
-          const flags = { official: isOfficial, protected: isOfficial };
-
-          finalJson.push({
-            transportUrl: url,
-            name: addon.transportName || addon.name,
-            manifest,
-            flags
-          });
-        }
-      }
-
-      this.progressText.set('Enviando configuración a Stremio...');
-
-      const result = await this.stremio.setAddonCollection(finalJson);
-
-      if (result.success) {
-        this.progressText.set('✅ Configuración completada correctamente.');
-        setTimeout(() => this.reloadAddons(), 2000);
-      } else {
-        throw new Error(result.error || 'Error desconocido');
-      }
-
-    } catch (error) {
-      console.error('Error en configureAll:', error);
-      this.progressText.set('❌ Error en la configuración');
-      alert('❌ Error de conexión al enviar los addons a Stremio.');
-    } finally {
-      setTimeout(() => this.isLoading.set(false), 500);
+    if (result.success) {
+      setTimeout(() => this.reloadAddons(), 2000);
+    } else if (result.error) {
+      alert(result.error);
     }
   }
 
-  private async resolveAddonUrl(addon: Addon, token?: string): Promise<string | null> {
-    if (addon.name === 'Anime Kitsu') {
-      return 'https://anime-kitsu.strem.fun/manifest.json';
-    } else if (addon.name === "Animes' Season") {
-      return 'https://victorgveloso.github.io/animes-season-addon/manifest.json';
-    } else if (addon.name === 'ThePirateBay+') {
-      return 'https://thepiratebay-plus.strem.fun/manifest.json';
-    } else {
-      if (addon.url) {
-        return addon.url.replace('/configure', '/manifest.json');
-      } else if (typeof addon.getUrl === 'function') {
-        const generated = await addon.getUrl(token, this.preferences.selectedLanguage());
-        return generated ? generated.replace('/configure', '/manifest.json') : null;
-      }
-    }
-    return null;
-  }
+  /**
+   * Instala un preset específico
+   */
+  async installPreset(presetType: PresetType): Promise<void> {
+    const result = await this.installation.installPreset(presetType, this.includeAnimeAddons);
 
-  private async fetchManifest(url: string): Promise<any | null> {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching manifest:', url, error);
-      return { error: 'Failed to fetch manifest' };
+    if (result.success) {
+      setTimeout(() => this.reloadAddons(), 2000);
+    } else if (result.error) {
+      alert(result.error);
     }
   }
 
-  logout() {
-    this.stremio.clearAuth();
-    this.debridService.clearToken();
-    this.router.navigate(['/']);
-  }
-
-  reloadAddons() {
-    location.reload();
-  }
-
-  async resetStremio() {
-    if (!this.stremio.isAuthenticated()) {
-      alert('⚠️ Debes iniciar sesión correctamente primero.');
-      return;
-    }
-
+  /**
+   * Resetea Stremio a la configuración de fábrica
+   */
+  async resetStremio(): Promise<void> {
     const confirmacion = confirm(
       '¿Seguro que deseas borrar tu configuración actual de Stremio y volver al estado de fábrica?'
     );
     if (!confirmacion) return;
 
-    this.isLoading.set(true);
-    this.loadingTitle.set('Reseteando Stremio');
-    this.progressText.set('Cargando configuración de fábrica...');
+    const result = await this.installation.resetStremio();
 
-    try {
-      const fileContent: any = await this.http.get('/assets/reset-stremio.json').toPromise();
-
-      this.progressText.set('Enviando configuración de fábrica a Stremio...');
-
-      const result = await this.stremio.setAddonCollection(fileContent.addons || []);
-
-      if (result.success) {
-        this.progressText.set('✅ Stremio reseteado correctamente.');
-        setTimeout(() => this.reloadAddons(), 1500);
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error) {
-      console.error('Error resetting Stremio:', error);
-      this.progressText.set('❌ Error al resetear Stremio.');
-      alert('❌ Error de conexión al resetear Stremio.');
-    } finally {
-      setTimeout(() => this.isLoading.set(false), 500);
+    if (result.success) {
+      setTimeout(() => this.reloadAddons(), 1500);
+    } else if (result.error) {
+      alert(result.error);
     }
   }
 
+  /**
+   * Cierra la sesión
+   */
+  logout(): void {
+    this.stremio.clearAuth();
+    this.debridService.clearToken();
+    this.router.navigate(['/']);
+  }
+
+  /**
+   * Recarga la página
+   */
+  reloadAddons(): void {
+    location.reload();
+  }
+
+  /**
+   * Obtiene los nombres de addons filtrados
+   */
   getFilteredAddonNames(): string[] {
-    return this.effectivePresetAddons().map(addon => addon.name);
+    return this.dashboardState.getFilteredAddonNames();
   }
 }
