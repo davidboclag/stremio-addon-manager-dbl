@@ -72,6 +72,13 @@ export class DashboardComponent {
   // Computed signal para el estado de incluir anime addons
   readonly showAnimeAddons = computed(() => this.dashboardState.includeAnimeAddons());
 
+  // Computed signals para addons filtrados por idioma y preset
+  readonly availablePresetAddons = computed(() => this.dashboardState.effectivePresetAddonsFilteredByLanguage());
+  readonly unavailablePresetAddons = computed(() => this.dashboardState.unavailablePresetAddons());
+  readonly availablePresetAddonsNames = computed(() => 
+    this.availablePresetAddons().map(addon => addon.name).join(", ")
+  );
+
   // Propiedades para selectores con getter/setter
   get selectedDebridProvider(): string {
     const provider = this.debridService.selectedProvider();

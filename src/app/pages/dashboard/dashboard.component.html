@@ -206,11 +206,17 @@
                 </h6>
                 <p class="mb-2 text-muted">{{ currentPreset().description }}</p>
                 <div class="mb-2">
-                  <strong>Addons incluidos:</strong>
-                  <span class="ms-1">{{
-                    getFilteredAddonNames().join(", ")
-                  }}</span>
+                  <strong>Addons incluidos ({{ availablePresetAddons().length }}):</strong>
+                  <span class="ms-1">{{ availablePresetAddonsNames() }}</span>
                 </div>
+                @if (unavailablePresetAddons().length > 0) {
+                <div class="mb-2">
+                  <small class="text-muted">
+                    <strong>No disponibles en {{ preferences.currentLanguageConfig().nativeName }}:</strong>
+                    <span class="ms-1">{{ unavailablePresetAddons().join(", ") }}</span>
+                  </small>
+                </div>
+                }
               </div>
               <div class="col-md-4">
                 <h6 class="fw-semibold mb-2">Beneficios</h6>

@@ -105,6 +105,33 @@ export class DashboardStateService {
     this._includeAnimeAddons.set(include);
   }
 
+  // Computed que filtra los addons del preset actual según el idioma seleccionado
+  readonly effectivePresetAddonsFilteredByLanguage = computed(() => {
+    const currentLang = this.preferences.selectedLanguage();
+    const presetAddons = this.effectivePresetAddons();
+    
+    return presetAddons.filter(addon => {
+      const supportedLanguages = ADDON_LANGUAGE_SUPPORT[addon.name];
+      if (supportedLanguages) {
+        return supportedLanguages.includes(currentLang);
+      }
+      return true;
+    });
+  });
+
+  // Computed que obtiene los addons del preset NO disponibles en el idioma actual
+  readonly unavailablePresetAddons = computed(() => {
+    const currentLang = this.preferences.selectedLanguage();
+    const presetAddons = this.effectivePresetAddons();
+    
+    return presetAddons
+      .filter(addon => {
+        const supportedLanguages = ADDON_LANGUAGE_SUPPORT[addon.name];
+        return supportedLanguages && !supportedLanguages.includes(currentLang);
+      })
+      .map(addon => addon.name);
+  });
+
   /**
    * Obtiene los nombres de los addons filtrados para el preset actual
    */
