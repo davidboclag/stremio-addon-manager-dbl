@@ -1,13 +1,14 @@
 import { Injectable, inject, computed } from '@angular/core';
 import { PreferencesService, LANGUAGES, Language } from './preferences.service';
 import { DebridService } from './debrid.service';
-import { 
-  Addon, 
-  TorrentioConfig, 
-  CometConfig, 
-  MediaFusionConfig, 
-  JackettioConfig 
+import {
+  Addon,
+  TorrentioConfig,
+  CometConfig,
+  MediaFusionConfig,
+  JackettioConfig
 } from '../types/addon-configs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ import {
 export class AddonConfigService {
   private readonly preferences = inject(PreferencesService);
   private readonly debridService = inject(DebridService);
+  private readonly http = inject(HttpClient);
 
   // Configuración base de addons
   private readonly baseAddons: Addon[] = [
@@ -25,7 +27,8 @@ export class AddonConfigService {
     },
     {
       name: "Aiolists",
-      url: "https://aiolists.elfhosted.com/H4sIAAAAAAAAA7UbXXLiPPIqlF4XT0H-dsZvJEwSsgPMBDIJmUptCVtgTfzDSnYIpHKR7w7f0x5hLrYlWzK2JGOx5TwlanVL6la7u9XdvAG4wv9CG2AD0AZk5c57Yhx3rAVByGJA0AZx4M7PESSITKNnFAIboM2NN79y8BjfDO62g-4I33z5xIDu_Q8G9B6v7l5HwY-T8f3d8DAYHA-ns9NR3_89m94G4-nX9ezo0Zv9PvfGkwEdBKf4EQ_OhlOnM-ovt-P-j81ocnI6nD6vh_3e67eLm617P8BjPDga93vr4f3sdTxdbmfbR380nR3Ptu7zePrzeXT1FTPc2dGX9ePDEI99imcP56uH4xt_dv8DP0zW2A1-bpwj_2XO9nvofHq9vLGmQ-clmJ59WwweOlfzfnj6cHnx2__P0XjrPV5PF9ECXV1OvDsuiAmiFEfhwM3kxkA9x4mSMC6C7igiIQxQBglQDF0Yw0mUEIfBGArH_AbDZQKXDIoogxH4HPccB1EqpC2gt2hBEPVk8NfXFSaI9mJgh4nvc2j5BD6m8Zi4iAD7FwjcORsnxP93HK2sbocdsQAjKHRxuLTCaG1RL1rT8rwPY0Rjy8VLHEPfIshHkCI9UvyiW4HtGkQvGFErWlixh6w1Qs9lnBDFCx-_cjz9nGZpF9MQbbRUfEpDBAO4jUJrRXCAtKQlBM0CXuInWsJ0Qkcwj6rAumW4sFaQwICpmrXyEwnFmVML-r4FU9WRjr9a-YjdhZY3PilBnRhHoQRzX1AYJ6RCRiEOoErkRAFyNxKMyVG6nMhJAhTGkEi4LoEBLIMWMMC-_o4XMIwh1c95mMaRvLwXERIRSdobGiOiX4REAQwd6fDUwdYCSzruEez7SFp6DQl4agMf0vhu5cIYMZtx1Dk6tbodq9udHh3bp6f2ydGn05POI_9u6ZCbD2C_AYijFGatYex47F_rnsE9SIfZce0F9ClqM8gk1TABYJteeMh53m3aOWObds_Ypp0vnz6fdR7B-3sbeNh1UfiNbQTsX09tQFAQvSC3AHESGkcBA4xgwLZ9M7ERNvjzlx_jANLWd-T_-dtJfCjrkaxlNuhlEEUNSndtg8sU8OdvuPc6bTDEDICjag20QV-MfFXFitrHdg2wj6U9uV21wY7L1hSFLgodBVU1tzaYIIJRJYlsXAtSzQiNzG3pcC5q-bA1QQEMpc0kQ2yDUQaovMCydd7h645WNtc26KfjyqVLJjzH1i2sM-k26KXQ1ncGrVZA1dhLlLoNiy7ABteJn1RuUHAKHFO74M4X2OD6fFy9XO5LMjzdYnoHYoPvAvCPyuUlx1Ki0UpecjY26DFIa_qzeo_cBxWRtYtnbskGPcfBf_4rO6jcBdmgx_7X4HB_ZIML9o_8ZWWeyQYX7K9EmXkiG_RVjyRciw2u0__kZbmXscG1xt0Il2KD2z3OxQYXODUFrUus4z33NzaYVroeG1wliBAI3llQSpa5RX97FxZ9yIQy3ayQMOvvbYCDVURi5PZcNgorTP3OGL0BzBzM3mCQR6bf0onW9Gdrwif2-bGYJKgNMB32z9mx74g_SA8mZviOaRxeGX8W4uIlJBuHwPUiIu7S2aFM_GSpXSLerNjBfgGaqebTu5GdVQVSGQDzk02jVSsTQ2u8aE091LrP5gviyXhWvLyZeOoicHMpVa6UCyudlWUlexVVRsoDgJ9HuJOhgDclk6oXh7kslBXMZFD53cjvHEkCTX8zFc-qw_k3_F4k56_yLz_m-Cm4229cASrejub8ywvsv_5yMFPJvXT5IuZp-O71j-ODWTe8eW10pkpA_y7nBypFZI3rwt6UgLlY9Mvs1wtd_FkjG0lHysFqw5qyLxfyfwrGUGsqH5WVEYcmR1WOPM79pHULN63bHUJTGlSbJisI6xmSuPTwKocgmjX2q1DpMaJKp5yu4mdIHyKNf0fazJi5mpTJDZiu_F5Kmbgiy01_H7qU34EMG34PxReihuFiLlEwPI8-4Io1ScsCw9SDSQjjZxzSblflt0hcc7-7d66eW_l251Hzl6vmbQ-42wJxzdVWvNdVvqsyw_xEhbd64_dek5QuqgBedj__87MikKoV9uuBnJBQhaLkwlVpNK0YVel3AykopHXBk5xg0QQHSsJfRAZ5dqX5iKmqyFAUgY8D6uFtqMYDCnVNkJRnjKq517HdeDSkVE8K7EIXBhGdRyREHdX0FUjrbpxnvTSsijKNYFSMG7tVqQ50QIQnKGsuUkn3a7hUC0-CXzHzAfpcWe0qyIDgLUELHzkxVQWgLlAjil36UiODQnlNMF8ANca1WsUzZbdAWWPAeQpWY7hFsZDvdyHGTbEnVyPN1TmnrOEtSyBrWOM1T8EZHzbGWLmkegBfnLAmV5HlvjVJCp4MF9kJPmwsJVPOtR-Qj-CE-9mSS4gqf0pBmW-f1Ro_IAlVVcE2_AoV8pqYmhcmNAG1qFSIaFqMG3s2SKWQA-JoQbmfN7nuqwme5UI_33-YwT8gZK7oLDC8XIV8vwDywpLK-a6NgW-7Kz01xavSKWHI5I5uP3eiLqYyl7dj8N0mDrYucYOsyf0e5qqbU-7nbVfM09SOdtU9US3aQRqrDiklxAMqQjvaGqdS7LjQuJZSS5BwMCVgY25G131kqK9l2hpzK-rEGnubdycJg5sDGrO4cgPUASY3J93PYFpkVplj4Jyxe9ikpmZLH8xQRlYXHZQ6fXTBQbkRLY8NGPgjQgNt35txZFCmrrFAvIFJX7tOW0YLtep03GRtutiTashfTlbDmKbdSsOkrgdWMMznWqNo3Xg-YV_zrakgdEuoGYb3NqARib8TtEAEhU6m4rt7p-kJAa85uKANoqyBGLiIOqyDRC_KejpNx4gxka74Y3DSys6Melq1U8Gc5gD-9FW_A-kOOaNSfTcmOeB0UiHKkOCQDUo1EDP8A5avzMPXk6ppaoPLVFO75kSG2Hku0QBXk5szoCqmsQzklGeDDHBFdsVAV8vBpQGBSHHUoyqBgQmJnGkw0NVdtGiAnL_kDbRaeRnX0xQek_XIu7eZgW0uvHXqsXmAWYeYGSs499EVCgm6xH7MZjN_i0I2cQtDN2tgv0SQKXnuuUk6I7w1d7qZ8_SidYwDdNI9A201xPRxCOkqITjEaUzg-ml35VMbUASJ42W__0lXcnCI2M-C-K-AGE7WkDmRMJ-yDwpl8K_p0d1CRHURhSFy0h8S5G2ZO07YD7g41-k2YiL9iVA-SlY0htTj4_f3_wEPCzzbGzYAAA/configure",
+      getUrl: (token, language) => this.buildAiolistsUrl(language),
+      requiresToken: false,
     },
     {
       name: "Animes' Season",
@@ -87,6 +90,33 @@ export class AddonConfigService {
 
   // Lista de addons considerados "de anime"
   readonly animeAddons = ['Anime Kitsu', "Animes' Season"];
+
+  /**
+   * Construye la URL de configuración para Aiolists
+   */
+  private async buildAiolistsUrl(language?: string): Promise<string> {
+    const langConfig = this.getLanguageConfig(language);
+    // Primero obtenemos la configuración de src\assets\aiolist-config.json
+    const configAiolist: any = await this.http
+      .get('/assets/aiolist-config.json')
+      .toPromise();
+    // Cambia idioma base de TMDB
+    configAiolist.aiolistsConfig.config.tmdbLanguage = langConfig.code;
+    // Si existe una traducción para ese idioma, añádela como bloque de traducción personalizado
+    if (langConfig.aiolistsCodeList) {
+      configAiolist.aiolistsConfig.config.customListNames = configAiolist.aiolistsConfig[langConfig.aiolistsCodeList].customListNames;
+    }
+    // Ejecuta un post a https://aiolists.elfhosted.com/api/config/create con el body de configAiolist y obtiene un un configHash, que posteriormente se usa para construir la URL manifest.json https://aiolists.elfhosted.com/{configHash}/configure
+    try {
+      const response: any = await this.http.post('https://aiolists.elfhosted.com/api/config/create', configAiolist.aiolistsConfig).toPromise();
+      const configHash = response?.configHash;
+      if (!configHash) throw new Error('No se pudo obtener el configHash');
+      return `https://aiolists.elfhosted.com/${configHash}/configure`;
+    } catch (error) {
+      console.error('Error al crear la configuración de Aiolists:', error);
+      throw error;
+    }
+  }
 
   /**
    * Construye la URL de configuración para Torrentio

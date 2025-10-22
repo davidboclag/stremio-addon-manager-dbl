@@ -1,0 +1,1302 @@
+{
+  "aiolistsConfig": {
+    "config": {
+      "tmdbUsername": "",
+      "metadataSource": "tmdb",
+      "tmdbLanguage": "es-ES",
+      "traktUsername": "",
+      "listOrder": [
+        "mdblisturl_top-10",
+        "mdblisturl_trending-now-shows",
+        "mdblisturl_latest-digital-releases",
+        "mdblisturl_latest-tv-shows",
+        "mdblisturl_top-movies-of-the-week",
+        "mdblisturl_netflix-movies",
+        "mdblisturl_netflix-shows",
+        "mdblisturl_disney-movies",
+        "mdblisturl_disney-shows",
+        "mdblisturl_amazon-prime-movies",
+        "mdblisturl_amazon-prime-shows",
+        "mdblisturl_hulu-movies",
+        "mdblisturl_hulu-shows",
+        "mdblisturl_hbo-shows",
+        "mdblisturl_hbo-movies",
+        "mdblisturl_movies-paramount-plus",
+        "mdblisturl_cbs-all-access",
+        "mdblisturl_apple-tv-movies",
+        "mdblisturl_apple-tv",
+        "mdblisturl_action",
+        "mdblisturl_adventure-movies",
+        "mdblisturl_animation",
+        "mdblisturl_comedy",
+        "mdblisturl_crime",
+        "mdblisturl_documentary",
+        "mdblisturl_drama",
+        "mdblisturl_family-movies",
+        "mdblisturl_fantasy-movies",
+        "mdblisturl_history",
+        "mdblisturl_horror",
+        "mdblisturl_mystery-movies",
+        "mdblisturl_romance",
+        "mdblisturl_sci-fi",
+        "mdblisturl_thriller",
+        "mdblisturl_war"
+      ],
+      "lastUpdated": "2025-06-15T20:43:28.634Z",
+      "listsMetadata": {
+        "aiolists-watchlist-W": {
+          "hasMovies": false,
+          "hasShows": false,
+          "lastChecked": "2025-06-11T16:55:09.860Z"
+        }
+      },
+      "hiddenLists": [],
+      "removedLists": [],
+      "customListNames": {
+        "mdblisturl_latest-digital-releases": "Latest Movies",
+        "mdblisturl_adventure-movies": "Adventure",
+        "mdblisturl_fantasy-movies": "Fantasy",
+        "mdblisturl_mystery-movies": "Mystery",
+        "mdblisturl_documentary": "Documentaries",
+        "mdblisturl_family-movies": "Family",
+        "mdblisturl_top-10": "Trending Movies",
+        "mdblisturl_trending-now-shows": "Trending TV Shows"
+      },
+      "mergedLists": {},
+      "customMediaTypeNames": {},
+      "importedAddons": {
+        "mdblisturl_latest-tv-shows": {
+          "id": "mdblisturl_latest-tv-shows",
+          "name": "Latest TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "latest-tv-shows",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "latest-tv-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_top-movies-of-the-week": {
+          "id": "mdblisturl_top-movies-of-the-week",
+          "name": "Top Movies Of The Week",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "top-movies-of-the-week",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "top-movies-of-the-week",
+          "types": ["movie"]
+        },
+        "mdblisturl_netflix-movies": {
+          "id": "mdblisturl_netflix-movies",
+          "name": "Netflix Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "netflix-movies",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "netflix-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_netflix-shows": {
+          "id": "mdblisturl_netflix-shows",
+          "name": "Netflix Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "netflix-shows",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "netflix-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_disney-movies": {
+          "id": "mdblisturl_disney-movies",
+          "name": "Disney Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "disney-movies",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "disney-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_disney-shows": {
+          "id": "mdblisturl_disney-shows",
+          "name": "Disney Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "disney-shows",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "disney-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_amazon-prime-movies": {
+          "id": "mdblisturl_amazon-prime-movies",
+          "name": "Amazon Prime Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "amazon-prime-movies",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "amazon-prime-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_amazon-prime-shows": {
+          "id": "mdblisturl_amazon-prime-shows",
+          "name": "Amazon Prime Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "amazon-prime-shows",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "amazon-prime-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_latest-digital-releases": {
+          "id": "mdblisturl_latest-digital-releases",
+          "name": "Latest Blu Ray Releases",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "latest-digital-releases",
+          "mdblistUsername": "kartana",
+          "mdblistSlug": "latest-digital-releases",
+          "types": ["movie"]
+        },
+        "mdblisturl_hulu-movies": {
+          "id": "mdblisturl_hulu-movies",
+          "name": "Hulu Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "hulu-movies",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "hulu-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_hulu-shows": {
+          "id": "mdblisturl_hulu-shows",
+          "name": "Hulu Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "hulu-shows",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "hulu-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_hbo-movies": {
+          "id": "mdblisturl_hbo-movies",
+          "name": "Hbo Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "hbo-movies",
+          "mdblistUsername": "shaunatkins11",
+          "mdblistSlug": "hbo-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_hbo-shows": {
+          "id": "mdblisturl_hbo-shows",
+          "name": "Hbo Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "hbo-shows",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "hbo-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_movies-paramount-plus": {
+          "id": "mdblisturl_movies-paramount-plus",
+          "name": "Paramount+ Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "movies-paramount-plus",
+          "mdblistUsername": "sig1878",
+          "mdblistSlug": "movies-paramount-plus",
+          "types": ["movie"]
+        },
+        "mdblisturl_cbs-all-access": {
+          "id": "mdblisturl_cbs-all-access",
+          "name": "Paramount+ Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "cbs-all-access",
+          "mdblistUsername": "sig1878",
+          "mdblistSlug": "cbs-all-access",
+          "types": ["series"]
+        },
+        "mdblisturl_apple-tv-movies": {
+          "id": "mdblisturl_apple-tv-movies",
+          "name": "Apple TV+ Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "apple-tv-movies",
+          "mdblistUsername": "slimshizn",
+          "mdblistSlug": "apple-tv-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_apple-tv": {
+          "id": "mdblisturl_apple-tv",
+          "name": "Apple TV+ Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "apple-tv",
+          "mdblistUsername": "adamosborne01",
+          "mdblistSlug": "apple-tv",
+          "types": ["series"]
+        },
+        "mdblisturl_action": {
+          "id": "mdblisturl_action",
+          "name": "Action",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "action",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "action",
+          "types": ["movie"]
+        },
+        "mdblisturl_adventure-movies": {
+          "id": "mdblisturl_adventure-movies",
+          "name": "Adventure Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "adventure-movies",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "adventure-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_animation": {
+          "id": "mdblisturl_animation",
+          "name": "Animation",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "animation",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "animation",
+          "types": ["movie"]
+        },
+        "mdblisturl_comedy": {
+          "id": "mdblisturl_comedy",
+          "name": "Comedy",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "comedy",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "comedy",
+          "types": ["movie"]
+        },
+        "mdblisturl_crime": {
+          "id": "mdblisturl_crime",
+          "name": "Crime",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "crime",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "crime",
+          "types": ["movie"]
+        },
+        "mdblisturl_drama": {
+          "id": "mdblisturl_drama",
+          "name": "Drama",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "drama",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "drama",
+          "types": ["movie"]
+        },
+        "mdblisturl_fantasy-movies": {
+          "id": "mdblisturl_fantasy-movies",
+          "name": "Fantasy Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "fantasy-movies",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "fantasy-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_horror": {
+          "id": "mdblisturl_horror",
+          "name": "Horror",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "horror",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "horror",
+          "types": ["movie"]
+        },
+        "mdblisturl_mystery-movies": {
+          "id": "mdblisturl_mystery-movies",
+          "name": "Mystery Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "mystery-movies",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "mystery-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_romance": {
+          "id": "mdblisturl_romance",
+          "name": "Romance",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "romance",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "romance",
+          "types": ["movie"]
+        },
+        "mdblisturl_sci-fi": {
+          "id": "mdblisturl_sci-fi",
+          "name": "Sci-Fi",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "sci-fi",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "sci-fi",
+          "types": ["movie"]
+        },
+        "mdblisturl_thriller": {
+          "id": "mdblisturl_thriller",
+          "name": "Thriller",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "thriller",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "thriller",
+          "types": ["movie"]
+        },
+        "mdblisturl_documentary": {
+          "id": "mdblisturl_documentary",
+          "name": "Documentary",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "documentary",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "documentary",
+          "types": ["movie"]
+        },
+        "mdblisturl_history": {
+          "id": "mdblisturl_history",
+          "name": "History",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "history",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "history",
+          "types": ["movie"]
+        },
+        "mdblisturl_war": {
+          "id": "mdblisturl_war",
+          "name": "War",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "war",
+          "mdblistUsername": "garycrawfordgc",
+          "mdblistSlug": "war",
+          "types": ["movie"]
+        },
+        "mdblisturl_family-movies": {
+          "id": "mdblisturl_family-movies",
+          "name": "Family Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "family-movies",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "family-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_top-10": {
+          "id": "mdblisturl_top-10",
+          "name": "Top 10",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "top-10",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "top-10",
+          "types": ["movie"]
+        },
+        "mdblisturl_trending-now-shows": {
+          "id": "mdblisturl_trending-now-shows",
+          "name": "Trending Now Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "trending-now-shows",
+          "mdblistUsername": "rizreflects",
+          "mdblistSlug": "trending-now-shows",
+          "types": ["series"]
+        }
+      },
+      "sortPreferences": {
+        "top-10": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "trending-now-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "latest-tv-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "latest-digital-releases": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "top-movies-of-the-week": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "netflix-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "netflix-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "amazon-prime-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "amazon-prime-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "disney-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "disney-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "hulu-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "hulu-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "hbo-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "hbo-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "movies-paramount-plus": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "cbs-all-access": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "apple-tv-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "apple-tv": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "action": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "adventure-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "animation": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "comedy": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "crime": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "documentary": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "drama": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "family-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "fantasy-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "history": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "horror": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "mystery-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "romance": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "sci-fi": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "thriller": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "war": {
+          "sort": "released",
+          "order": "desc"
+        }
+      },
+      "disableGenreFilter": true,
+      "enableRandomListFeature": false,
+      "randomMDBListUsernames": [
+        "showtime416",
+        "garycrawfordgc",
+        "linaspurinis",
+        "hdlists"
+      ],
+      "searchSources": ["cinemeta", "tmdb"],
+      "mergedSearchSources": [],
+      "animeSearchEnabled": false,
+      "isConnected": {
+        "mdblist": false,
+        "rpdb": true,
+        "tmdb": false,
+        "trakt": false,
+        "upstash": false
+      }
+    },
+    "es-MX": {
+      "customListNames": {
+        "mdblisturl_top-10": "Películas Tendencia",
+        "mdblisturl_trending-now-shows": "Series Tendencia",
+        "mdblisturl_latest-digital-releases": "Últimas Películas",
+        "mdblisturl_latest-tv-shows": "Últimas Series",
+        "mdblisturl_top-movies-of-the-week": "Películas de la Semana",
+        "mdblisturl_netflix-movies": "Netflix Películas",
+        "mdblisturl_netflix-shows": "Netflix Series",
+        "mdblisturl_disney-movies": "Disney Películas",
+        "mdblisturl_disney-shows": "Disney Series",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Películas",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Series",
+        "mdblisturl_hulu-movies": "Hulu Películas",
+        "mdblisturl_hulu-shows": "Hulu Series",
+        "mdblisturl_hbo-movies": "HBO Películas",
+        "mdblisturl_hbo-shows": "HBO Series",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Películas",
+        "mdblisturl_cbs-all-access": "Paramount+ Series",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Películas",
+        "mdblisturl_apple-tv": "Apple TV+ Series",
+        "mdblisturl_action": "Acción",
+        "mdblisturl_animation": "Animación",
+        "mdblisturl_adventure-movies": "Aventura",
+        "mdblisturl_comedy": "Comedia",
+        "mdblisturl_crime": "Crimen",
+        "mdblisturl_documentary": "Documentales",
+        "mdblisturl_drama": "Drama",
+        "mdblisturl_family-movies": "Familia",
+        "mdblisturl_fantasy-movies": "Fantasía",
+        "mdblisturl_history": "Historia",
+        "mdblisturl_horror": "Horror",
+        "mdblisturl_mystery-movies": "Misterio",
+        "mdblisturl_romance": "Romance",
+        "mdblisturl_sci-fi": "Ciencia Ficción",
+        "mdblisturl_thriller": "Thriller",
+        "mdblisturl_war": "Guerra"
+      }
+    },
+    "es-ES": {
+      "customListNames": {
+        "mdblisturl_top-10": "Películas Tendencia",
+        "mdblisturl_trending-now-shows": "Series Tendencia",
+        "mdblisturl_latest-digital-releases": "Últimas Películas",
+        "mdblisturl_latest-tv-shows": "Últimas Series",
+        "mdblisturl_top-movies-of-the-week": "Películas de la Semana",
+        "mdblisturl_netflix-movies": "Netflix Películas",
+        "mdblisturl_netflix-shows": "Netflix Series",
+        "mdblisturl_disney-movies": "Disney Películas",
+        "mdblisturl_disney-shows": "Disney Series",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Películas",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Series",
+        "mdblisturl_hulu-movies": "Hulu Películas",
+        "mdblisturl_hulu-shows": "Hulu Series",
+        "mdblisturl_hbo-movies": "HBO Películas",
+        "mdblisturl_hbo-shows": "HBO Series",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Películas",
+        "mdblisturl_cbs-all-access": "Paramount+ Series",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Películas",
+        "mdblisturl_apple-tv": "Apple TV+ Series",
+        "mdblisturl_action": "Acción",
+        "mdblisturl_animation": "Animación",
+        "mdblisturl_adventure-movies": "Aventura",
+        "mdblisturl_comedy": "Comedia",
+        "mdblisturl_crime": "Crimen",
+        "mdblisturl_documentary": "Documentales",
+        "mdblisturl_drama": "Drama",
+        "mdblisturl_family-movies": "Familia",
+        "mdblisturl_fantasy-movies": "Fantasía",
+        "mdblisturl_history": "Historia",
+        "mdblisturl_horror": "Horror",
+        "mdblisturl_mystery-movies": "Misterio",
+        "mdblisturl_romance": "Romance",
+        "mdblisturl_sci-fi": "Ciencia Ficción",
+        "mdblisturl_thriller": "Thriller",
+        "mdblisturl_war": "Guerra"
+      }
+    },
+    "pt-BR": {
+      "customListNames": {
+        "mdblisturl_top-10": "Filmes em Tendência",
+        "mdblisturl_trending-now-shows": "Séries em Tendência",
+        "mdblisturl_latest-digital-releases": "Últimos Filmes",
+        "mdblisturl_latest-tv-shows": "Últimas Séries",
+        "mdblisturl_top-movies-of-the-week": "Filmes da Semana",
+        "mdblisturl_netflix-movies": "Netflix Filmes",
+        "mdblisturl_netflix-shows": "Netflix Séries",
+        "mdblisturl_disney-movies": "Disney Filmes",
+        "mdblisturl_disney-shows": "Disney Séries",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Filmes",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Séries",
+        "mdblisturl_hulu-movies": "Hulu Filmes",
+        "mdblisturl_hulu-shows": "Hulu Séries",
+        "mdblisturl_hbo-movies": "HBO Filmes",
+        "mdblisturl_hbo-shows": "HBO Séries",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Filmes",
+        "mdblisturl_cbs-all-access": "Paramount+ Séries",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Filmes",
+        "mdblisturl_apple-tv": "Apple TV+ Séries",
+        "mdblisturl_action": "Ação",
+        "mdblisturl_animation": "Animação",
+        "mdblisturl_adventure-movies": "Aventura",
+        "mdblisturl_comedy": "Comédia",
+        "mdblisturl_crime": "Crime",
+        "mdblisturl_documentary": "Documentários",
+        "mdblisturl_drama": "Drama",
+        "mdblisturl_family-movies": "Família",
+        "mdblisturl_fantasy-movies": "Fantasia",
+        "mdblisturl_history": "História",
+        "mdblisturl_horror": "Terror",
+        "mdblisturl_mystery-movies": "Mistério",
+        "mdblisturl_romance": "Romance",
+        "mdblisturl_sci-fi": "Ficção Científica",
+        "mdblisturl_thriller": "Suspense",
+        "mdblisturl_war": "Guerra"
+      }
+    },
+    "fr": {
+      "customListNames": {
+        "mdblisturl_top-10": "Films Tendance",
+        "mdblisturl_trending-now-shows": "Séries Tendance",
+        "mdblisturl_latest-digital-releases": "Derniers Films",
+        "mdblisturl_latest-tv-shows": "Dernières Séries",
+        "mdblisturl_top-movies-of-the-week": "Films de la Semaine",
+        "mdblisturl_netflix-movies": "Netflix Films",
+        "mdblisturl_netflix-shows": "Netflix Séries",
+        "mdblisturl_disney-movies": "Disney Films",
+        "mdblisturl_disney-shows": "Disney Séries",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Films",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Séries",
+        "mdblisturl_hulu-movies": "Hulu Films",
+        "mdblisturl_hulu-shows": "Hulu Séries",
+        "mdblisturl_hbo-movies": "HBO Films",
+        "mdblisturl_hbo-shows": "HBO Séries",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Films",
+        "mdblisturl_cbs-all-access": "Paramount+ Séries",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Films",
+        "mdblisturl_apple-tv": "Apple TV+ Séries",
+        "mdblisturl_action": "Action",
+        "mdblisturl_animation": "Animation",
+        "mdblisturl_adventure-movies": "Aventure",
+        "mdblisturl_comedy": "Comédie",
+        "mdblisturl_crime": "Crime",
+        "mdblisturl_documentary": "Documentaires",
+        "mdblisturl_drama": "Drame",
+        "mdblisturl_family-movies": "Famille",
+        "mdblisturl_fantasy-movies": "Fantastique",
+        "mdblisturl_history": "Histoire",
+        "mdblisturl_horror": "Horreur",
+        "mdblisturl_mystery-movies": "Mystère",
+        "mdblisturl_romance": "Romance",
+        "mdblisturl_sci-fi": "Science-fiction",
+        "mdblisturl_thriller": "Thriller",
+        "mdblisturl_war": "Guerre"
+      }
+    },
+    "it": {
+      "customListNames": {
+        "mdblisturl_top-10": "Film di Tendenza",
+        "mdblisturl_trending-now-shows": "Serie di Tendenza",
+        "mdblisturl_latest-digital-releases": "Ultimi Film",
+        "mdblisturl_latest-tv-shows": "Ultime Serie",
+        "mdblisturl_top-movies-of-the-week": "Film della Settimana",
+        "mdblisturl_netflix-movies": "Netflix Film",
+        "mdblisturl_netflix-shows": "Netflix Serie",
+        "mdblisturl_disney-movies": "Disney Film",
+        "mdblisturl_disney-shows": "Disney Serie",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Film",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Serie",
+        "mdblisturl_hulu-movies": "Hulu Film",
+        "mdblisturl_hulu-shows": "Hulu Serie",
+        "mdblisturl_hbo-movies": "HBO Film",
+        "mdblisturl_hbo-shows": "HBO Serie",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Film",
+        "mdblisturl_cbs-all-access": "Paramount+ Serie",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Film",
+        "mdblisturl_apple-tv": "Apple TV+ Serie",
+        "mdblisturl_action": "Azione",
+        "mdblisturl_animation": "Animazione",
+        "mdblisturl_adventure-movies": "Avventura",
+        "mdblisturl_comedy": "Commedia",
+        "mdblisturl_crime": "Crimine",
+        "mdblisturl_documentary": "Documentari",
+        "mdblisturl_drama": "Dramma",
+        "mdblisturl_family-movies": "Famiglia",
+        "mdblisturl_fantasy-movies": "Fantasia",
+        "mdblisturl_history": "Storia",
+        "mdblisturl_horror": "Horror",
+        "mdblisturl_mystery-movies": "Mistero",
+        "mdblisturl_romance": "Romantico",
+        "mdblisturl_sci-fi": "Fantascienza",
+        "mdblisturl_thriller": "Thriller",
+        "mdblisturl_war": "Guerra"
+      }
+    },
+    "de": {
+      "customListNames": {
+        "mdblisturl_top-10": "Trendfilme",
+        "mdblisturl_trending-now-shows": "Trendserien",
+        "mdblisturl_latest-digital-releases": "Neueste Filme",
+        "mdblisturl_latest-tv-shows": "Neueste Serien",
+        "mdblisturl_top-movies-of-the-week": "Filme der Woche",
+        "mdblisturl_netflix-movies": "Netflix Filme",
+        "mdblisturl_netflix-shows": "Netflix Serien",
+        "mdblisturl_disney-movies": "Disney Filme",
+        "mdblisturl_disney-shows": "Disney Serien",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Filme",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Serien",
+        "mdblisturl_hulu-movies": "Hulu Filme",
+        "mdblisturl_hulu-shows": "Hulu Serien",
+        "mdblisturl_hbo-movies": "HBO Filme",
+        "mdblisturl_hbo-shows": "HBO Serien",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Filme",
+        "mdblisturl_cbs-all-access": "Paramount+ Serien",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Filme",
+        "mdblisturl_apple-tv": "Apple TV+ Serien",
+        "mdblisturl_action": "Action",
+        "mdblisturl_animation": "Animation",
+        "mdblisturl_adventure-movies": "Abenteuer",
+        "mdblisturl_comedy": "Komödie",
+        "mdblisturl_crime": "Krimi",
+        "mdblisturl_documentary": "Dokumentationen",
+        "mdblisturl_drama": "Drama",
+        "mdblisturl_family-movies": "Familie",
+        "mdblisturl_fantasy-movies": "Fantasie",
+        "mdblisturl_history": "Geschichte",
+        "mdblisturl_horror": "Horror",
+        "mdblisturl_mystery-movies": "Mystery",
+        "mdblisturl_romance": "Romanze",
+        "mdblisturl_sci-fi": "Science-Fiction",
+        "mdblisturl_thriller": "Thriller",
+        "mdblisturl_war": "Krieg"
+      }
+    },
+    "nl": {
+      "customListNames": {
+        "mdblisturl_top-10": "Populaire Films",
+        "mdblisturl_trending-now-shows": "Populaire Series",
+        "mdblisturl_latest-digital-releases": "Nieuwste Films",
+        "mdblisturl_latest-tv-shows": "Nieuwste Series",
+        "mdblisturl_top-movies-of-the-week": "Films van de Week",
+        "mdblisturl_netflix-movies": "Netflix Films",
+        "mdblisturl_netflix-shows": "Netflix Series",
+        "mdblisturl_disney-movies": "Disney Films",
+        "mdblisturl_disney-shows": "Disney Series",
+        "mdblisturl_amazon-prime-movies": "Amazon Prime Films",
+        "mdblisturl_amazon-prime-shows": "Amazon Prime Series",
+        "mdblisturl_hulu-movies": "Hulu Films",
+        "mdblisturl_hulu-shows": "Hulu Series",
+        "mdblisturl_hbo-movies": "HBO Films",
+        "mdblisturl_hbo-shows": "HBO Series",
+        "mdblisturl_movies-paramount-plus": "Paramount+ Films",
+        "mdblisturl_cbs-all-access": "Paramount+ Series",
+        "mdblisturl_apple-tv-movies": "Apple TV+ Films",
+        "mdblisturl_apple-tv": "Apple TV+ Series",
+        "mdblisturl_action": "Actie",
+        "mdblisturl_animation": "Animatie",
+        "mdblisturl_adventure-movies": "Avontuur",
+        "mdblisturl_comedy": "Komedie",
+        "mdblisturl_crime": "Misdaad",
+        "mdblisturl_documentary": "Documentaires",
+        "mdblisturl_drama": "Drama",
+        "mdblisturl_family-movies": "Familie",
+        "mdblisturl_fantasy-movies": "Fantasie",
+        "mdblisturl_history": "Geschiedenis",
+        "mdblisturl_horror": "Horror",
+        "mdblisturl_mystery-movies": "Mysterie",
+        "mdblisturl_romance": "Romantiek",
+        "mdblisturl_sci-fi": "Sciencefiction",
+        "mdblisturl_thriller": "Thriller",
+        "mdblisturl_war": "Oorlog"
+      }
+    }
+  },
+  "aiolistsKidsConfig": {
+    "config": {
+      "tmdbUsername": "",
+      "metadataSource": "tmdb",
+      "tmdbLanguage": "es-ES",
+      "traktUsername": "",
+      "listOrder": [
+        "mdblisturl_kids",
+        "mdblisturl_kids-tv-shows",
+        "mdblisturl_kids-movies",
+        "mdblisturl_latest-kids-shows",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids",
+        "mdblisturl_childish-movies-8",
+        "mdblisturl_walt-disney-animated-films",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films",
+        "mdblisturl_pixar",
+        "mdblisturl_disney-junior-tv",
+        "mdblisturl_kids-tv-cartoon-network",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue",
+        "mdblisturl_tv-show-netflix-kids",
+        "mdblisturl_nickelodeon-movies",
+        "mdblisturl_nickelodeon-kids"
+      ],
+      "lastUpdated": "2025-06-15T20:43:28.634Z",
+      "listsMetadata": {
+        "aiolists-watchlist-W": {
+          "hasMovies": false,
+          "hasShows": false,
+          "lastChecked": "2025-06-11T16:55:09.860Z"
+        }
+      },
+      "hiddenLists": [],
+      "removedLists": [],
+      "customListNames": {},
+      "mergedLists": {},
+      "customMediaTypeNames": {},
+      "importedAddons": {
+        "mdblisturl_kids": {
+          "id": "mdblisturl_kids",
+          "name": "Popular Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "kids",
+          "mdblistUsername": "ceefaxer",
+          "mdblistSlug": "kids",
+          "types": ["movie"]
+        },
+        "mdblisturl_kids-tv-shows": {
+          "id": "mdblisturl_kids-tv-shows",
+          "name": "Popular TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "kids-tv-shows",
+          "mdblistUsername": "ishalioh",
+          "mdblistSlug": "kids-tv-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_kids-movies": {
+          "id": "mdblisturl_kids-movies",
+          "name": "Latest Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "kids-movies",
+          "mdblistUsername": "samthe2can",
+          "mdblistSlug": "kids-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_latest-kids-shows": {
+          "id": "mdblisturl_latest-kids-shows",
+          "name": "Latest TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "latest-kids-shows",
+          "mdblistUsername": "hardboardweird",
+          "mdblistSlug": "latest-kids-shows",
+          "types": ["series"]
+        },
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": {
+          "id": "mdblisturl_top-watched-movies-of-the-week-for-kids",
+          "name": "Top Movies of the Week",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "top-watched-movies-of-the-week-for-kids",
+          "mdblistUsername": "linaspurinis",
+          "mdblistSlug": "top-watched-movies-of-the-week-for-kids",
+          "types": ["movie"]
+        },
+        "mdblisturl_childish-movies-8": {
+          "id": "mdblisturl_childish-movies-8",
+          "name": "Family Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "childish-movies-8",
+          "mdblistUsername": "iamamac",
+          "mdblistSlug": "childish-movies-8",
+          "types": ["movie"]
+        },
+        "mdblisturl_walt-disney-animated-films": {
+          "id": "mdblisturl_walt-disney-animated-films",
+          "name": "Disney Animated Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "walt-disney-animated-films",
+          "mdblistUsername": "banggun2",
+          "mdblistSlug": "walt-disney-animated-films",
+          "types": ["movie"]
+        },
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": {
+          "id": "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films",
+          "name": "Disney Live Action Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "disney-live-action-adaptations-and-remakes-of-disney-animated-films",
+          "mdblistUsername": "aaron713",
+          "mdblistSlug": "disney-live-action-adaptations-and-remakes-of-disney-animated-films",
+          "types": ["movie"]
+        },
+        "mdblisturl_pixar": {
+          "id": "mdblisturl_pixar",
+          "name": "Pixar Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "pixar",
+          "mdblistUsername": "gigsy",
+          "mdblistSlug": "pixar",
+          "types": ["movie"]
+        },
+        "mdblisturl_disney-junior-tv": {
+          "id": "mdblisturl_disney-junior-tv",
+          "name": "Disney Junior TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "disney-junior-tv",
+          "mdblistUsername": "mrspacegoose",
+          "mdblistSlug": "disney-junior-tv",
+          "types": ["series"]
+        },
+        "mdblisturl_kids-tv-cartoon-network": {
+          "id": "mdblisturl_kids-tv-cartoon-network",
+          "name": "Cartoon Network TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "kids-tv-cartoon-network",
+          "mdblistUsername": "starteq",
+          "mdblistSlug": "kids-tv-cartoon-network",
+          "types": ["series"]
+        },
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": {
+          "id": "mdblisturl_movie-netflix-kids-u0cpofqeue",
+          "name": "Netflix Kids Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "movie-netflix-kids-u0cpofqeue",
+          "mdblistUsername": "plamuvi",
+          "mdblistSlug": "movie-netflix-kids-u0cpofqeue",
+          "types": ["movie"]
+        },
+        "mdblisturl_tv-show-netflix-kids": {
+          "id": "mdblisturl_tv-show-netflix-kids",
+          "name": "Netflix Kids TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "tv-show-netflix-kids",
+          "mdblistUsername": "plamuvi",
+          "mdblistSlug": "tv-show-netflix-kids",
+          "types": ["series"]
+        },
+        "mdblisturl_nickelodeon-movies": {
+          "id": "mdblisturl_nickelodeon-movies",
+          "name": "Nickelodeon Movies",
+          "hasMovies": true,
+          "hasShows": false,
+          "isMDBListUrlImport": true,
+          "mdblistId": "nickelodeon-movies",
+          "mdblistUsername": "mulanzo3",
+          "mdblistSlug": "nickelodeon-movies",
+          "types": ["movie"]
+        },
+        "mdblisturl_nickelodeon-kids": {
+          "id": "mdblisturl_nickelodeon-kids",
+          "name": "Nickelodeon TV Shows",
+          "hasMovies": false,
+          "hasShows": true,
+          "isMDBListUrlImport": true,
+          "mdblistId": "nickelodeon-kids",
+          "mdblistUsername": "phoenixtrajero",
+          "mdblistSlug": "nickelodeon-kids",
+          "types": ["series"]
+        }
+      },
+      "sortPreferences": {
+        "kids": {
+          "sort": "imdbpopular",
+          "order": "desc"
+        },
+        "kids-tv-shows": {
+          "sort": "imdbpopular",
+          "order": "desc"
+        },
+        "kids-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "latest-kids-shows": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "top-watched-movies-of-the-week-for-kids": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "childish-movies-8": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "walt-disney-animated-films": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "disney-live-action-adaptations-and-remakes-of-disney-animated-films": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "pixar": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "disney-junior-tv": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "kids-tv-cartoon-network": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "movie-netflix-kids-u0cpofqeue": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "tv-show-netflix-kids": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "nickelodeon-movies": {
+          "sort": "released",
+          "order": "desc"
+        },
+        "nickelodeon-kids": {
+          "sort": "released",
+          "order": "desc"
+        }
+      },
+      "disableGenreFilter": true,
+      "enableRandomListFeature": false,
+      "randomMDBListUsernames": [],
+      "searchSources": ["cinemeta", "tmdb"],
+      "mergedSearchSources": [],
+      "animeSearchEnabled": false,
+      "isConnected": {
+        "mdblist": false,
+        "rpdb": true,
+        "tmdb": false,
+        "trakt": false,
+        "upstash": false
+      }
+    },
+    "es-MX": {
+      "customListNames": {
+        "mdblisturl_kids": "Películas Populares",
+        "mdblisturl_kids-tv-shows": "Series Populares",
+        "mdblisturl_kids-movies": "Últimas Películas",
+        "mdblisturl_latest-kids-shows": "Últimas Series",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Películas más vistas de la semana",
+        "mdblisturl_childish-movies-8": "Películas Familiares",
+        "mdblisturl_walt-disney-animated-films": "Películas animadas de Disney",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Películas de acción real de Disney",
+        "mdblisturl_pixar": "Películas de Pixar",
+        "mdblisturl_disney-junior-tv": "Series de Disney Junior",
+        "mdblisturl_kids-tv-cartoon-network": "Series de Cartoon Network",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Películas de Netflix Kids",
+        "mdblisturl_tv-show-netflix-kids": "Series de Netflix Kids",
+        "mdblisturl_nickelodeon-movies": "Películas de Nickelodeon",
+        "mdblisturl_nickelodeon-kids": "Series de Nickelodeon Kids"
+      }
+    },
+    "es-ES": {
+      "customListNames": {
+        "mdblisturl_kids": "Películas Populares",
+        "mdblisturl_kids-tv-shows": "Series Populares",
+        "mdblisturl_kids-movies": "Últimas Películas",
+        "mdblisturl_latest-kids-shows": "Últimas Series",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Películas más vistas de la semana",
+        "mdblisturl_childish-movies-8": "Películas Familiares",
+        "mdblisturl_walt-disney-animated-films": "Películas animadas de Disney",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Películas de acción real de Disney",
+        "mdblisturl_pixar": "Películas de Pixar",
+        "mdblisturl_disney-junior-tv": "Series de Disney Junior",
+        "mdblisturl_kids-tv-cartoon-network": "Series de Cartoon Network",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Películas de Netflix Kids",
+        "mdblisturl_tv-show-netflix-kids": "Series de Netflix Kids",
+        "mdblisturl_nickelodeon-movies": "Películas de Nickelodeon",
+        "mdblisturl_nickelodeon-kids": "Series de Nickelodeon Kids"
+      }
+    },
+    "pt-BR": {
+      "customListNames": {
+        "mdblisturl_kids": "Filmes Populares",
+        "mdblisturl_kids-tv-shows": "Séries Populares",
+        "mdblisturl_kids-movies": "Últimos Filmes",
+        "mdblisturl_latest-kids-shows": "Últimas Séries",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Filmes da Semana",
+        "mdblisturl_childish-movies-8": "Filmes Familiares",
+        "mdblisturl_walt-disney-animated-films": "Filmes Animados da Disney",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Filmes Live Action da Disney",
+        "mdblisturl_pixar": "Filmes da Pixar",
+        "mdblisturl_disney-junior-tv": "Séries Disney Junior",
+        "mdblisturl_kids-tv-cartoon-network": "Séries Cartoon Network",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Filmes Netflix Kids",
+        "mdblisturl_tv-show-netflix-kids": "Séries Netflix Kids",
+        "mdblisturl_nickelodeon-movies": "Filmes Nickelodeon",
+        "mdblisturl_nickelodeon-kids": "Séries Nickelodeon Kids"
+      }
+    },
+    "fr": {
+      "customListNames": {
+        "mdblisturl_kids": "Films Populaires",
+        "mdblisturl_kids-tv-shows": "Séries Populaires",
+        "mdblisturl_kids-movies": "Derniers Films",
+        "mdblisturl_latest-kids-shows": "Dernières Séries",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Films les plus regardés de la semaine",
+        "mdblisturl_childish-movies-8": "Films Familiaux",
+        "mdblisturl_walt-disney-animated-films": "Films d'animation Disney",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Films Disney en prise de vue réelle",
+        "mdblisturl_pixar": "Films Pixar",
+        "mdblisturl_disney-junior-tv": "Séries Disney Junior",
+        "mdblisturl_kids-tv-cartoon-network": "Séries Cartoon Network",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Films Netflix Kids",
+        "mdblisturl_tv-show-netflix-kids": "Séries Netflix Kids",
+        "mdblisturl_nickelodeon-movies": "Films Nickelodeon",
+        "mdblisturl_nickelodeon-kids": "Séries Nickelodeon Kids"
+      }
+    },
+    "it": {
+      "customListNames": {
+        "mdblisturl_kids": "Film Popolari",
+        "mdblisturl_kids-tv-shows": "Serie Popolari",
+        "mdblisturl_kids-movies": "Ultimi Film",
+        "mdblisturl_latest-kids-shows": "Ultime Serie",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Film più visti della settimana",
+        "mdblisturl_childish-movies-8": "Film per Famiglie",
+        "mdblisturl_walt-disney-animated-films": "Film d'animazione Disney",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Film Disney live action",
+        "mdblisturl_pixar": "Film Pixar",
+        "mdblisturl_disney-junior-tv": "Serie Disney Junior",
+        "mdblisturl_kids-tv-cartoon-network": "Serie Cartoon Network",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Film Netflix Kids",
+        "mdblisturl_tv-show-netflix-kids": "Serie Netflix Kids",
+        "mdblisturl_nickelodeon-movies": "Film Nickelodeon",
+        "mdblisturl_nickelodeon-kids": "Serie Nickelodeon Kids"
+      }
+    },
+    "de": {
+      "customListNames": {
+        "mdblisturl_kids": "Beliebte Filme",
+        "mdblisturl_kids-tv-shows": "Beliebte Serien",
+        "mdblisturl_kids-movies": "Neueste Filme",
+        "mdblisturl_latest-kids-shows": "Neueste Serien",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Meistgesehene Filme der Woche",
+        "mdblisturl_childish-movies-8": "Familienfilme",
+        "mdblisturl_walt-disney-animated-films": "Disney Animationsfilme",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Disney Realverfilmungen",
+        "mdblisturl_pixar": "Pixar Filme",
+        "mdblisturl_disney-junior-tv": "Disney Junior Serien",
+        "mdblisturl_kids-tv-cartoon-network": "Cartoon Network Serien",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Netflix Kids Filme",
+        "mdblisturl_tv-show-netflix-kids": "Netflix Kids Serien",
+        "mdblisturl_nickelodeon-movies": "Nickelodeon Filme",
+        "mdblisturl_nickelodeon-kids": "Nickelodeon Kids Serien"
+      }
+    },
+    "nl": {
+      "customListNames": {
+        "mdblisturl_kids": "Populaire Films",
+        "mdblisturl_kids-tv-shows": "Populaire Series",
+        "mdblisturl_kids-movies": "Nieuwste Films",
+        "mdblisturl_latest-kids-shows": "Nieuwste Series",
+        "mdblisturl_top-watched-movies-of-the-week-for-kids": "Meest Bekeken Films van de Week",
+        "mdblisturl_childish-movies-8": "Familiefilms",
+        "mdblisturl_walt-disney-animated-films": "Disney Animatiefilms",
+        "mdblisturl_disney-live-action-adaptations-and-remakes-of-disney-animated-films": "Disney Live-Action Films",
+        "mdblisturl_pixar": "Pixar Films",
+        "mdblisturl_disney-junior-tv": "Disney Junior Series",
+        "mdblisturl_kids-tv-cartoon-network": "Cartoon Network Series",
+        "mdblisturl_movie-netflix-kids-u0cpofqeue": "Netflix Kids Films",
+        "mdblisturl_tv-show-netflix-kids": "Netflix Kids Series",
+        "mdblisturl_nickelodeon-movies": "Nickelodeon Films",
+        "mdblisturl_nickelodeon-kids": "Nickelodeon Kids Series"
+      }
+    }
+  }
+}

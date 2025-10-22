@@ -12,6 +12,8 @@ export interface LanguageConfig {
   mediafusionPriority: string[];
   peerflixCode?: string;
   jackettioCode?: string;
+  aiolistsCode?: string;
+  aiolistsCodeList?: string;
 }
 
 // Información sobre compatibilidad de addons por idioma
@@ -33,10 +35,12 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     jackettioCode: 'spanish',
     cometCode: 'es',
     mediafusionPriority: ['Spanish', 'English'],
-    peerflixCode: 'es,en'
+    peerflixCode: 'es,en',
+    aiolistsCode: 'es',
+    aiolistsCodeList: 'es-ES'
   },
   english: {
-    code: 'en', 
+    code: 'en',
     name: 'English',
     nativeName: 'English',
     flag: '🇺🇸',
@@ -44,7 +48,8 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     jackettioCode: 'english',
     cometCode: 'en',
     mediafusionPriority: ['English'],
-    peerflixCode: 'en'
+    peerflixCode: 'en',
+    aiolistsCode: 'en'
   },
   french: {
     code: 'fr',
@@ -54,7 +59,9 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     torrentioCode: 'french',
     jackettioCode: 'french',
     cometCode: 'fr',
-    mediafusionPriority: ['French', 'English']
+    mediafusionPriority: ['French', 'English'],
+    aiolistsCode: 'fr',
+    aiolistsCodeList: 'fr'
   },
   german: {
     code: 'de',
@@ -64,7 +71,9 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     torrentioCode: 'german',
     jackettioCode: 'german',
     cometCode: 'de',
-    mediafusionPriority: ['German', 'English']
+    mediafusionPriority: ['German', 'English'],
+    aiolistsCode: 'de',
+    aiolistsCodeList: 'de'
   },
   italian: {
     code: 'it',
@@ -74,7 +83,9 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     torrentioCode: 'italian',
     jackettioCode: 'italian',
     cometCode: 'it',
-    mediafusionPriority: ['Italian', 'English']
+    mediafusionPriority: ['Italian', 'English'],
+    aiolistsCode: 'it',
+    aiolistsCodeList: 'it'
   },
   portuguese: {
     code: 'pt',
@@ -84,7 +95,9 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     torrentioCode: 'portuguese',
     jackettioCode: 'portuguese',
     cometCode: 'pt',
-    mediafusionPriority: ['Portuguese', 'Spanish', 'English']
+    mediafusionPriority: ['Portuguese', 'Spanish', 'English'],
+    aiolistsCode: 'pt-BR',
+    aiolistsCodeList: 'pt-BR'
   },
   russian: {
     code: 'ru',
@@ -94,7 +107,9 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     torrentioCode: 'russian',
     jackettioCode: 'russian',
     cometCode: 'ru',
-    mediafusionPriority: ['Russian', 'English']
+    mediafusionPriority: ['Russian', 'English'],
+    aiolistsCode: 'ru',
+    aiolistsCodeList: 'ru'
   },
   mexican: {
     code: 'mx',
@@ -104,15 +119,17 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     torrentioCode: 'latino',
     jackettioCode: 'spanish',
     cometCode: 'la',
-    mediafusionPriority: ['Latino','Spanish', 'English'],
-    peerflixCode: 'es,en'
+    mediafusionPriority: ['Latino', 'Spanish', 'English'],
+    peerflixCode: 'es,en',
+    aiolistsCode: 'es',
+    aiolistsCodeList: 'es-MX'
   }
 };
 
 @Injectable({ providedIn: 'root' })
 export class PreferencesService {
   private readonly _selectedLanguage = signal<Language>(this.getStoredLanguage());
-  
+
   readonly selectedLanguage = this._selectedLanguage.asReadonly();
 
   // Computed para obtener la configuración del idioma actual
