@@ -29,13 +29,13 @@
     }
 
     <!-- Iframes -->
-    @for (url of iframeUrls(); track url; let i = $index) {
-      @if (i === activeIndex() && url) {
+    @for (addon of visibleAddons(); track addon.name; let i = $index) {
+      @if (i === activeIndex() && iframeUrls().get(addon.name)) {
         <iframe
           class="addon-iframe"
           width="100%"
           height="600"
-          [src]="url"
+          [src]="iframeUrls().get(addon.name)!"
           frameborder="0"
           (load)="onIframeLoaded()"
         ></iframe>
@@ -44,7 +44,7 @@
   </div>
 
   <!-- Notas -->
-  <div class="card bg-dark text-light">
+  <!-- <div class="card bg-dark text-light">
     <div class="card-body">
       <h5 class="card-title">Notas</h5>
       <p class="card-text">
@@ -63,5 +63,5 @@
         </small>
       </p>
     </div>
-  </div>
+  </div> -->
 </div>

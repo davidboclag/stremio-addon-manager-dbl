@@ -5,79 +5,286 @@
     Instalador rápido de Addons Stremio Web
   </h4>
   <div class="d-flex gap-2">
-    <button class="btn btn-outline-danger btn-sm" (click)="logout()" type="button">
+    <button
+      class="btn btn-outline-danger btn-sm"
+      (click)="logout()"
+      type="button"
+    >
       <i class="bi bi-box-arrow-right me-1"></i>
       Cerrar sesión
     </button>
   </div>
 </div>
 
-<!-- Token Real-Debrid -->
+<!-- Token Debrid -->
 <div class="card shadow-sm mb-4">
   <div class="card-body">
-    <div class="d-flex align-items-center mb-3">
-      <i class="bi bi-shield-check text-success me-2 fs-5"></i>
-      <label class="form-label mb-0 fw-semibold">
-        Token Real-Debrid
-      </label>
-      <small class="text-muted ms-2">
-        (Obtén tu token en
-        <a href="https://real-debrid.com/devices" target="_blank" rel="noopener noreferrer" 
-           class="text-decoration-none">
-          real-debrid.com/devices
-          <i class="bi bi-box-arrow-up-right ms-1"></i>
-        </a>)
-      </small>
-    </div>
-    
-    <div class="input-group mb-3">
-      <span class="input-group-text">
-        <i class="bi bi-key"></i>
-      </span>
-      <input
-        [(ngModel)]="rdTokenInput"
-        class="form-control"
-        placeholder="Token (52 caracteres)"
-        (input)="onTokenChange($event)"
-        type="password"
-      />
-      <button class="btn btn-outline-secondary" (click)="copyToken()" type="button">
-        <i class="bi bi-clipboard"></i>
-      </button>
+    <div class="row g-3">
+      <!-- Selector de idioma -->
+      <div class="col-md-4">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-translate text-info me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Idioma de los addons
+          </label>
+        </div>
+
+        <select class="form-select" [(ngModel)]="selectedLanguage">
+          @for (lang of languageOptions(); track lang.key) {
+          <option [value]="lang.key">
+            {{ lang.config.flag }} {{ lang.config.nativeName }}
+          </option>
+          }
+        </select>
+        <div class="form-text">
+          Los addons se configurarán con el idioma seleccionado
+        </div>
+      </div>
+
+      <!-- Selector de proveedor Debrid -->
+      <div class="col-md-4">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-cloud-arrow-down text-primary me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Proveedor Debrid
+          </label>
+        </div>
+
+        <select 
+          class="form-select" 
+          [(ngModel)]="selectedDebridProvider"
+          (ngModelChange)="onDebridProviderChange($event)"
+        >
+          <option value="">
+            🚫 Ningún servicio (solo addons gratuitos)
+          </option>
+          @for (service of debridService.availableServices(); track service.id) {
+          <option [value]="service.id">
+            {{ service.displayName }}
+          </option>
+          }
+        </select>
+        <div class="form-text">
+          @if (debridService.currentService()) {
+          <small>
+            <a 
+              [href]="debridService.currentService()!.signupUrl" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="text-decoration-none"
+            >
+              Registrarse en {{ debridService.currentService()!.displayName }}
+              <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+          </small>
+          }
+        </div>
+      </div>
+
+      <!-- Token del proveedor -->
+      @if (debridService.currentService()) {
+      <div class="col-md-4">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-shield-check text-success me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Token {{ debridService.currentService()!.displayName }}
+          </label>
+          <small class="text-muted ms-2">
+            ({{ debridService.currentService()!.tokenLength }} caracteres)
+          </small>
+        </div>
+        
+        <div class="input-group mb-3">
+          <span class="input-group-text">
+            <i class="bi bi-key"></i>
+          </span>
+          <input
+            [(ngModel)]="debridTokenInput"
+            class="form-control"
+            [placeholder]="'Token (' + debridService.currentService()!.tokenLength + ' caracteres)'"
+            (input)="onTokenChange($event)"
+            type="password"
+            [class.is-valid]="hasValidToken()"
+            [class.is-invalid]="debridTokenInput && !hasValidToken()"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            (click)="copyToken()"
+            type="button"
+          >
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+
+        @if (debridTokenInput && !hasValidToken()) {
+        <div class="text-danger small">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          El token debe tener exactamente {{ debridService.currentService()!.tokenLength }} caracteres alfanuméricos
+        </div>
+        }
+      </div>
+      }
     </div>
 
     <!-- Información de usuarios conectados -->
     <div class="row g-2 mb-3">
-      @if (rdService.user(); as user) {
-        <div class="col-md-6">
-          <div class="alert alert-success py-2 d-flex align-items-center mb-0" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <small><strong>Real-Debrid:</strong> {{ user.username }}</small>
-          </div>
-        </div>
-      }
-      
       @if (stremio.user(); as stremioUser) {
-        <div class="col-md-6">
-          <div class="alert alert-info py-2 d-flex align-items-center mb-0" role="alert">
-            <i class="bi bi-person-check-fill me-2"></i>
-            <small><strong>Stremio:</strong> {{ stremioUser.email }}</small>
+      <div class="col-md-6">
+        <div
+          class="alert alert-info py-2 d-flex align-items-center mb-0"
+          role="alert"
+        >
+          <i class="bi bi-person-check-fill me-2"></i>
+          <small><strong>Stremio:</strong> {{ stremioUser.email }}</small>
+        </div>
+      </div>
+      } @if (debridService.user(); as user) {
+      <div class="col-md-6">
+        <div
+          class="alert alert-success py-2 d-flex align-items-center mb-0"
+          role="alert"
+        >
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <small><strong>{{ debridService.currentService()!.displayName }}:</strong> {{ user.username }}</small>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Selector de configuración predefinida -->
+    <div class="row g-3 mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-collection text-primary me-2 fs-5"></i>
+          <label class="form-label mb-0 fw-semibold">
+            Configuración predefinida
+          </label>
+        </div>
+
+        <div class="row g-2">
+          @for (preset of availablePresets(); track preset.id) {
+          <div class="col-md-6 col-lg-3 d-flex">
+            <input
+              type="radio"
+              class="btn-check"
+              [id]="'preset-' + preset.id"
+              name="preset"
+              [value]="preset.id"
+              [(ngModel)]="selectedPreset"
+            />
+            <label
+              [for]="'preset-' + preset.id"
+              class="btn btn-outline-primary w-100 text-start p-3 d-flex h-100"
+            >
+              <div class="d-flex align-items-center w-100">
+                <span class="fs-4 me-2">{{ preset.icon }}</span>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold">{{ preset.name }}</div>
+                  <!-- <small class="text-muted">{{ preset.description }}</small> -->
+                  @if (preset.requiresToken) {
+                  <div class="mt-1">
+                    <span class="badge bg-warning text-dark">
+                      <i class="bi bi-key me-1"></i>
+                      {{ debridService.currentService() ? 'Requiere ' + debridService.currentService()!.displayName : 'Requiere un servicio Debrid' }}
+                    </span>
+                  </div>
+                  }
+                </div>
+              </div>
+            </label>
+          </div>
+          }
+        </div>
+
+        <!-- Información de la configuración seleccionada -->
+        <div class="card bg-light mt-3">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-md-8">
+                <h6 class="fw-semibold mb-2">
+                  {{ currentPreset().icon }} {{ currentPreset().name }}
+                </h6>
+                <p class="mb-2 text-muted">{{ currentPreset().description }}</p>
+                <div class="mb-2">
+                  <strong>Addons incluidos ({{ availablePresetAddons().length }}):</strong>
+                  <span class="ms-1">{{ availablePresetAddonsNames() }}</span>
+                </div>
+                @if (unavailablePresetAddons().length > 0) {
+                <div class="mb-2">
+                  <small class="text-muted">
+                    <strong>No disponibles en {{ preferences.currentLanguageConfig().nativeName }}:</strong>
+                    <span class="ms-1">{{ unavailablePresetAddons().join(", ") }}</span>
+                  </small>
+                </div>
+                }
+              </div>
+              <div class="col-md-4">
+                <h6 class="fw-semibold mb-2">Beneficios</h6>
+                <ul class="list-unstyled mb-0">
+                  @for (benefit of currentPreset().benefits; track benefit) {
+                  <li class="small text-success">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    {{ benefit }}
+                  </li>
+                  }
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
-      }
+
+        <!-- Opciones adicionales -->
+        <div class="card bg-light mt-3">
+          <div class="card-body p-3">
+            <h6 class="fw-semibold mb-3">
+              <i class="bi bi-gear-fill me-2"></i>
+              Opciones adicionales
+            </h6>
+            
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="includeAnimeAddons"
+                [(ngModel)]="includeAnimeAddons"
+              >
+              <label class="form-check-label" for="includeAnimeAddons">
+                <i class="bi bi-tv me-2 text-info"></i>
+                <strong>Incluir addons de anime</strong>
+                <small class="text-muted d-block">
+                  Agregar "Anime Kitsu" y "Animes' Season" a la configuración seleccionada
+                </small>
+              </label>
+            </div>
+            
+            @if (showAnimeAddons()) {
+              <div class="mt-2 ms-4">
+                <span class="badge bg-info text-white me-1">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Anime Kitsu
+                </span>
+                <span class="badge bg-info text-white">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Animes' Season
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="d-flex gap-2 flex-wrap">
       <button
         class="btn btn-primary"
         (click)="configureAll()"
-        [disabled]="isLoading()"
+        [disabled]="!canInstallPreset()"
         type="button"
       >
         <i class="bi bi-cloud-download me-2"></i>
-        Instalar preconfiguración recomendada
+        Instalar {{ currentPreset().name }}
       </button>
-      
+
       <button
         class="btn btn-outline-warning"
         (click)="resetStremio()"
@@ -93,44 +300,52 @@
 
 <!-- Overlay de carga -->
 @if (isLoading()) {
-  <div class="global-overlay">
-    <div class="card bg-dark text-light shadow-lg border-0" style="min-width: 320px; max-width: 400px;">
-      <div class="card-body text-center p-4">
-        <div class="d-flex justify-content-center mb-3">
-          <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
-            <span class="visually-hidden">Cargando...</span>
-          </div>
+<div class="global-overlay">
+  <div
+    class="card bg-dark text-light shadow-lg border-0"
+    style="min-width: 320px; max-width: 400px"
+  >
+    <div class="card-body text-center p-4">
+      <div class="d-flex justify-content-center mb-3">
+        <div
+          class="spinner-border text-light"
+          style="width: 3rem; height: 3rem"
+          role="status"
+        >
+          <span class="visually-hidden">Cargando...</span>
         </div>
-        <h5 class="fw-semibold mb-2">{{ loadingTitle() }}</h5>
-        <p class="mb-0 text-light-emphasis">{{ progressText() }}</p>
       </div>
+      <h5 class="fw-semibold mb-2">{{ loadingTitle() }}</h5>
+      <p class="mb-0 text-light-emphasis">{{ progressText() }}</p>
     </div>
   </div>
+</div>
 }
 
 <!-- Componente de addons -->
-<app-addons 
-  [stremioAuthKey]="stremio.authKey() || ''" 
-  [rdToken]="rdService.token() || ''"
+<app-addons
+  [stremioAuthKey]="stremio.authKey() || ''"
+  [rdToken]="debridService.token() || ''"
   (refreshRequested)="reloadAddons()"
 />
 
 <!-- Iframes dinámicos para instalar addons -->
 @for (iframeUrl of iframeUrls; track iframeUrl) {
-  <div class="card shadow-sm mb-3">
-    <div class="card-body p-0">
-      <iframe
-        [src]="iframeUrl"
-        class="w-100 border-0 rounded"
-        height="480"
-        loading="lazy"
-      ></iframe>
-    </div>
+<div class="card shadow-sm mb-3">
+  <div class="card-body p-0">
+    <iframe
+      [src]="iframeUrl"
+      class="w-100 border-0 rounded"
+      height="480"
+      loading="lazy"
+    ></iframe>
   </div>
+</div>
 }
 
 <!-- Tabs de addons -->
-<app-addon-tabs 
-  [addons]="addons" 
-  [token]="rdService.token() || ''"
+<app-addon-tabs
+  [addons]="filteredAddons()"
+  [token]="debridService.token() || ''"
+  [language]="preferences.selectedLanguage()"
 />
