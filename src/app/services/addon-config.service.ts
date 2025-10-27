@@ -100,7 +100,18 @@ export class AddonConfigService {
       name: "SubHero",
       getUrl: async (token, language) => {
         const langConfig = this.getLanguageConfig(language);
-        return `https://subhero.onrender.com/%7B%22language%22%3A%22es%2Cen%2Cde%2Cfr%2Cru%2Cpb%2Cit%22%7D/configure`;
+        // Obtener selección de idiomas del usuario (si no hay, usar el código del idioma actual)
+        let selectedCodes: string[] = [];
+        try {
+          const prefs = this.preferences.selectedSubheroLanguages && this.preferences.selectedSubheroLanguages();
+          if (Array.isArray(prefs) && prefs.length > 0) selectedCodes = prefs;
+        } catch (e) {
+          // ignore and fallback
+        }
+
+        const codes = selectedCodes.length ? selectedCodes.join(',') : langConfig.code;
+        const payload = JSON.stringify({ language: codes });
+        return `https://subhero.onrender.com/${encodeURIComponent(payload)}/configure`;
       }
     }
   ];

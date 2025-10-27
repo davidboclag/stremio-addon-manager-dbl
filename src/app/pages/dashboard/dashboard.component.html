@@ -278,6 +278,35 @@
 
 
       <div class="d-flex gap-2 flex-wrap mt-3">
+
+            <!-- SubHero languages selection -->
+            <div class="card bg-light mt-3">
+              <div class="card-body p-3">
+                <h6 class="fw-semibold mb-3">
+                  <i class="bi bi-subtitles me-2"></i>
+                  SubHero — Idiomas de subtítulos
+                </h6>
+
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  @for (lang of languageOptions(); track lang.key) {
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [id]="'subhero-' + lang.key"
+                      [checked]="preferences.selectedSubheroLanguages() && preferences.selectedSubheroLanguages().includes(lang.config.code)"
+                      (change)="onToggleSubheroLang(lang.config.code, $any($event.target).checked)"
+                    />
+                    <label class="form-check-label" [for]="'subhero-' + lang.key">
+                      {{ lang.config.flag }} {{ lang.config.nativeName }}
+                    </label>
+                  </div>
+                  }
+                </div>
+
+                <div class="form-text">Selecciona los idiomas que quieras obtener para los subtítulos (<code>Si no se selecciona ninguno, se utilizará el idioma seleccionado para stremio</code>).</div>
+              </div>
+            </div>
         <button
           class="btn btn-primary"
           (click)="configureAll()"

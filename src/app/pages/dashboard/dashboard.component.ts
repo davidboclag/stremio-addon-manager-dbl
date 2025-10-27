@@ -223,4 +223,20 @@ export class DashboardComponent {
   getFilteredAddonNames(): string[] {
     return this.dashboardState.getFilteredAddonNames();
   }
+
+  /**
+   * Toggle selection of a SubHero language code
+   */
+  onToggleSubheroLang(code: string, checked: boolean): void {
+    const current = Array.isArray(this.preferences.selectedSubheroLanguages?.())
+      ? [...this.preferences.selectedSubheroLanguages()]
+      : [];
+    if (checked) {
+      if (!current.includes(code)) current.push(code);
+    } else {
+      const idx = current.indexOf(code);
+      if (idx >= 0) current.splice(idx, 1);
+    }
+    this.preferences.setSubheroLanguages(current);
+  }
 }
