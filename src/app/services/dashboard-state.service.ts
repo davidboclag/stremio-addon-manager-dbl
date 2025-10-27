@@ -178,4 +178,17 @@ export class DashboardStateService {
     this._selectedPreset.set('recommended');
     this._includeAnimeAddons.set(false);
   }
+
+  /**
+   * Método para recargar addons desde el dashboard (puede ser extendido según integración real)
+   */
+  refreshAddons(): void {
+    // Aquí deberías notificar a los componentes que deben recargar los addons
+    // Por ejemplo, usando un Subject, EventEmitter, o llamando a un servicio compartido
+    // Por ahora, este método es un placeholder
+    // Ejemplo: this.addonConfig.reloadAddons();
+    // O emitir un evento global
+    // Implementar según la arquitectura de la app
+    console.log('Recarga de addons solicitada desde DashboardStateService');
+  }
 }

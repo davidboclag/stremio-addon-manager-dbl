@@ -1,13 +1,13 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StremioService } from '../../services/stremio.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="card shadow mx-auto mt-5" style="max-width:520px">
       <div class="card-body">
@@ -17,7 +17,7 @@ import { StremioService } from '../../services/stremio.service';
           <p class="text-muted">Introduce tus credenciales o AuthKey</p>
         </div>
 
-        <form (ngSubmit)="onSubmit()" #f="ngForm">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <div class="mb-3">
             <label class="form-label fw-semibold">Email</label>
             <div class="input-group">
@@ -26,13 +26,18 @@ import { StremioService } from '../../services/stremio.service';
               </span>
               <input 
                 class="form-control" 
-                [(ngModel)]="email" 
-                name="email" 
+                formControlName="email" 
                 type="email" 
                 placeholder="tu@email.com"
                 [disabled]="loading()"
-                required
+                [class.is-invalid]="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)"
               />
+            </div>
+            <div *ngIf="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty) && !form.get('authKey')?.value" class="invalid-feedback d-block">
+              Ingresa un email válido.
+            </div>
+            <div *ngIf="form.errors?.['login'] && (form.get('email')?.touched || form.get('password')?.touched || form.get('authKey')?.touched)" class="invalid-feedback d-block">
+              {{ form.errors?.['login'] }}
             </div>
           </div>
 
@@ -44,13 +49,15 @@ import { StremioService } from '../../services/stremio.service';
               </span>
               <input 
                 class="form-control" 
-                [(ngModel)]="password" 
-                name="password" 
+                formControlName="password" 
                 type="password" 
                 placeholder="Tu contraseña"
                 [disabled]="loading()"
-                required
+                [class.is-invalid]="form.get('password')?.invalid && (form.get('password')?.touched || form.get('password')?.dirty)"
               />
+            </div>
+            <div *ngIf="form.get('password')?.invalid && (form.get('password')?.touched || form.get('password')?.dirty) && !form.get('authKey')?.value" class="invalid-feedback d-block">
+              Ingresa una contraseña.
             </div>
           </div>
 
@@ -62,8 +69,7 @@ import { StremioService } from '../../services/stremio.service';
               </span>
               <input 
                 class="form-control" 
-                [(ngModel)]="authKey" 
-                name="authKey" 
+                formControlName="authKey" 
                 placeholder="Si ya tienes tu AuthKey..."
                 [disabled]="loading()"
               />
@@ -83,7 +89,7 @@ import { StremioService } from '../../services/stremio.service';
           <div class="d-grid gap-2">
             <button 
               class="btn btn-primary btn-lg" 
-              [disabled]="loading() || (!authKey && f.invalid)" 
+              [disabled]="loading() || !canLogin" 
               type="submit"
             >
               @if (loading()) {
@@ -95,17 +101,7 @@ import { StremioService } from '../../services/stremio.service';
               }
             </button>
             
-            @if (authKey) {
-              <button 
-                class="btn btn-outline-secondary" 
-                type="button" 
-                (click)="useAuthKey()"
-                [disabled]="loading()"
-              >
-                <i class="bi bi-key me-2"></i>
-                Usar solo AuthKey
-              </button>
-            }
+            <!-- Botón secundario eliminado: el botón principal maneja ambos casos -->
           </div>
         </form>
       </div>
@@ -116,63 +112,84 @@ import { StremioService } from '../../services/stremio.service';
 export class LoginComponent {
   private readonly stremio = inject(StremioService);
   private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
 
-  email = '';
-  password = '';
-  authKey = '';
-  
   readonly loading = signal(false);
   readonly error = signal('');
 
+  // Validador personalizado: requiere email+password o authKey
+  private loginValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+    const email = group.get('email')?.value?.trim();
+    const password = group.get('password')?.value;
+    const authKey = group.get('authKey')?.value?.trim();
+    if (authKey) return null;
+    if (email && password && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return null;
+    return { login: 'Debes ingresar authKey o email y contraseña válidos' };
+  };
+
+
+  readonly form = this.fb.group({
+    email: ['', [Validators.email]],
+    password: [''],
+    authKey: ['']
+  }, { validators: this.loginValidator });
+
+
+  get canLogin(): boolean {
+    return this.form.valid && !this.loading();
+  }
+
+
   async onSubmit(): Promise<void> {
     this.error.set('');
-    
-    if (this.authKey) {
-      this.useAuthKey();
+    if (this.loading()) return;
+    const { email, password, authKey } = this.form.value;
+    const trimmedAuthKey = authKey?.trim();
+    const trimmedEmail = email?.trim();
+
+    if (trimmedAuthKey) {
+      await this.useAuthKey(trimmedAuthKey);
       return;
     }
 
-    if (!this.email || !this.password) {
-      this.error.set('Proporciona email y contraseña o authKey');
+    if (!trimmedEmail || !password || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmedEmail)) {
+      this.error.set('Proporciona email válido y contraseña o authKey');
+      this.form.get('email')?.markAsTouched();
+      this.form.get('password')?.markAsTouched();
       return;
     }
 
     this.loading.set(true);
-    
     try {
-      const result = await this.stremio.login(this.email, this.password);
-      
+      const result = await this.stremio.login(trimmedEmail, password);
       if (result.success) {
         await this.router.navigate(['/dashboard']);
       } else {
         this.error.set(result.error || 'Error de login');
       }
+    } catch (err) {
+      this.error.set('Error de conexión');
     } finally {
       this.loading.set(false);
     }
   }
 
-  async useAuthKey(): Promise<void> {
-    if (!this.authKey.trim()) {
+
+  async useAuthKey(authKey: string): Promise<void> {
+    if (!authKey) {
       this.error.set('Introduce authKey.');
+      this.form.get('authKey')?.markAsTouched();
       return;
     }
-    
     this.loading.set(true);
     this.error.set('');
-    
     try {
-      await this.stremio.setAuthKeyAndFetchUser(this.authKey.trim());
+      await this.stremio.setAuthKeyAndFetchUser(authKey);
       await this.router.navigate(['/dashboard']);
     } catch (error) {
-      console.error('Error setting authKey:', error);
       // Fallback: usar método anterior
-      this.stremio.setAuthKey(this.authKey.trim());
-      const user = {
-        authKey: this.authKey.trim(),
-        email: 'Usuario AuthKey'
-      };
-      this.stremio.setUser(user);
+      this.stremio.setAuthKey(authKey);
+      this.stremio.setUser({ authKey, email: 'Usuario AuthKey' });
       await this.router.navigate(['/dashboard']);
     } finally {
       this.loading.set(false);

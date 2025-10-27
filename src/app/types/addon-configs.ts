@@ -136,7 +136,7 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Configuración Básica',
     description: 'Addons esenciales para uso general sin servicios premium',
     icon: '🎬',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet'],
+    addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'SubHero'],
     requiresToken: false,
     benefits: [
       'Funciona sin y con Real-Debrid',
@@ -147,7 +147,7 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Configuración Completa',
     description: 'Todos los addons principales para uso general sin servicios premium',
     icon: '🎯',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion'],
+    addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'SubHero'],
     requiresToken: false,
     benefits: [
       'Funciona sin y con Real-Debrid',
@@ -158,7 +158,7 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Configuración Premium',
     description: 'Todos los addons recomendados para la mejor experiencia',
     icon: '💎',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr'],
+    addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'SubHero'],
     requiresToken: false,
     benefits: [
       'Mayor cobertura de contenido',
@@ -170,7 +170,7 @@ export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
     name: 'Recomendada',
     description: 'Todos los addons recomendados para la mejor experiencia con Real-Debrid (Streaming instantáneo)',
     icon: '📺',
-    addonNames: ['watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr'],
+    addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'SubHero'],
     requiresToken: true,
     benefits: [
       'Mayor cobertura de contenido',

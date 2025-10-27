@@ -16,10 +16,8 @@ import { AddonInstallationService } from '../../services/addon-installation.serv
 import { DashboardStateService } from '../../services/dashboard-state.service';
 import { AddonsComponent } from '../addons/addons.component';
 import { AddonTabsComponent } from '../addons/addons-tabs.component';
-import {
-  DebridProviderType,
-  PresetType
-} from '../../types';
+import { NotificationService } from '../../services/notification.service';
+import type { DebridProviderType, PresetType } from '../../types';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,6 +29,7 @@ import {
 })
 export class DashboardComponent {
   private readonly router = inject(Router);
+  private readonly notification = inject(NotificationService);
 
   // Servicios inyectados
   readonly stremio = inject(StremioService);
@@ -150,12 +149,11 @@ export class DashboardComponent {
   copyToken(): void {
     const token = this.debridService.token();
     if (!token) {
-      alert('No hay token');
+      this.notification.error('No hay token');
       return;
     }
-
     navigator.clipboard.writeText(token).then(() => {
-      alert('Token copiado');
+      this.notification.success('Token copiado');
     });
   }
 
@@ -167,11 +165,10 @@ export class DashboardComponent {
       this.selectedPreset,
       this.includeAnimeAddons
     );
-
     if (result.success) {
       setTimeout(() => this.reloadAddons(), 2000);
     } else if (result.error) {
-      alert(result.error);
+      this.notification.error(result.error);
     }
   }
 
@@ -180,11 +177,10 @@ export class DashboardComponent {
    */
   async installPreset(presetType: PresetType): Promise<void> {
     const result = await this.installation.installPreset(presetType, this.includeAnimeAddons);
-
     if (result.success) {
       setTimeout(() => this.reloadAddons(), 2000);
     } else if (result.error) {
-      alert(result.error);
+      this.notification.error(result.error);
     }
   }
 
@@ -192,17 +188,15 @@ export class DashboardComponent {
    * Resetea Stremio a la configuración de fábrica
    */
   async resetStremio(): Promise<void> {
-    const confirmacion = confirm(
+    const confirmacion = window.confirm(
       '¿Seguro que deseas borrar tu configuración actual de Stremio y volver al estado de fábrica?'
     );
     if (!confirmacion) return;
-
     const result = await this.installation.resetStremio();
-
     if (result.success) {
       setTimeout(() => this.reloadAddons(), 1500);
     } else if (result.error) {
-      alert(result.error);
+      this.notification.error(result.error);
     }
   }
 
@@ -219,7 +213,8 @@ export class DashboardComponent {
    * Recarga la página
    */
   reloadAddons(): void {
-    location.reload();
+    // Recargar los addons sin recargar la página
+    this.dashboardState.refreshAddons?.();
   }
 
   /**

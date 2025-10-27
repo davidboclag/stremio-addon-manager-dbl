@@ -1,67 +1,47 @@
-<div class="addon-tabs-container">
-  <!-- Tabs -->
-  <ul class="nav nav-tabs mb-3" role="tablist">
-    @for (addon of visibleAddons(); track addon.name; let i = $index) {
-      <li class="nav-item">
-        <a
-          href="#"
-          class="nav-link"
-          [class.active]="i === activeIndex()"
-          (click)="selectTab(i); $event.preventDefault()"
-        >
-          {{ addon.name }}
-        </a>
-      </li>
-    }
-  </ul>
-
-  <!-- Loader -->
-  <div class="iframe-wrapper position-relative mb-3">
-    @if (loading()) {
-      <div class="loader-overlay">
-        <div
-          class="spinner-border text-primary"
-          role="status"
-          aria-hidden="true"
-        ></div>
-        <span class="ms-2">Cargando addon...</span>
-      </div>
-    }
-
-    <!-- Iframes -->
-    @for (addon of visibleAddons(); track addon.name; let i = $index) {
-      @if (i === activeIndex() && iframeUrls().get(addon.name)) {
-        <iframe
-          class="addon-iframe"
-          width="100%"
-          height="600"
-          [src]="iframeUrls().get(addon.name)!"
-          frameborder="0"
-          (load)="onIframeLoaded()"
-        ></iframe>
+<!-- Solo la versión accesible y semántica de tabs y iframes -->
+  <nav class="addon-tabs-container" role="tablist" aria-label="Pestañas de addons">
+    <ul class="nav nav-tabs mb-3">
+      @for (addon of visibleAddons(); track addon.name; let i = $index) {
+        <li class="nav-item">
+          <a
+            href="#"
+            class="nav-link"
+            [class.active]="i === activeIndex()"
+            (click)="selectTab(i); $event.preventDefault()"
+            role="tab"
+            [attr.aria-selected]="i === activeIndex()"
+            [attr.aria-controls]="'addon-tab-' + i"
+          >
+            {{ addon.name }}
+          </a>
+        </li>
       }
-    }
-  </div>
-
-  <!-- Notas -->
-  <!-- <div class="card bg-dark text-light">
-    <div class="card-body">
-      <h5 class="card-title">Notas</h5>
-      <p class="card-text">
-        Haz clic en cada pestaña para abrir cada addon en su propio iframe. Los
-        addons que requieren Real-Debrid se habilitan sólo si introduces un
-        token válido. Si algún iframe no carga puede ser por política CORS o
-        bloqueo de la página remota — en ese caso el botón individual abrirá en
-        nueva pestaña.
-      </p>
-      <p class="mb-0">
-        Orden recomendado de addons: <br />
-        <small>
-          Cinemata, Local Files, Watchhub, AIOLists, (oficial), Torrentio | RD,
-          Comet | RD, MediaFusion | RD, Peerflix | RD, Jackettio (ElfHosted RD),
-          ThePirateBay+, Nuvio Streams, WebStreamr, Anime Kitsu, Animes' Season.
-        </small>
-      </p>
+    </ul>
+  </nav>
+  <section>
+    <div class="iframe-wrapper position-relative mb-3">
+      @if (loading()) {
+        <div class="loader-overlay" role="status" aria-live="polite">
+          <div
+            class="spinner-border text-primary"
+            aria-hidden="true"
+          ></div>
+          <span class="ms-2">Cargando addon...</span>
+        </div>
+      }
+      @for (addon of visibleAddons(); track addon.name; let i = $index) {
+        @if (i === activeIndex() && iframeUrls().get(addon.name)) {
+          <iframe
+            class="addon-iframe"
+            width="100%"
+            height="600"
+            [src]="iframeUrls().get(addon.name)!"
+            frameborder="0"
+            (load)="onIframeLoaded()"
+            [attr.id]="'addon-tab-' + i"
+            title="Addon {{ addon.name }}"
+          ></iframe>
+        }
+      }
     </div>
-  </div> -->
-</div>
+  </section>

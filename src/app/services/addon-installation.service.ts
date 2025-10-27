@@ -10,6 +10,7 @@ import {
   ADDON_PRESETS,
   Addon 
 } from '../types/addon-configs';
+import { StremioAddon } from './stremio.service';
 
 export interface InstallationProgress {
   isLoading: boolean;
@@ -71,7 +72,7 @@ export class AddonInstallationService {
     this.startInstallation(preset.name, addonsToInstall.length);
 
     try {
-      const finalJson: any[] = [];
+  const finalJson: StremioAddon[] = [];
       const token = this.debridService.token()?.trim();
       const language = this.preferences.selectedLanguage();
 
@@ -144,9 +145,12 @@ export class AddonInstallationService {
     try {
       this.updateProgress(1, 'Cargando configuración de fábrica...');
 
-      const fileContent: any = await this.http
-        .get('/assets/reset-stremio.json')
+      const fileContent = await this.http
+        .get<{ addons: StremioAddon[] }>('/assets/reset-stremio.json')
         .toPromise();
+      if (!fileContent || !Array.isArray(fileContent.addons)) {
+        throw new Error('No se pudo cargar la configuración de fábrica');
+      }
 
       this.updateProgress(2, 'Enviando configuración de fábrica a Stremio...');
 
@@ -182,15 +186,15 @@ export class AddonInstallationService {
       };
     }
 
-    if (preset.requiresToken && !this.debridService.isValidToken()) {
+    const token = this.debridService.token()?.trim();
+    if (preset.requiresToken && (!token || !this.debridService.validateTokenFormat(token))) {
       const currentService = this.debridService.currentService();
-      const serviceName = currentService?.displayName || 'un servicio debrid';
-      return { 
-        success: false, 
-        error: `⚠️ La configuración "${preset.name}" requiere un token de ${serviceName} válido.` 
+      const serviceName = currentService?.displayName || 'un servicio de debrid';
+      return {
+        success: false,
+        error: `⚠️ La configuración "${preset.name}" requiere un token de ${serviceName} válido.`
       };
     }
-
     return { success: true };
   }
 
@@ -201,13 +205,14 @@ export class AddonInstallationService {
     addon: Addon, 
     token?: string, 
     language?: string
-  ): Promise<any | null> {
+  ): Promise<StremioAddon | null> {
     try {
       const url = await this.addonConfig.resolveAddonUrl(addon, token, language);
       if (!url) return null;
 
       const manifest = await this.fetchManifest(url);
-      if (!manifest) return null;
+      // Validar que manifest tiene al menos id y name
+      if (!manifest || typeof manifest !== 'object' || !('id' in manifest) || !('name' in manifest)) return null;
 
       const isOfficial = ['cinemeta', 'watchhub'].includes(
         addon.name?.toLowerCase() || ''
@@ -216,8 +221,8 @@ export class AddonInstallationService {
 
       return {
         transportUrl: url,
-        name: addon.transportName || addon.name,
-        manifest,
+        transportName: addon.transportName || addon.name,
+        manifest: manifest as any, // Se asume AddonManifest, validado arriba
         flags
       };
     } catch (error) {
@@ -229,7 +234,7 @@ export class AddonInstallationService {
   /**
    * Obtiene el manifest de un addon
    */
-  private async fetchManifest(url: string): Promise<any | null> {
+  private async fetchManifest(url: string): Promise<object | null> {
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -293,7 +298,8 @@ export class AddonInstallationService {
    */
   canInstallPreset(presetType: PresetType): boolean {
     const preset = ADDON_PRESETS[presetType];
+    const token = this.debridService.token()?.trim();
     return this.stremio.isAuthenticated() && 
-           (!preset.requiresToken || this.debridService.isValidToken());
+      (!preset.requiresToken || (!!token && this.debridService.validateTokenFormat(token)));
   }
 }

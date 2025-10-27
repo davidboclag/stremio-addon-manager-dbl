@@ -44,58 +44,81 @@ export class DebridService {
 
   constructor() {
     // Cargar datos del localStorage al inicializar
-    // Usar queueMicrotask para asegurar que se ejecute después del ciclo de renderizado inicial
     queueMicrotask(() => {
       this.loadFromStorage();
+      this.loadTokenFromStorage();
     });
   }
 
   private loadFromStorage(): void {
     const storedProvider = localStorage.getItem('debrid-provider') as DebridProviderType;
-    
     // Cargar el proveedor primero
     if (storedProvider && DEBRID_SERVICES[storedProvider]) {
       this._selectedProvider.set(storedProvider);
     }
-    
-    // Ya no cargar tokens desde localStorage - solo mantienen en memoria durante la sesión
+  }
+
+  /**
+   * Cargar token del proveedor seleccionado desde localStorage
+   */
+  private loadTokenFromStorage(): void {
+    const provider = this._selectedProvider();
+    if (!provider) return;
+    const key = `debrid-token-${provider}`;
+    const storedToken = localStorage.getItem(key);
+    if (storedToken) {
+      this._token.set(storedToken);
+    }
   }
 
   setProvider(provider: DebridProviderType): void {
     if (provider && !DEBRID_SERVICES[provider]) {
       throw new Error(`Proveedor de debrid no soportado: ${provider}`);
     }
-    
     // Cambiar proveedor
     this._selectedProvider.set(provider);
-    
     // Guardar en localStorage solo si no es null
     if (provider) {
       localStorage.setItem('debrid-provider', provider);
     } else {
       localStorage.removeItem('debrid-provider');
     }
-    
-    // Limpiar token y usuario al cambiar proveedor (ya no se persisten tokens)
-    this._token.set(null);
-    this._user.set(null);
+    // Limpiar token y usuario al cambiar proveedor
+    if (provider) {
+      this._token.set(null);
+      this._user.set(null);
+      // Cargar token del nuevo proveedor
+      this.loadTokenFromStorage();
+    } else {
+      this.clearToken();
+    }
   }
 
   setToken(token: string): void {
     const cleanToken = token.trim();
     this._token.set(cleanToken || null);
-    
-    // Ya no guardar tokens en localStorage - solo mantener en memoria durante la sesión
-    
+    // Guardar token en localStorage por proveedor
+    const provider = this._selectedProvider();
+    if (provider) {
+      const key = `debrid-token-${provider}`;
+      if (cleanToken) {
+        localStorage.setItem(key, cleanToken);
+      } else {
+        localStorage.removeItem(key);
+      }
+    }
     // Limpiar usuario al cambiar token
     this._user.set(null);
   }
 
   clearToken(): void {
+    const provider = this._selectedProvider();
+    if (provider) {
+      const key = `debrid-token-${provider}`;
+      localStorage.removeItem(key);
+    }
     this._token.set(null);
     this._user.set(null);
-    
-    // Ya no eliminar tokens de localStorage - solo limpiar memoria
   }
 
   validateTokenFormat(token: string): boolean {

@@ -23,6 +23,7 @@ export const ADDON_LANGUAGE_SUPPORT: Record<string, Language[]> = {
   'MediaFusion': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
   'Peerflix': ['spanish', 'english', 'mexican'], // Solo disponible en español, inglés y mexicano
   'Jackettio': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican'],
+  'SubHero': ['spanish', 'english', 'french', 'german', 'italian', 'portuguese', 'russian', 'mexican']
 };
 
 export const LANGUAGES: Record<Language, LanguageConfig> = {

@@ -1,5 +1,6 @@
 import { Injectable, inject, computed } from '@angular/core';
-import { PreferencesService, LANGUAGES, Language } from './preferences.service';
+import { PreferencesService, Language } from './preferences.service';
+import { LanguageConfigService } from './language-config.service';
 import { DebridService } from './debrid.service';
 import {
   Addon,
@@ -10,6 +11,20 @@ import {
 } from '../types/addon-configs';
 import { HttpClient } from '@angular/common/http';
 
+// Tipado para la respuesta de aiolist-config.json
+interface AiolistsConfig {
+  config?: {
+    tmdbLanguage?: string;
+    customListNames?: Record<string, string>;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+interface AiolistsConfigResponse {
+  aiolistsConfig?: AiolistsConfig;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,12 +32,18 @@ export class AddonConfigService {
   private readonly preferences = inject(PreferencesService);
   private readonly debridService = inject(DebridService);
   private readonly http = inject(HttpClient);
+  private readonly languageConfig = inject(LanguageConfigService);
 
   // Configuración base de addons
   private readonly baseAddons: Addon[] = [
     {
       name: "watchhub",
       url: "https://watchhub.strem.io/manifest.json",
+      hideTab: true,
+    },
+    {
+      name: "Cinemeta",
+      url: "https://v3-cinemeta.strem.io/manifest.json",
       hideTab: true,
     },
     {
@@ -74,6 +95,13 @@ export class AddonConfigService {
     {
       name: "Webstreamr",
       url: "https://webstreamr.hayd.uk/%7B%22en%22%3A%22on%22%2C%22es%22%3A%22on%22%2C%22mediaFlowProxyUrl%22%3A%22%22%2C%22mediaFlowProxyPassword%22%3A%22%22%2C%22proxyConfig%22%3A%22%22%7D/configure",
+    },
+    {
+      name: "SubHero",
+      getUrl: async (token, language) => {
+        const langConfig = this.getLanguageConfig(language);
+        return `https://subhero.onrender.com/%7B%22language%22%3A%22es%2Cen%2Cde%2Cfr%2Cru%2Cpb%2Cit%22%7D/configure`;
+      }
     }
   ];
 
@@ -82,7 +110,7 @@ export class AddonConfigService {
    */
   private getLanguageConfig(language?: string) {
     const lang = (language as Language) || this.preferences.selectedLanguage();
-    return LANGUAGES[lang] || LANGUAGES['spanish'];
+    return this.languageConfig.getConfig(lang);
   }
 
   // Computed para obtener la lista completa de addons
@@ -96,20 +124,34 @@ export class AddonConfigService {
    */
   private async buildAiolistsUrl(language?: string): Promise<string> {
     const langConfig = this.getLanguageConfig(language);
-    // Primero obtenemos la configuración de src\assets\aiolist-config.json
-    const configAiolist: any = await this.http
-      .get('/assets/aiolist-config.json')
+    // Primero obtenemos la configuración de src/assets/aiolist-config.json
+    const configAiolist = await this.http
+      .get<AiolistsConfigResponse>(`/assets/aiolist-config.json`)
       .toPromise();
-    // Cambia idioma base de TMDB
-    configAiolist.aiolistsConfig.config.tmdbLanguage = langConfig.code;
-    // Si existe una traducción para ese idioma, añádela como bloque de traducción personalizado
-    if (langConfig.aiolistsCodeList) {
-      configAiolist.aiolistsConfig.config.customListNames = configAiolist.aiolistsConfig[langConfig.aiolistsCodeList].customListNames;
+    if (!configAiolist || typeof configAiolist.aiolistsConfig !== 'object') {
+      throw new Error('No se pudo cargar la configuración base de Aiolists');
     }
-    // Ejecuta un post a https://aiolists.elfhosted.com/api/config/create con el body de configAiolist y obtiene un un configHash, que posteriormente se usa para construir la URL manifest.json https://aiolists.elfhosted.com/{configHash}/configure
+    const aiolistsConfig = configAiolist.aiolistsConfig;
+    // Cambia idioma base de TMDB
+    if (aiolistsConfig.config) {
+      aiolistsConfig.config.tmdbLanguage = langConfig.code;
+      // Si existe una traducción para ese idioma, añádela como bloque de traducción personalizado
+      if (langConfig.aiolistsCodeList && aiolistsConfig[langConfig.aiolistsCodeList]) {
+        const customLangBlock = aiolistsConfig[langConfig.aiolistsCodeList];
+        if (
+          typeof customLangBlock === 'object' &&
+          customLangBlock !== null &&
+          'customListNames' in customLangBlock &&
+          typeof (customLangBlock as any).customListNames === 'object'
+        ) {
+          aiolistsConfig.config.customListNames = (customLangBlock as { customListNames: Record<string, string> }).customListNames;
+        }
+      }
+    }
+    // Ejecuta un post a https://aiolists.elfhosted.com/api/config/create con el body de aiolistsConfig y obtiene un configHash
     try {
-      const response: any = await this.http.post('https://aiolists.elfhosted.com/api/config/create', configAiolist.aiolistsConfig).toPromise();
-      const configHash = response?.configHash;
+      const response = await this.http.post<{ configHash?: string }>('https://aiolists.elfhosted.com/api/config/create', aiolistsConfig).toPromise();
+      const configHash = response && response.configHash;
       if (!configHash) throw new Error('No se pudo obtener el configHash');
       return `https://aiolists.elfhosted.com/${configHash}/configure`;
     } catch (error) {

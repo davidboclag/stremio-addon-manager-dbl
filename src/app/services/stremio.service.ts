@@ -2,13 +2,26 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
+
+export interface StremioUserInfo {
+  email: string;
+  fullname?: string;
+  dateRegistered?: string;
+  premium_expire?: string;
+  [key: string]: any;
+}
+
 export interface StremioUser {
   authKey: string;
   email: string;
   fullname?: string;
   dateRegistered?: string;
   premium_expire?: string;
-  user?: any;
+  user?: StremioUserInfo;
+}
+
+interface GetUserResponse {
+  result?: StremioUserInfo;
 }
 
 export interface AddonCollection {
@@ -103,7 +116,7 @@ export class StremioService {
   async fetchUserInfo(authKey: string, email?: string): Promise<void> {
     try {
       // Usar getUser que sabemos que funciona
-      const response = await this.http.post<{ result?: any }>(`${this.apiBase}/getUser`, {
+      const response = await this.http.post<GetUserResponse>(`${this.apiBase}/getUser`, {
         type: 'GetUser',
         authKey
       }).toPromise();
