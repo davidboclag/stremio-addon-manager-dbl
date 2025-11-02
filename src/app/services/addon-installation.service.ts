@@ -52,7 +52,8 @@ export class AddonInstallationService {
    */
   async installPreset(
     presetType: PresetType, 
-    includeAnimeAddons: boolean = false
+    includeAnimeAddons: boolean = false,
+    includeCinemeta: boolean = true
   ): Promise<InstallationResult> {
     const preset = ADDON_PRESETS[presetType];
 
@@ -65,7 +66,8 @@ export class AddonInstallationService {
     // Obtener addons efectivos para instalar
     const addonsToInstall = this.addonConfig.getEffectiveAddons(
       preset.addonNames, 
-      includeAnimeAddons
+      includeAnimeAddons,
+      includeCinemeta
     );
 
     // Iniciar proceso de instalación

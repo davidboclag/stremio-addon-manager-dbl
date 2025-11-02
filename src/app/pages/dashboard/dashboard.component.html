@@ -1,6 +1,8 @@
-
 <main>
-  <header class="d-flex justify-content-between align-items-center mb-4" role="banner">
+  <header
+    class="d-flex justify-content-between align-items-center mb-4"
+    role="banner"
+  >
     <h1 class="mb-0 fw-bold text-primary fs-3">
       <i class="bi bi-puzzle me-2" aria-hidden="true"></i>
       Instalador rápido de Addons Stremio Web
@@ -21,15 +23,23 @@
   <section aria-labelledby="debrid-section-title" class="card shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-3">
-      <!-- Selector de idioma -->
+        <!-- Selector de idioma -->
         <div class="col-md-4">
           <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-translate text-info me-2 fs-5" aria-hidden="true"></i>
+            <i
+              class="bi bi-translate text-info me-2 fs-5"
+              aria-hidden="true"
+            ></i>
             <label for="languageSelect" class="form-label mb-0 fw-semibold">
               Idioma de los addons
             </label>
           </div>
-          <select id="languageSelect" class="form-select" [(ngModel)]="selectedLanguage" aria-describedby="languageHelp">
+          <select
+            id="languageSelect"
+            class="form-select"
+            [(ngModel)]="selectedLanguage"
+            aria-describedby="languageHelp"
+          >
             @for (lang of languageOptions(); track lang.key) {
             <option [value]="lang.key">
               {{ lang.config.flag }} {{ lang.config.nativeName }}
@@ -41,25 +51,30 @@
           </div>
         </div>
 
-      <!-- Selector de proveedor Debrid -->
+        <!-- Selector de proveedor Debrid -->
         <div class="col-md-4">
           <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-cloud-arrow-down text-primary me-2 fs-5" aria-hidden="true"></i>
-            <label for="debridProviderSelect" class="form-label mb-0 fw-semibold">
+            <i
+              class="bi bi-cloud-arrow-down text-primary me-2 fs-5"
+              aria-hidden="true"
+            ></i>
+            <label
+              for="debridProviderSelect"
+              class="form-label mb-0 fw-semibold"
+            >
               Proveedor Debrid
             </label>
           </div>
-          <select 
+          <select
             id="debridProviderSelect"
-            class="form-select" 
+            class="form-select"
             [(ngModel)]="selectedDebridProvider"
             (ngModelChange)="onDebridProviderChange($event)"
             aria-describedby="debridProviderHelp"
           >
-            <option value="">
-              🚫 Ningún servicio (solo addons gratuitos)
-            </option>
-            @for (service of debridService.availableServices(); track service.id) {
+            <option value="">🚫 Ningún servicio (solo addons gratuitos)</option>
+            @for (service of debridService.availableServices(); track
+            service.id) {
             <option [value]="service.id">
               {{ service.displayName }}
             </option>
@@ -68,9 +83,9 @@
           <div id="debridProviderHelp" class="form-text">
             @if (debridService.currentService()) {
             <small>
-              <a 
-                [href]="debridService.currentService()!.signupUrl" 
-                target="_blank" 
+              <a
+                [href]="debridService.currentService()!.signupUrl"
+                target="_blank"
                 rel="noopener noreferrer"
                 class="text-decoration-none"
               >
@@ -82,11 +97,14 @@
           </div>
         </div>
 
-      <!-- Token del proveedor -->
+        <!-- Token del proveedor -->
         @if (debridService.currentService()) {
         <div class="col-md-4">
           <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-shield-check text-success me-2 fs-5" aria-hidden="true"></i>
+            <i
+              class="bi bi-shield-check text-success me-2 fs-5"
+              aria-hidden="true"
+            ></i>
             <label for="debridTokenInput" class="form-label mb-0 fw-semibold">
               Token {{ debridService.currentService()!.displayName }}
             </label>
@@ -102,7 +120,11 @@
               id="debridTokenInput"
               [(ngModel)]="debridTokenInput"
               class="form-control"
-              [placeholder]="'Token (' + debridService.currentService()!.tokenLength + ' caracteres)'"
+              [placeholder]="
+                'Token (' +
+                debridService.currentService()!.tokenLength +
+                ' caracteres)'
+              "
               (input)="onTokenChange($event)"
               type="password"
               [class.is-valid]="hasValidToken()"
@@ -121,12 +143,14 @@
           @if (debridTokenInput && !hasValidToken()) {
           <div id="debridTokenHelp" class="text-danger small">
             <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
-            El token debe tener exactamente {{ debridService.currentService()!.tokenLength }} caracteres alfanuméricos
+            El token debe tener exactamente
+            {{ debridService.currentService()!.tokenLength }} caracteres
+            alfanuméricos
           </div>
           }
         </div>
         }
-    </div>
+      </div>
 
       <!-- Información de usuarios conectados -->
       <div class="row g-2 mb-3">
@@ -141,8 +165,7 @@
             <small><strong>Stremio:</strong> {{ stremioUser.email }}</small>
           </div>
         </div>
-        }
-        @if (debridService.user(); as user) {
+        } @if (debridService.user(); as user) {
         <div class="col-md-6">
           <div
             class="alert alert-success py-2 d-flex align-items-center mb-0"
@@ -150,7 +173,12 @@
             aria-live="polite"
           >
             <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>
-            <small><strong>{{ debridService.currentService()!.displayName }}:</strong> {{ user.username }}</small>
+            <small
+              ><strong
+                >{{ debridService.currentService()!.displayName }}:</strong
+              >
+              {{ user.username }}</small
+            >
           </div>
         </div>
         }
@@ -161,8 +189,14 @@
         <div class="col-12">
           <section aria-labelledby="preset-section-title">
             <div class="d-flex align-items-center mb-3">
-              <i class="bi bi-collection text-primary me-2 fs-5" aria-hidden="true"></i>
-              <label id="preset-section-title" class="form-label mb-0 fw-semibold">
+              <i
+                class="bi bi-collection text-primary me-2 fs-5"
+                aria-hidden="true"
+              ></i>
+              <label
+                id="preset-section-title"
+                class="form-label mb-0 fw-semibold"
+              >
                 Configuración predefinida
               </label>
             </div>
@@ -190,7 +224,12 @@
                       <div class="mt-1">
                         <span class="badge bg-warning text-dark">
                           <i class="bi bi-key me-1" aria-hidden="true"></i>
-                          {{ debridService.currentService() ? 'Requiere ' + debridService.currentService()!.displayName : 'Requiere un servicio Debrid' }}
+                          {{
+                            debridService.currentService()
+                              ? "Requiere " +
+                                debridService.currentService()!.displayName
+                              : "Requiere un servicio Debrid"
+                          }}
                         </span>
                       </div>
                       }
@@ -208,16 +247,31 @@
                     <h2 class="fw-semibold mb-2 fs-5">
                       {{ currentPreset().icon }} {{ currentPreset().name }}
                     </h2>
-                    <p class="mb-2 text-muted">{{ currentPreset().description }}</p>
+                    <p class="mb-2 text-muted">
+                      {{ currentPreset().description }}
+                    </p>
                     <div class="mb-2">
-                      <strong>Addons incluidos ({{ availablePresetAddons().length }}):</strong>
-                      <span class="ms-1">{{ availablePresetAddonsNames() }}</span>
+                      <strong
+                        >Addons incluidos ({{
+                          availablePresetAddons().length
+                        }}):</strong
+                      >
+                      <span class="ms-1">{{
+                        availablePresetAddonsNames()
+                      }}</span>
                     </div>
                     @if (unavailablePresetAddons().length > 0) {
                     <div class="mb-2">
                       <small class="text-muted">
-                        <strong>No disponibles en {{ preferences.currentLanguageConfig().nativeName }}:</strong>
-                        <span class="ms-1">{{ unavailablePresetAddons().join(", ") }}</span>
+                        <strong
+                          >No disponibles en
+                          {{
+                            preferences.currentLanguageConfig().nativeName
+                          }}:</strong
+                        >
+                        <span class="ms-1">{{
+                          unavailablePresetAddons().join(", ")
+                        }}</span>
                       </small>
                     </div>
                     }
@@ -225,9 +279,13 @@
                   <div class="col-md-4">
                     <h3 class="fw-semibold mb-2 fs-6">Beneficios</h3>
                     <ul class="list-unstyled mb-0">
-                      @for (benefit of currentPreset().benefits; track benefit) {
+                      @for (benefit of currentPreset().benefits; track benefit)
+                      {
                       <li class="small text-success">
-                        <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>
+                        <i
+                          class="bi bi-check-circle-fill me-1"
+                          aria-hidden="true"
+                        ></i>
                         {{ benefit }}
                       </li>
                       }
@@ -243,32 +301,59 @@
                   <i class="bi bi-gear-fill me-2" aria-hidden="true"></i>
                   Opciones adicionales
                 </h4>
+                <div class="form-check mt-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="includeCinemetaAddon"
+                    [(ngModel)]="includeCinemetaAddons"
+                  />
+                  <label class="form-check-label" for="includeCinemetaAddon">
+                    <i
+                      class="bi bi-film me-2 text-secondary"
+                      aria-hidden="true"
+                    ></i>
+                    <strong>Incluir addon Cinemeta</strong>
+                    <small class="text-muted d-block">
+                      Agregar "Cinemeta" a la configuración seleccionada
+                    </small>
+                  </label>
+                </div>
                 <div class="form-check">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
                     id="includeAnimeAddons"
                     [(ngModel)]="includeAnimeAddons"
-                  >
+                  />
                   <label class="form-check-label" for="includeAnimeAddons">
                     <i class="bi bi-tv me-2 text-info" aria-hidden="true"></i>
                     <strong>Incluir addons de anime</strong>
                     <small class="text-muted d-block">
-                      Agregar "Anime Kitsu" y "Animes' Season" a la configuración seleccionada
+                      Agregar "Anime Kitsu" y "Animes' Season" a la
+                      configuración seleccionada
                     </small>
                   </label>
                 </div>
-                @if (showAnimeAddons()) {
-                  <div class="mt-2 ms-4">
-                    <span class="badge bg-info text-white me-1">
-                      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                      Anime Kitsu
-                    </span>
-                    <span class="badge bg-info text-white">
-                      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                      Animes' Season
-                    </span>
-                  </div>
+                @if (showCinemetaAddons() || showAnimeAddons()) {
+                <div class="mt-2 ms-4 d-flex align-items-center flex-wrap gap-2">
+                  @if (showCinemetaAddons()) {
+                  <span class="badge bg-secondary text-white">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    Cinemeta
+                  </span>
+                  }
+                  @if (showAnimeAddons()) {
+                  <span class="badge bg-info text-white">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    Anime Kitsu
+                  </span>
+                  <span class="badge bg-info text-white">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    Animes' Season
+                  </span>
+                  }
+                </div>
                 }
               </div>
             </div>
@@ -276,42 +361,74 @@
         </div>
       </div>
 
-
       <div class="d-flex gap-2 flex-wrap mt-3">
-
-            <!-- SubHero languages selection -->
-            <div class="card bg-light mt-3">
-              <div class="card-body p-3">
-                <h6 class="fw-semibold mb-3">
-                  <i class="bi bi-subtitles me-2"></i>
-                  SubHero — Idiomas de subtítulos
-                  <small class="text-muted ms-2">{{ subheroSelectedCount() }} seleccionados</small>
-                  <div class="btn-group btn-group-sm float-end ms-2" role="group" aria-label="SubHero actions">
-                    <button type="button" class="btn btn-outline-secondary" (click)="selectAllSubheroLangs()">Seleccionar todo</button>
-                    <button type="button" class="btn btn-outline-secondary" (click)="clearAllSubheroLangs()">Borrar todo</button>
-                  </div>
-                </h6>
-
-                <div class="d-flex flex-wrap gap-2 mb-2">
-                  @for (lang of languageOptions(); track lang.key) {
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      [id]="'subhero-' + lang.key"
-                      [checked]="preferences.selectedSubheroLanguages() && preferences.selectedSubheroLanguages().includes(lang.config.code)"
-                      (change)="onToggleSubheroLang(lang.config.code, $any($event.target).checked)"
-                    />
-                    <label class="form-check-label" [for]="'subhero-' + lang.key">
-                      {{ lang.config.flag }} {{ lang.config.nativeName }}
-                    </label>
-                  </div>
-                  }
-                </div>
-
-                <div class="form-text">Selecciona los idiomas que quieras obtener para los subtítulos (<code>Si no se selecciona ninguno, se utilizará el idioma seleccionado para los addons</code>).</div>
+        <!-- SubHero languages selection -->
+        <div class="card bg-light mt-3">
+          <div class="card-body p-3">
+            <h6 class="fw-semibold mb-3">
+              <i class="bi bi-subtitles me-2"></i>
+              SubHero — Idiomas de subtítulos
+              <small class="text-muted ms-2"
+                >{{ subheroSelectedCount() }} seleccionados</small
+              >
+              <div
+                class="btn-group btn-group-sm float-end ms-2"
+                role="group"
+                aria-label="SubHero actions"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="selectAllSubheroLangs()"
+                >
+                  Seleccionar todo
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="clearAllSubheroLangs()"
+                >
+                  Borrar todo
+                </button>
               </div>
+            </h6>
+
+            <div class="d-flex flex-wrap gap-2 mb-2">
+              @for (lang of languageOptions(); track lang.key) {
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [id]="'subhero-' + lang.key"
+                  [checked]="
+                    preferences.selectedSubheroLanguages() &&
+                    preferences
+                      .selectedSubheroLanguages()
+                      .includes(lang.config.code)
+                  "
+                  (change)="
+                    onToggleSubheroLang(
+                      lang.config.code,
+                      $any($event.target).checked
+                    )
+                  "
+                />
+                <label class="form-check-label" [for]="'subhero-' + lang.key">
+                  {{ lang.config.flag }} {{ lang.config.nativeName }}
+                </label>
+              </div>
+              }
             </div>
+
+            <div class="form-text">
+              Selecciona los idiomas que quieras obtener para los subtítulos
+              (<code
+                >Si no se selecciona ninguno, se utilizará el idioma
+                seleccionado para los addons</code
+              >).
+            </div>
+          </div>
+        </div>
         <button
           class="btn btn-primary"
           (click)="configureAll()"
@@ -336,10 +453,14 @@
     </div>
   </section>
 
-
   <!-- Overlay de carga -->
   @if (isLoading()) {
-  <div class="global-overlay" role="alertdialog" aria-modal="true" aria-label="Cargando">
+  <div
+    class="global-overlay"
+    role="alertdialog"
+    aria-modal="true"
+    aria-label="Cargando"
+  >
     <div
       class="card bg-dark text-light shadow-lg border-0"
       style="min-width: 320px; max-width: 400px"
@@ -361,7 +482,6 @@
     </div>
   </div>
   }
-
 
   <!-- Componente de addons -->
   <section aria-label="Gestión de addons">

@@ -70,6 +70,7 @@ export class DashboardComponent {
 
   // Computed signal para el estado de incluir anime addons
   readonly showAnimeAddons = computed(() => this.dashboardState.includeAnimeAddons());
+  readonly showCinemetaAddons = computed(() => this.dashboardState.includeCinemetaAddons());
 
   // Computed signals para addons filtrados por idioma y preset
   readonly availablePresetAddons = computed(() => this.dashboardState.effectivePresetAddonsFilteredByLanguage());
@@ -114,6 +115,15 @@ export class DashboardComponent {
 
   set includeAnimeAddons(value: boolean) {
     this.dashboardState.setIncludeAnimeAddons(value);
+  }
+
+  // Getter/setter para includeCinemetaAddons
+  get includeCinemetaAddons() {
+    return this.dashboardState.includeCinemetaAddons();
+  }
+
+  set includeCinemetaAddons(value: boolean) {
+    this.dashboardState.setIncludeCinemetaAddons(value);
   }
 
   // Iframes dinámicos (legacy - se puede eliminar si no se usa)
@@ -163,7 +173,8 @@ export class DashboardComponent {
   async configureAll(): Promise<void> {
     const result = await this.installation.installPreset(
       this.selectedPreset,
-      this.includeAnimeAddons
+      this.includeAnimeAddons,
+      this.includeCinemetaAddons
     );
     if (result.success) {
       setTimeout(() => this.reloadAddons(), 2000);
@@ -176,7 +187,11 @@ export class DashboardComponent {
    * Instala un preset específico
    */
   async installPreset(presetType: PresetType): Promise<void> {
-    const result = await this.installation.installPreset(presetType, this.includeAnimeAddons);
+    const result = await this.installation.installPreset(
+      presetType,
+      this.includeAnimeAddons,
+      this.includeCinemetaAddons
+    );
     if (result.success) {
       setTimeout(() => this.reloadAddons(), 2000);
     } else if (result.error) {

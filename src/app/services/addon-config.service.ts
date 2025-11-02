@@ -404,13 +404,21 @@ export class AddonConfigService {
   }
 
   /**
-   * Obtiene los addons efectivos incluyendo addons de anime si está habilitado
+   * Obtiene los addons efectivos incluyendo addons de anime o Cinemeta según flags
    */
-  getEffectiveAddons(presetAddonNames: string[], includeAnime: boolean): Addon[] {
+  getEffectiveAddons(presetAddonNames: string[], includeAnime: boolean, includeCinemeta: boolean = true): Addon[] {
     let addonNames = [...presetAddonNames];
 
     if (includeAnime) {
       addonNames = [...addonNames, ...this.animeAddons];
+    }
+
+    // Control explícito para incluir/excluir Cinemeta
+    const cinemetaName = 'Cinemeta';
+    if (includeCinemeta) {
+      if (!addonNames.includes(cinemetaName)) addonNames.push(cinemetaName);
+    } else {
+      addonNames = addonNames.filter(n => n !== cinemetaName);
     }
 
     return this.addons().filter(addon => addonNames.includes(addon.name));

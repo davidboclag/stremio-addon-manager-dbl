@@ -16,10 +16,12 @@ export class DashboardStateService {
   // Signals para el estado del dashboard
   private readonly _selectedPreset = signal<PresetType>('recommended');
   private readonly _includeAnimeAddons = signal<boolean>(false);
+  private readonly _includeCinemetaAddons = signal<boolean>(false);
 
   // Readonly signals
   readonly selectedPreset = this._selectedPreset.asReadonly();
   readonly includeAnimeAddons = this._includeAnimeAddons.asReadonly();
+  readonly includeCinemetaAddons = this._includeCinemetaAddons.asReadonly();
 
   // Computed para configuraciones predefinidas
   readonly availablePresets = computed(() => Object.values(ADDON_PRESETS));
@@ -36,7 +38,8 @@ export class DashboardStateService {
     const preset = this.currentPreset();
     return this.addonConfig.getEffectiveAddons(
       preset.addonNames, 
-      this._includeAnimeAddons()
+      this._includeAnimeAddons(),
+      this._includeCinemetaAddons()
     );
   });
 
@@ -105,6 +108,13 @@ export class DashboardStateService {
     this._includeAnimeAddons.set(include);
   }
 
+  /**
+   * Establece si se incluye el addon Cinemeta
+   */
+  setIncludeCinemetaAddons(include: boolean): void {
+    this._includeCinemetaAddons.set(include);
+  }
+
   // Computed que filtra los addons del preset actual según el idioma seleccionado
   readonly effectivePresetAddonsFilteredByLanguage = computed(() => {
     const currentLang = this.preferences.selectedLanguage();
@@ -161,6 +171,11 @@ export class DashboardStateService {
     if (savedAnimePreference !== null) {
       this._includeAnimeAddons.set(savedAnimePreference === 'true');
     }
+    // Cargar preferencia de addon Cinemeta
+    const savedCinemetaPreference = localStorage.getItem('include-cinemeta-addon');
+    if (savedCinemetaPreference !== null) {
+      this._includeCinemetaAddons.set(savedCinemetaPreference === 'true');
+    }
   }
 
   /**
@@ -169,6 +184,7 @@ export class DashboardStateService {
   private savePreferences(): void {
     localStorage.setItem('selected-preset', this._selectedPreset());
     localStorage.setItem('include-anime-addons', this._includeAnimeAddons().toString());
+    localStorage.setItem('include-cinemeta-addon', this._includeCinemetaAddons().toString());
   }
 
   /**
@@ -177,6 +193,7 @@ export class DashboardStateService {
   resetToDefaults(): void {
     this._selectedPreset.set('recommended');
     this._includeAnimeAddons.set(false);
+    this._includeCinemetaAddons.set(false);
   }
 
   /**
