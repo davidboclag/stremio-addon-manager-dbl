@@ -4,6 +4,7 @@
       "tmdbUsername": "",
       "metadataSource": "tmdb",
       "tmdbLanguage": "es-ES",
+      "rpdbApiKey": "t0-free-rpdb",
       "traktUsername": "",
       "listOrder": [
         "mdblisturl_top-10",
@@ -891,6 +892,7 @@
       "tmdbUsername": "",
       "metadataSource": "tmdb",
       "tmdbLanguage": "es-ES",
+      "rpdbApiKey": "t0-free-rpdb",
       "traktUsername": "",
       "listOrder": [
         "mdblisturl_kids",
