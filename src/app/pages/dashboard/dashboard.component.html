@@ -285,6 +285,11 @@
                 <h6 class="fw-semibold mb-3">
                   <i class="bi bi-subtitles me-2"></i>
                   SubHero — Idiomas de subtítulos
+                  <small class="text-muted ms-2">{{ subheroSelectedCount() }} seleccionados</small>
+                  <div class="btn-group btn-group-sm float-end ms-2" role="group" aria-label="SubHero actions">
+                    <button type="button" class="btn btn-outline-secondary" (click)="selectAllSubheroLangs()">Seleccionar todo</button>
+                    <button type="button" class="btn btn-outline-secondary" (click)="clearAllSubheroLangs()">Borrar todo</button>
+                  </div>
                 </h6>
 
                 <div class="d-flex flex-wrap gap-2 mb-2">
@@ -304,7 +309,7 @@
                   }
                 </div>
 
-                <div class="form-text">Selecciona los idiomas que quieras obtener para los subtítulos (<code>Si no se selecciona ninguno, se utilizará el idioma seleccionado para stremio</code>).</div>
+                <div class="form-text">Selecciona los idiomas que quieras obtener para los subtítulos (<code>Si no se selecciona ninguno, se utilizará el idioma seleccionado para los addons</code>).</div>
               </div>
             </div>
         <button

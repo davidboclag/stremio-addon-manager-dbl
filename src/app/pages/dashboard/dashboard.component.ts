@@ -239,4 +239,22 @@ export class DashboardComponent {
     }
     this.preferences.setSubheroLanguages(current);
   }
+
+  /** Seleccionar todos los idiomas para SubHero */
+  selectAllSubheroLangs(): void {
+    const opts = this.languageOptions();
+    const all = Array.isArray(opts) ? opts.map((l: any) => l.config.code) : [];
+    this.preferences.setSubheroLanguages(all);
+  }
+
+  /** Limpiar selección de idiomas para SubHero */
+  clearAllSubheroLangs(): void {
+    this.preferences.setSubheroLanguages([]);
+  }
+
+  /** Número de idiomas seleccionados (para mostrar en UI) */
+  subheroSelectedCount(): number {
+    const arr = this.preferences.selectedSubheroLanguages && this.preferences.selectedSubheroLanguages();
+    return Array.isArray(arr) ? arr.length : 0;
+  }
 }

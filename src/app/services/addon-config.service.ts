@@ -1,5 +1,5 @@
 import { Injectable, inject, computed } from '@angular/core';
-import { PreferencesService, Language } from './preferences.service';
+import { PreferencesService, Language, LANGUAGES } from './preferences.service';
 import { LanguageConfigService } from './language-config.service';
 import { DebridService } from './debrid.service';
 import {
@@ -109,7 +109,13 @@ export class AddonConfigService {
           // ignore and fallback
         }
 
-        const codes = selectedCodes.length ? selectedCodes.join(',') : langConfig.code;
+        // Mapear códigos a los que SubHero espera si existe subheroCode
+        const mapped = (selectedCodes.length ? selectedCodes : [langConfig.code]).map(code => {
+          const entry = Object.values(LANGUAGES).find(l => l.code === code);
+          return entry ? (entry.subheroCode || entry.code) : code;
+        });
+
+        const codes = mapped.join(',');
         const payload = JSON.stringify({ language: codes });
         return `https://subhero.onrender.com/${encodeURIComponent(payload)}/configure`;
       }

@@ -105,7 +105,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
     mediafusionPriority: ['Portuguese', 'Spanish', 'English'],
     aiolistsCode: 'pt-BR',
     aiolistsCodeList: 'pt-BR',
-    subheroCode: 'pb'
+    subheroCode: 'pt'
   },
   russian: {
     code: 'ru',
