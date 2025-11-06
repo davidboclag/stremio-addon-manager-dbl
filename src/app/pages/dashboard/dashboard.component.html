@@ -336,14 +336,15 @@
                   </label>
                 </div>
                 @if (showCinemetaAddons() || showAnimeAddons()) {
-                <div class="mt-2 ms-4 d-flex align-items-center flex-wrap gap-2">
+                <div
+                  class="mt-2 ms-4 d-flex align-items-center flex-wrap gap-2"
+                >
                   @if (showCinemetaAddons()) {
                   <span class="badge bg-secondary text-white">
                     <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                     Cinemeta
                   </span>
-                  }
-                  @if (showAnimeAddons()) {
+                  } @if (showAnimeAddons()) {
                   <span class="badge bg-info text-white">
                     <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                     Anime Kitsu
@@ -361,74 +362,77 @@
         </div>
       </div>
 
-      <div class="d-flex gap-2 flex-wrap mt-3">
-        <!-- SubHero languages selection -->
-        <div class="card bg-light mt-3">
-          <div class="card-body p-3">
-            <h6 class="fw-semibold mb-3">
-              <i class="bi bi-subtitles me-2"></i>
+      <!-- SubHero languages selection -->
+      <div class="card bg-light mt-3">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-semibold mb-0">
+              <i class="bi bi-translate me-2"></i>
               SubHero — Idiomas de subtítulos
               <small class="text-muted ms-2"
                 >{{ subheroSelectedCount() }} seleccionados</small
               >
-              <div
-                class="btn-group btn-group-sm float-end ms-2"
-                role="group"
-                aria-label="SubHero actions"
-              >
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="selectAllSubheroLangs()"
-                >
-                  Seleccionar todo
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="clearAllSubheroLangs()"
-                >
-                  Borrar todo
-                </button>
-              </div>
             </h6>
-
-            <div class="d-flex flex-wrap gap-2 mb-2">
-              @for (lang of languageOptions(); track lang.key) {
-              <div class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  [id]="'subhero-' + lang.key"
-                  [checked]="
-                    preferences.selectedSubheroLanguages() &&
-                    preferences
-                      .selectedSubheroLanguages()
-                      .includes(lang.config.code)
-                  "
-                  (change)="
-                    onToggleSubheroLang(
-                      lang.config.code,
-                      $any($event.target).checked
-                    )
-                  "
-                />
-                <label class="form-check-label" [for]="'subhero-' + lang.key">
-                  {{ lang.config.flag }} {{ lang.config.nativeName }}
-                </label>
-              </div>
-              }
-            </div>
-
-            <div class="form-text">
-              Selecciona los idiomas que quieras obtener para los subtítulos
-              (<code
-                >Si no se selecciona ninguno, se utilizará el idioma
-                seleccionado para los addons</code
-              >).
+            <div
+              class="btn-group btn-group-sm"
+              role="group"
+              aria-label="SubHero actions"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="selectAllSubheroLangs()"
+              >
+                Seleccionar todo
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="clearAllSubheroLangs()"
+              >
+                Borrar todo
+              </button>
             </div>
           </div>
+
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            @for (lang of languageOptions(); track lang.key) {
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                [id]="'subhero-' + lang.key"
+                [checked]="
+                  preferences.selectedSubheroLanguages() &&
+                  preferences
+                    .selectedSubheroLanguages()
+                    .includes(lang.config.code)
+                "
+                (change)="
+                  onToggleSubheroLang(
+                    lang.config.code,
+                    $any($event.target).checked
+                  )
+                "
+              />
+              <label class="form-check-label" [for]="'subhero-' + lang.key">
+                {{ lang.config.flag }} {{ lang.config.nativeName }}
+              </label>
+            </div>
+            }
+          </div>
+
+          <div class="form-text">
+            Selecciona los idiomas que quieras obtener para los subtítulos
+            (<code
+              >Si no se selecciona ninguno, se utilizará el idioma seleccionado
+              para los addons</code
+            >).
+          </div>
         </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap mt-3">
         <button
           class="btn btn-primary"
           (click)="configureAll()"
