@@ -496,23 +496,42 @@
     />
   </section>
 
-  <!-- Iframes dinámicos para instalar addons -->
-  @for (iframeUrl of iframeUrls; track iframeUrl) {
-  <section class="card shadow-sm mb-3" aria-label="Instalador de addon">
-    <div class="card-body p-0">
-      <iframe
-        [src]="iframeUrl"
-        class="w-100 border-0 rounded"
-        height="480"
-        loading="lazy"
-        title="Instalador de addon"
-      ></iframe>
-    </div>
-  </section>
-  }
+  <!-- Tabs de addons iframe -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0 fw-bold text-secondary fs-4">
+      <i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>
+      Addons personalizables
+    </h2>
+    <button
+      class="btn btn-outline-secondary btn-sm d-flex align-items-center"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#addonTabsSection"
+      [attr.aria-expanded]="!addonTabsCollapsed"
+      aria-controls="addonTabsSection"
+      aria-label="Mostrar/ocultar addons personalizables"
+      (click)="toggleAddonTabs()"
+      title="{{
+        addonTabsCollapsed
+          ? 'Mostrar addons personalizables'
+          : 'Ocultar addons personalizables'
+      }}"
+    >
+      <i
+        [class]="addonTabsCollapsed ? 'bi bi-chevron-down' : 'bi bi-chevron-up'"
+        aria-hidden="true"
+      ></i>
+      <span class="d-none d-sm-inline ms-1">
+        {{ addonTabsCollapsed ? "Mostrar" : "Ocultar" }}
+      </span>
+    </button>
+  </div>
 
-  <!-- Tabs de addons -->
-  <section aria-label="Listado de addons">
+  <section
+    id="addonTabsSection"
+    [class]="'collapse' + (!addonTabsCollapsed ? ' show' : '')"
+    aria-label="Listado de addons"
+  >
     <app-addon-tabs
       [addons]="filteredAddons()"
       [token]="debridService.token() || ''"

@@ -42,6 +42,9 @@ export class DashboardComponent {
   // Token input para el debrid provider
   debridTokenInput = this.debridService.token() || '';
 
+  // Estado de las tabs de addons (visible por defecto)
+  addonTabsCollapsed = this.getAddonTabsState();
+
   // Computed properties delegadas a los servicios
   readonly isLoading = computed(() => this.installation.progress().isLoading);
   readonly progressText = computed(() => this.installation.progress().message);
@@ -125,9 +128,6 @@ export class DashboardComponent {
   set includeCinemetaAddons(value: boolean) {
     this.dashboardState.setIncludeCinemetaAddons(value);
   }
-
-  // Iframes dinámicos (legacy - se puede eliminar si no se usa)
-  iframeUrls: string[] = [];
 
   constructor() {
     // Effect para sincronizar el input del token con el servicio
@@ -222,6 +222,37 @@ export class DashboardComponent {
     this.stremio.clearAuth();
     this.debridService.clearToken();
     this.router.navigate(['/']);
+  }
+
+  /**
+   * Alterna la visibilidad de las tabs de addons
+   */
+  toggleAddonTabs(): void {
+    this.addonTabsCollapsed = !this.addonTabsCollapsed;
+    this.saveAddonTabsState();
+  }
+
+  /**
+   * Obtiene el estado de las tabs de addons desde localStorage
+   */
+  private getAddonTabsState(): boolean {
+    try {
+      const saved = localStorage.getItem('addonTabsCollapsed');
+      return saved ? JSON.parse(saved) : true; // Por defecto oculto
+    } catch {
+      return true; // Por defecto oculto si hay error
+    }
+  }
+
+  /**
+   * Guarda el estado de las tabs de addons en localStorage
+   */
+  private saveAddonTabsState(): void {
+    try {
+      localStorage.setItem('addonTabsCollapsed', JSON.stringify(this.addonTabsCollapsed));
+    } catch {
+      // Silenciar errores de localStorage
+    }
   }
 
   /**
