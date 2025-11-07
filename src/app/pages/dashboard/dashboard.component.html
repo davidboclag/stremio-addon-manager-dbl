@@ -21,7 +21,7 @@
           >
             @for (lang of languageOptions(); track lang.key) {
             <option [value]="lang.key">
-              {{ lang.config.flag }} {{ lang.config.nativeName }}
+              {{ lang.config.flag }} {{ lang.config.nativeName | translate }}
             </option>
             }
           </select>
@@ -254,8 +254,8 @@
                               | translate
                                 : {
                                     language:
-                                      preferences.currentLanguageConfig()
-                                        .nativeName
+                                      (preferences.currentLanguageConfig()
+                                        .nativeName | translate)
                                   }
                           }}:</strong
                         >
@@ -420,7 +420,7 @@
                 "
               />
               <label class="form-check-label" [for]="'subhero-' + lang.key">
-                {{ lang.config.flag }} {{ lang.config.nativeName }}
+                {{ lang.config.flag }} {{ lang.config.nativeName | translate }}
               </label>
             </div>
             }

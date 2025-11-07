@@ -31,7 +31,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   spanish: {
     code: 'es',
     name: 'Spanish',
-    nativeName: 'Español',
+    nativeName: 'LANGUAGE.SPANISH',
     flag: '🇪🇸',
     torrentioCode: 'spanish',
     jackettioCode: 'spanish',
@@ -45,7 +45,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   english: {
     code: 'en',
     name: 'English',
-    nativeName: 'English',
+    nativeName: 'LANGUAGE.ENGLISH',
     flag: '🇺🇸',
     torrentioCode: 'english',
     jackettioCode: 'english',
@@ -58,7 +58,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   french: {
     code: 'fr',
     name: 'French',
-    nativeName: 'Français',
+    nativeName: 'LANGUAGE.FRENCH',
     flag: '🇫🇷',
     torrentioCode: 'french',
     jackettioCode: 'french',
@@ -71,7 +71,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   german: {
     code: 'de',
     name: 'German',
-    nativeName: 'Deutsch',
+    nativeName: 'LANGUAGE.GERMAN',
     flag: '🇩🇪',
     torrentioCode: 'german',
     jackettioCode: 'german',
@@ -84,7 +84,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   italian: {
     code: 'it',
     name: 'Italian',
-    nativeName: 'Italiano',
+    nativeName: 'LANGUAGE.ITALIAN',
     flag: '🇮🇹',
     torrentioCode: 'italian',
     jackettioCode: 'italian',
@@ -97,7 +97,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   portuguese: {
     code: 'pt',
     name: 'Portuguese',
-    nativeName: 'Português',
+    nativeName: 'LANGUAGE.PORTUGUESE',
     flag: '🇵🇹',
     torrentioCode: 'portuguese',
     jackettioCode: 'portuguese',
@@ -110,7 +110,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   russian: {
     code: 'ru',
     name: 'Russian',
-    nativeName: 'Русский',
+    nativeName: 'LANGUAGE.RUSSIAN',
     flag: '🇷🇺',
     torrentioCode: 'russian',
     jackettioCode: 'russian',
@@ -123,7 +123,7 @@ export const LANGUAGES: Record<Language, LanguageConfig> = {
   mexican: {
     code: 'mx',
     name: 'Mexican/Latino',
-    nativeName: 'Español Latino',
+    nativeName: 'LANGUAGE.SPANISH_LATIN',
     flag: '🇲🇽',
     torrentioCode: 'latino',
     jackettioCode: 'spanish',

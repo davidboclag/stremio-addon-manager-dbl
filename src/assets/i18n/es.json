@@ -2,7 +2,13 @@
   "LANGUAGE": {
     "SELECT": "Seleccionar Idioma",
     "ENGLISH": "Inglés",
-    "SPANISH": "Español"
+    "SPANISH": "Español",
+    "FRENCH": "Francés",
+    "GERMAN": "Alemán",
+    "ITALIAN": "Italiano",
+    "PORTUGUESE": "Portugués",
+    "RUSSIAN": "Ruso",
+    "SPANISH_LATIN": "Español Latino"
   },
   "COMMON": {
     "LOADING": "Cargando...",
