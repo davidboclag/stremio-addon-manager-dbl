@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 import { StremioService } from './stremio.service';
 import { DebridService } from './debrid.service';
 import { PreferencesService } from './preferences.service';
@@ -31,6 +32,7 @@ export interface InstallationResult {
 })
 export class AddonInstallationService {
   private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
   private readonly stremio = inject(StremioService);
   private readonly debridService = inject(DebridService);
   private readonly preferences = inject(PreferencesService);
@@ -83,7 +85,7 @@ export class AddonInstallationService {
         
         this.updateProgress(
           i + 1, 
-          `Procesando ${addon.name}...`
+          this.translate.instant('INSTALLATION.PROCESSING', { name: addon.name })
         );
 
         const addonData = await this.processAddon(addon, token, language);
@@ -94,7 +96,7 @@ export class AddonInstallationService {
 
       this.updateProgress(
         addonsToInstall.length + 1,
-        'Enviando configuración a Stremio...'
+        this.translate.instant('INSTALLATION.SENDING_CONFIG')
       );
 
       const result = await this.stremio.setAddonCollection(finalJson);
@@ -102,7 +104,7 @@ export class AddonInstallationService {
       if (result.success) {
         this.updateProgress(
           addonsToInstall.length + 1,
-          '✅ Configuración completada correctamente.'
+          this.translate.instant('INSTALLATION.CONFIG_COMPLETED')
         );
         
         setTimeout(() => this.finishInstallation(), 2000);
@@ -119,14 +121,14 @@ export class AddonInstallationService {
       console.error('Error en installPreset:', error);
       this.updateProgress(
         0,
-        '❌ Error en la configuración'
+        this.translate.instant('INSTALLATION.CONFIG_ERROR')
       );
       
       setTimeout(() => this.finishInstallation(), 500);
 
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Error desconocido' 
+        error: error instanceof Error ? error.message : this.translate.instant('INSTALLATION.UNKNOWN_ERROR')
       };
     }
   }
@@ -138,28 +140,28 @@ export class AddonInstallationService {
     if (!this.stremio.isAuthenticated()) {
       return { 
         success: false, 
-        error: 'Debes iniciar sesión correctamente primero.' 
+        error: this.translate.instant('INSTALLATION.LOGIN_REQUIRED')
       };
     }
 
-    this.startInstallation('Reseteando Stremio', 2);
+    this.startInstallation('INSTALLATION.RESETTING_STREMIO', 2);
 
     try {
-      this.updateProgress(1, 'Cargando configuración de fábrica...');
+      this.updateProgress(1, this.translate.instant('INSTALLATION.LOADING_FACTORY_CONFIG'));
 
       const fileContent = await this.http
         .get<{ addons: StremioAddon[] }>('/assets/reset-stremio.json')
         .toPromise();
       if (!fileContent || !Array.isArray(fileContent.addons)) {
-        throw new Error('No se pudo cargar la configuración de fábrica');
+        throw new Error(this.translate.instant('INSTALLATION.FACTORY_CONFIG_LOAD_ERROR'));
       }
 
-      this.updateProgress(2, 'Enviando configuración de fábrica a Stremio...');
+      this.updateProgress(2, this.translate.instant('INSTALLATION.SENDING_FACTORY_CONFIG'));
 
       const result = await this.stremio.setAddonCollection(fileContent.addons || []);
 
       if (result.success) {
-        this.updateProgress(2, '✅ Stremio reseteado correctamente.');
+        this.updateProgress(2, this.translate.instant('INSTALLATION.STREMIO_RESET_SUCCESS'));
         setTimeout(() => this.finishInstallation(), 1500);
         return { success: true };
       } else {
@@ -167,12 +169,12 @@ export class AddonInstallationService {
       }
     } catch (error) {
       console.error('Error resetting Stremio:', error);
-      this.updateProgress(0, '❌ Error al resetear Stremio.');
+      this.updateProgress(0, this.translate.instant('INSTALLATION.STREMIO_RESET_ERROR'));
       setTimeout(() => this.finishInstallation(), 500);
       
       return { 
         success: false, 
-        error: 'Error de conexión al resetear Stremio.' 
+        error: this.translate.instant('INSTALLATION.STREMIO_RESET_CONNECTION_ERROR')
       };
     }
   }
@@ -184,17 +186,20 @@ export class AddonInstallationService {
     if (!this.stremio.isAuthenticated()) {
       return { 
         success: false, 
-        error: '⚠️ Debes iniciar sesión correctamente primero.' 
+        error: this.translate.instant('INSTALLATION.LOGIN_REQUIRED_WARNING')
       };
     }
 
     const token = this.debridService.token()?.trim();
     if (preset.requiresToken && (!token || !this.debridService.validateTokenFormat(token))) {
       const currentService = this.debridService.currentService();
-      const serviceName = currentService?.displayName || 'un servicio de debrid';
+      const serviceName = currentService?.displayName || this.translate.instant('INSTALLATION.DEBRID_SERVICE');
       return {
         success: false,
-        error: `⚠️ La configuración "${preset.name}" requiere un token de ${serviceName} válido.`
+        error: this.translate.instant('INSTALLATION.TOKEN_REQUIRED', { 
+          presetName: this.translate.instant(preset.name), 
+          serviceName: serviceName 
+        })
       };
     }
     return { success: true };
@@ -254,7 +259,7 @@ export class AddonInstallationService {
     this._progress.set({
       isLoading: true,
       title,
-      message: 'Preparando instalación...',
+      message: this.translate.instant('INSTALLATION.PREPARING'),
       currentStep: 0,
       totalSteps: totalSteps + 1 // +1 para el paso final de envío a Stremio
     });

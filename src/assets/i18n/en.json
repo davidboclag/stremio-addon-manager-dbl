@@ -170,5 +170,24 @@
     "TITLE": "Settings",
     "LANGUAGE": "Language",
     "PREFERENCES": "Preferences"
+  },
+  "INSTALLATION": {
+    "PROCESSING": "Processing {{name}}...",
+    "SENDING_CONFIG": "Sending configuration to Stremio...",
+    "CONFIG_COMPLETED": "✅ Configuration completed successfully.",
+    "CONFIG_ERROR": "❌ Configuration error",
+    "UNKNOWN_ERROR": "Unknown error",
+    "LOGIN_REQUIRED": "You must login correctly first.",
+    "LOGIN_REQUIRED_WARNING": "⚠️ You must login correctly first.",
+    "RESETTING_STREMIO": "Resetting Stremio",
+    "LOADING_FACTORY_CONFIG": "Loading factory configuration...",
+    "FACTORY_CONFIG_LOAD_ERROR": "Could not load factory configuration",
+    "SENDING_FACTORY_CONFIG": "Sending factory configuration to Stremio...",
+    "STREMIO_RESET_SUCCESS": "✅ Stremio reset successfully.",
+    "STREMIO_RESET_ERROR": "❌ Error resetting Stremio.",
+    "STREMIO_RESET_CONNECTION_ERROR": "Connection error resetting Stremio.",
+    "DEBRID_SERVICE": "a debrid service",
+    "TOKEN_REQUIRED": "⚠️ The \"{{presetName}}\" configuration requires a valid {{serviceName}} token.",
+    "PREPARING": "Preparing installation..."
   }
 }
