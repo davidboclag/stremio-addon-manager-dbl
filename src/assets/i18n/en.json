@@ -1,0 +1,132 @@
+{
+  "LANGUAGE": {
+    "SELECT": "Select Language",
+    "ENGLISH": "English",
+    "SPANISH": "Spanish"
+  },
+  "COMMON": {
+    "LOADING": "Loading...",
+    "RELOAD": "Reload",
+    "EXPORT": "Export",
+    "IMPORT": "Import",
+    "OPEN": "Open",
+    "DELETE": "Delete",
+    "DELETE_ALL": "Delete All",
+    "SYNC_STREMIO": "Sync to Stremio",
+    "SHOW": "Show",
+    "HIDE": "Hide",
+    "SELECT_ALL": "Select All",
+    "CLEAR_ALL": "Clear All",
+    "CHARACTERS": "characters"
+  },
+  "NAVIGATION": {
+    "DASHBOARD": "Dashboard",
+    "ADDONS": "Add-ons",
+    "LOGIN": "Login",
+    "LOGOUT": "Logout"
+  },
+  "DASHBOARD": {
+    "TITLE": "Quick Stremio Addon Installer",
+    "WELCOME": "Welcome to Stremio Addon Manager",
+    "DESCRIPTION": "Manage your Stremio add-ons efficiently",
+    "DEBRID_SECTION": {
+      "LANGUAGE_SELECTOR": "Addon Language",
+      "LANGUAGE_HELP": "Addons will be configured with the selected language",
+      "DEBRID_PROVIDER": "Debrid Provider",
+      "NO_SERVICE": "🚫 No service (free addons only)",
+      "SIGNUP_LINK": "Sign up for",
+      "TOKEN_LABEL": "Token",
+      "TOKEN_PLACEHOLDER": "Token",
+      "TOKEN_COPY": "Copy token",
+      "TOKEN_ERROR": "Token must be exactly {{length}} alphanumeric characters"
+    },
+    "PRESET_SECTION": {
+      "TITLE": "Preset Configuration",
+      "BENEFITS": "Benefits",
+      "ADDONS_INCLUDED": "Addons included",
+      "NOT_AVAILABLE": "Not available in {{language}}",
+      "ADDITIONAL_OPTIONS": "Additional Options",
+      "INCLUDE_CINEMETA": "Include Cinemeta addon",
+      "INCLUDE_CINEMETA_HELP": "Add \"Cinemeta\" to the selected configuration",
+      "INCLUDE_ANIME": "Include anime addons",
+      "INCLUDE_ANIME_HELP": "Add \"Anime Kitsu\" and \"Animes' Season\" to the selected configuration"
+    },
+    "BUTTONS": {
+      "INSTALL_PRESET": "Install {{preset}}",
+      "FACTORY_RESET": "Factory Reset",
+      "CONFIRM_RESET": "Are you sure you want to delete your current Stremio configuration and return to factory settings?"
+    },
+    "SUBHERO": {
+      "TITLE": "SubHero — Subtitle Languages",
+      "SELECTED": "selected",
+      "HELP": "Select the languages you want to get subtitles for (If none selected, the selected addon language will be used)."
+    },
+    "CUSTOMIZABLE_ADDONS": "Customizable Addons",
+    "SHOW_ADDONS": "Show customizable addons",
+    "HIDE_ADDONS": "Hide customizable addons",
+    "USER_INFO": {
+      "STREMIO": "Stremio",
+      "LOGIN_REQUIRED": "You need to login to Stremio to view and edit addons."
+    },
+    "ARIA": {
+      "USER_ACTIONS": "User actions",
+      "LOGOUT": "Logout",
+      "INSTALL_PRESET": "Install {{preset}}",
+      "COPY_TOKEN": "Copy token",
+      "TOGGLE_CUSTOMIZABLE": "Show/hide customizable addons",
+      "SUBHERO_ACTIONS": "SubHero actions"
+    }
+  },
+  "ADDONS": {
+    "TITLE": "Add-ons",
+    "LIST_TITLE": "Addon List",
+    "INSTALL": "Install",
+    "UNINSTALL": "Uninstall",
+    "CONFIGURE": "Configure",
+    "ENABLED": "Enabled",
+    "DISABLED": "Disabled",
+    "NO_ADDONS": "No addons available",
+    "LOADING_ADDON": "Loading addon...",
+    "ACTIONS": "Addon actions",
+    "TABS": "Addon tabs",
+    "ADDON_TITLE": "Addon {{name}}"
+  },
+  "LOGIN": {
+    "TITLE": "Login",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "SUBMIT": "Login",
+    "ERROR": "Invalid credentials"
+  },
+  "BUTTONS": {
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "EDIT": "Edit",
+    "CONFIRM": "Confirm",
+    "CLOSE": "Close"
+  },
+  "MESSAGES": {
+    "SUCCESS": "Operation completed successfully",
+    "ERROR": "An error occurred",
+    "LOADING": "Loading...",
+    "CONFIRM_DELETE": "Are you sure you want to delete this item?",
+    "NO_TOKEN": "No token available",
+    "TOKEN_COPIED": "Token copied",
+    "ADDON_LOAD_ERROR": "Error loading addons. Check your connection.",
+    "CONFIRM_DELETE_ADDON": "Delete \"{{name}}\"?",
+    "ADDON_DELETED": "\"{{name}}\" deleted successfully",
+    "CONFIRM_DELETE_ALL": "Delete ALL addons? This action cannot be undone.",
+    "ALL_ADDONS_DELETED": "All addons have been deleted",
+    "SYNC_SUCCESS": "✅ Successfully synced with Stremio",
+    "SYNC_ERROR": "❌ Error syncing with Stremio",
+    "EXPORT_SUCCESS": "✅ Configuration exported successfully",
+    "IMPORT_FILE_ERROR": "❌ Please select a valid JSON file",
+    "IMPORT_ERROR": "❌ Error importing: {{error}}"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "LANGUAGE": "Language",
+    "PREFERENCES": "Preferences"
+  }
+}

@@ -4,6 +4,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { DebridService } from '../../services/debrid.service';
 import { PreferencesService, Language } from '../../services/preferences.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface Addon {
   name: string;
@@ -16,7 +17,7 @@ interface Addon {
 @Component({
   selector: 'app-addon-tabs',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './addons-tabs.component.html',
 })
 export class AddonTabsComponent {
@@ -34,7 +35,7 @@ export class AddonTabsComponent {
   readonly loading = signal(false);
 
   // Computed para obtener addons visibles (sin hideTab)
-  readonly visibleAddons = computed(() => 
+  readonly visibleAddons = computed(() =>
     this.addons().filter(addon => !addon.hideTab)
   );
 
@@ -53,7 +54,7 @@ export class AddonTabsComponent {
     effect(() => {
       const visible = this.visibleAddons();
       const currentActive = this.activeAddonName();
-      
+
       // Si no hay addon activo o el activo ya no está visible, seleccionar el primero
       if (visible.length > 0 && (!currentActive || !visible.some(addon => addon.name === currentActive))) {
         this.selectTab(0);
@@ -67,7 +68,7 @@ export class AddonTabsComponent {
       const debridToken = this.debridService.token();
       const selectedProvider = this.debridService.selectedProvider();
       const activeAddon = this.activeAddonName();
-      
+
       // Recargar iframe activo cuando cambie cualquier factor relevante
       if (activeAddon !== null) {
         this.updateActiveIframe();
@@ -144,7 +145,7 @@ export class AddonTabsComponent {
       const shouldPassToken = addon.requiresToken || this.hasValidToken();
       const validToken = shouldPassToken ? (this.debridService.token() || undefined) : undefined;
       const currentLanguage = this.preferences.selectedLanguage();
-      
+
       let url = addon.getUrl(validToken, currentLanguage);
       if (url instanceof Promise) url = await url;
       return url;

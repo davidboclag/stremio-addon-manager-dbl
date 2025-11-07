@@ -5,17 +5,17 @@
   >
     <h1 class="mb-0 fw-bold text-primary fs-3">
       <i class="bi bi-puzzle me-2" aria-hidden="true"></i>
-      Instalador rápido de Addons Stremio
+      {{ "DASHBOARD.TITLE" | translate }}
     </h1>
-    <nav aria-label="Acciones de usuario">
+    <nav [attr.aria-label]="'DASHBOARD.ARIA.USER_ACTIONS' | translate">
       <button
         class="btn btn-outline-danger btn-sm"
         (click)="logout()"
         type="button"
-        aria-label="Cerrar sesión"
+        [attr.aria-label]="'DASHBOARD.ARIA.LOGOUT' | translate"
       >
         <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>
-        Cerrar sesión
+        {{ "NAVIGATION.LOGOUT" | translate }}
       </button>
     </nav>
   </header>
@@ -31,7 +31,7 @@
               aria-hidden="true"
             ></i>
             <label for="languageSelect" class="form-label mb-0 fw-semibold">
-              Idioma de los addons
+              {{ "DASHBOARD.DEBRID_SECTION.LANGUAGE_SELECTOR" | translate }}
             </label>
           </div>
           <select
@@ -47,7 +47,7 @@
             }
           </select>
           <div id="languageHelp" class="form-text">
-            Los addons se configurarán con el idioma seleccionado
+            {{ "DASHBOARD.DEBRID_SECTION.LANGUAGE_HELP" | translate }}
           </div>
         </div>
 
@@ -62,7 +62,7 @@
               for="debridProviderSelect"
               class="form-label mb-0 fw-semibold"
             >
-              Proveedor Debrid
+              {{ "DASHBOARD.DEBRID_SECTION.DEBRID_PROVIDER" | translate }}
             </label>
           </div>
           <select
@@ -72,7 +72,9 @@
             (ngModelChange)="onDebridProviderChange($event)"
             aria-describedby="debridProviderHelp"
           >
-            <option value="">🚫 Ningún servicio (solo addons gratuitos)</option>
+            <option value="">
+              {{ "DASHBOARD.DEBRID_SECTION.NO_SERVICE" | translate }}
+            </option>
             @for (service of debridService.availableServices(); track
             service.id) {
             <option [value]="service.id">
@@ -89,7 +91,8 @@
                 rel="noopener noreferrer"
                 class="text-decoration-none"
               >
-                Registrarse en {{ debridService.currentService()!.displayName }}
+                {{ "DASHBOARD.DEBRID_SECTION.SIGNUP_LINK" | translate }}
+                {{ debridService.currentService()!.displayName }}
                 <i class="bi bi-box-arrow-up-right ms-1" aria-hidden="true"></i>
               </a>
             </small>
@@ -109,7 +112,8 @@
               Token {{ debridService.currentService()!.displayName }}
             </label>
             <small class="text-muted ms-2">
-              ({{ debridService.currentService()!.tokenLength }} caracteres)
+              ({{ debridService.currentService()!.tokenLength }}
+              {{ "COMMON.CHARACTERS" | translate }})
             </small>
           </div>
           <div class="input-group mb-3">
@@ -120,11 +124,7 @@
               id="debridTokenInput"
               [(ngModel)]="debridTokenInput"
               class="form-control"
-              [placeholder]="
-                'Token (' +
-                debridService.currentService()!.tokenLength +
-                ' caracteres)'
-              "
+              [placeholder]="getTokenPlaceholder()"
               (input)="onTokenChange($event)"
               type="password"
               [class.is-valid]="hasValidToken()"
@@ -135,7 +135,7 @@
               class="btn btn-outline-secondary"
               (click)="copyToken()"
               type="button"
-              aria-label="Copiar token"
+              [attr.aria-label]="'DASHBOARD.ARIA.COPY_TOKEN' | translate"
             >
               <i class="bi bi-clipboard" aria-hidden="true"></i>
             </button>
@@ -143,9 +143,11 @@
           @if (debridTokenInput && !hasValidToken()) {
           <div id="debridTokenHelp" class="text-danger small">
             <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
-            El token debe tener exactamente
-            {{ debridService.currentService()!.tokenLength }} caracteres
-            alfanuméricos
+            {{
+              "DASHBOARD.DEBRID_SECTION.TOKEN_ERROR"
+                | translate
+                  : { length: debridService.currentService()!.tokenLength }
+            }}
           </div>
           }
         </div>
@@ -162,7 +164,10 @@
             aria-live="polite"
           >
             <i class="bi bi-person-check-fill me-2" aria-hidden="true"></i>
-            <small><strong>Stremio:</strong> {{ stremioUser.email }}</small>
+            <small
+              ><strong>{{ "DASHBOARD.USER_INFO.STREMIO" | translate }}:</strong>
+              {{ stremioUser.email }}</small
+            >
           </div>
         </div>
         } @if (debridService.user(); as user) {
@@ -197,7 +202,7 @@
                 id="preset-section-title"
                 class="form-label mb-0 fw-semibold"
               >
-                Configuración predefinida
+                {{ "DASHBOARD.PRESET_SECTION.TITLE" | translate }}
               </label>
             </div>
             <div class="row g-2">
@@ -252,9 +257,10 @@
                     </p>
                     <div class="mb-2">
                       <strong
-                        >Addons incluidos ({{
-                          availablePresetAddons().length
-                        }}):</strong
+                        >{{
+                          "DASHBOARD.PRESET_SECTION.ADDONS_INCLUDED" | translate
+                        }}
+                        ({{ availablePresetAddons().length }}):</strong
                       >
                       <span class="ms-1">{{
                         availablePresetAddonsNames()
@@ -264,9 +270,14 @@
                     <div class="mb-2">
                       <small class="text-muted">
                         <strong
-                          >No disponibles en
-                          {{
-                            preferences.currentLanguageConfig().nativeName
+                          >{{
+                            "DASHBOARD.PRESET_SECTION.NOT_AVAILABLE"
+                              | translate
+                                : {
+                                    language:
+                                      preferences.currentLanguageConfig()
+                                        .nativeName
+                                  }
                           }}:</strong
                         >
                         <span class="ms-1">{{
@@ -277,7 +288,9 @@
                     }
                   </div>
                   <div class="col-md-4">
-                    <h3 class="fw-semibold mb-2 fs-6">Beneficios</h3>
+                    <h3 class="fw-semibold mb-2 fs-6">
+                      {{ "DASHBOARD.PRESET_SECTION.BENEFITS" | translate }}
+                    </h3>
                     <ul class="list-unstyled mb-0">
                       @for (benefit of currentPreset().benefits; track benefit)
                       {
@@ -299,7 +312,9 @@
               <div class="card-body p-3">
                 <h4 class="fw-semibold mb-3 fs-6">
                   <i class="bi bi-gear-fill me-2" aria-hidden="true"></i>
-                  Opciones adicionales
+                  {{
+                    "DASHBOARD.PRESET_SECTION.ADDITIONAL_OPTIONS" | translate
+                  }}
                 </h4>
                 <div class="form-check mt-2">
                   <input
@@ -313,9 +328,14 @@
                       class="bi bi-film me-2 text-secondary"
                       aria-hidden="true"
                     ></i>
-                    <strong>Incluir addon Cinemeta</strong>
+                    <strong>{{
+                      "DASHBOARD.PRESET_SECTION.INCLUDE_CINEMETA" | translate
+                    }}</strong>
                     <small class="text-muted d-block">
-                      Agregar "Cinemeta" a la configuración seleccionada
+                      {{
+                        "DASHBOARD.PRESET_SECTION.INCLUDE_CINEMETA_HELP"
+                          | translate
+                      }}
                     </small>
                   </label>
                 </div>
@@ -328,10 +348,14 @@
                   />
                   <label class="form-check-label" for="includeAnimeAddons">
                     <i class="bi bi-tv me-2 text-info" aria-hidden="true"></i>
-                    <strong>Incluir addons de anime</strong>
+                    <strong>{{
+                      "DASHBOARD.PRESET_SECTION.INCLUDE_ANIME" | translate
+                    }}</strong>
                     <small class="text-muted d-block">
-                      Agregar "Anime Kitsu" y "Animes' Season" a la
-                      configuración seleccionada
+                      {{
+                        "DASHBOARD.PRESET_SECTION.INCLUDE_ANIME_HELP"
+                          | translate
+                      }}
                     </small>
                   </label>
                 </div>
@@ -368,29 +392,30 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="fw-semibold mb-0">
               <i class="bi bi-translate me-2"></i>
-              SubHero — Idiomas de subtítulos
+              {{ "DASHBOARD.SUBHERO.TITLE" | translate }}
               <small class="text-muted ms-2"
-                >{{ subheroSelectedCount() }} seleccionados</small
+                >{{ subheroSelectedCount() }}
+                {{ "DASHBOARD.SUBHERO.SELECTED" | translate }}</small
               >
             </h6>
             <div
               class="btn-group btn-group-sm"
               role="group"
-              aria-label="SubHero actions"
+              [attr.aria-label]="'DASHBOARD.ARIA.SUBHERO_ACTIONS' | translate"
             >
               <button
                 type="button"
                 class="btn btn-outline-secondary"
                 (click)="selectAllSubheroLangs()"
               >
-                Seleccionar todo
+                {{ "COMMON.SELECT_ALL" | translate }}
               </button>
               <button
                 type="button"
                 class="btn btn-outline-secondary"
                 (click)="clearAllSubheroLangs()"
               >
-                Borrar todo
+                {{ "COMMON.CLEAR_ALL" | translate }}
               </button>
             </div>
           </div>
@@ -423,11 +448,7 @@
           </div>
 
           <div class="form-text">
-            Selecciona los idiomas que quieras obtener para los subtítulos
-            (<code
-              >Si no se selecciona ninguno, se utilizará el idioma seleccionado
-              para los addons</code
-            >).
+            {{ "DASHBOARD.SUBHERO.HELP" | translate }}
           </div>
         </div>
       </div>
@@ -438,20 +459,26 @@
           (click)="configureAll()"
           [disabled]="!canInstallPreset()"
           type="button"
-          [attr.aria-label]="'Instalar ' + currentPreset().name"
+          [attr.aria-label]="
+            'DASHBOARD.ARIA.INSTALL_PRESET'
+              | translate : { preset: currentPreset().name }
+          "
         >
           <i class="bi bi-cloud-download me-2" aria-hidden="true"></i>
-          Instalar {{ currentPreset().name }}
+          {{
+            "DASHBOARD.BUTTONS.INSTALL_PRESET"
+              | translate : { preset: currentPreset().name }
+          }}
         </button>
         <button
           class="btn btn-outline-warning"
           (click)="resetStremio()"
           [disabled]="isLoading()"
           type="button"
-          aria-label="Volver al estado de fábrica"
+          [attr.aria-label]="'DASHBOARD.BUTTONS.FACTORY_RESET' | translate"
         >
           <i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>
-          Volver al estado de fábrica
+          {{ "DASHBOARD.BUTTONS.FACTORY_RESET" | translate }}
         </button>
       </div>
     </div>
@@ -463,7 +490,7 @@
     class="global-overlay"
     role="alertdialog"
     aria-modal="true"
-    aria-label="Cargando"
+    [attr.aria-label]="'COMMON.LOADING' | translate"
   >
     <div
       class="card bg-dark text-light shadow-lg border-0"
@@ -477,7 +504,9 @@
             role="status"
             aria-live="assertive"
           >
-            <span class="visually-hidden">Cargando...</span>
+            <span class="visually-hidden">{{
+              "COMMON.LOADING" | translate
+            }}</span>
           </div>
         </div>
         <h2 class="fw-semibold mb-2 fs-5">{{ loadingTitle() }}</h2>
@@ -488,7 +517,7 @@
   }
 
   <!-- Componente de addons -->
-  <section aria-label="Gestión de addons">
+  <section [attr.aria-label]="'ADDONS.TITLE' | translate">
     <app-addons
       [stremioAuthKey]="stremio.authKey() || ''"
       [rdToken]="debridService.token() || ''"
@@ -500,7 +529,7 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0 fw-bold text-secondary fs-4">
       <i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>
-      Addons personalizables
+      {{ "DASHBOARD.CUSTOMIZABLE_ADDONS" | translate }}
     </h2>
     <button
       class="btn btn-outline-secondary btn-sm d-flex align-items-center"
@@ -509,20 +538,24 @@
       data-bs-target="#addonTabsSection"
       [attr.aria-expanded]="!addonTabsCollapsed"
       aria-controls="addonTabsSection"
-      aria-label="Mostrar/ocultar addons personalizables"
+      [attr.aria-label]="'DASHBOARD.ARIA.TOGGLE_CUSTOMIZABLE' | translate"
       (click)="toggleAddonTabs()"
-      title="{{
+      [title]="
         addonTabsCollapsed
-          ? 'Mostrar addons personalizables'
-          : 'Ocultar addons personalizables'
-      }}"
+          ? ('DASHBOARD.SHOW_ADDONS' | translate)
+          : ('DASHBOARD.HIDE_ADDONS' | translate)
+      "
     >
       <i
         [class]="addonTabsCollapsed ? 'bi bi-chevron-down' : 'bi bi-chevron-up'"
         aria-hidden="true"
       ></i>
       <span class="d-none d-sm-inline ms-1">
-        {{ addonTabsCollapsed ? "Mostrar" : "Ocultar" }}
+        {{
+          addonTabsCollapsed
+            ? ("COMMON.SHOW" | translate)
+            : ("COMMON.HIDE" | translate)
+        }}
       </span>
     </button>
   </div>
@@ -530,7 +563,7 @@
   <section
     id="addonTabsSection"
     [class]="'collapse' + (!addonTabsCollapsed ? ' show' : '')"
-    aria-label="Addons personalizables"
+    [attr.aria-label]="'DASHBOARD.CUSTOMIZABLE_ADDONS' | translate"
   >
     <app-addon-tabs
       [addons]="filteredAddons()"

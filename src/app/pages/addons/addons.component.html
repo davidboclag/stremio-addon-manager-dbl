@@ -2,34 +2,39 @@
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 id="addons-title" class="card-title mb-0">
-        Listado de Addons
+        {{ "ADDONS.LIST_TITLE" | translate }}
         <span class="badge bg-info ms-2">{{ addons().length || 0 }}</span>
       </h2>
-      <div class="btn-group btn-group-sm" role="group" aria-label="Acciones sobre addons">
+      <div
+        class="btn-group btn-group-sm"
+        role="group"
+        [attr.aria-label]="'ADDONS.ACTIONS' | translate"
+      >
         <button
           class="btn btn-outline-secondary"
           (click)="refreshAddons()"
           [disabled]="loading()"
-          title="Recargar addons"
+          [title]="'COMMON.RELOAD' | translate"
           type="button"
         >
-          <i class="bi bi-arrow-clockwise"></i> Recargar
+          <i class="bi bi-arrow-clockwise"></i>
+          {{ "COMMON.RELOAD" | translate }}
         </button>
         <button
           class="btn btn-outline-primary"
           (click)="exportConfig()"
           [disabled]="addons().length === 0"
-          title="Exportar configuración"
+          [title]="'COMMON.EXPORT' | translate"
           type="button"
         >
-          <i class="bi bi-download"></i> Exportar
+          <i class="bi bi-download"></i> {{ "COMMON.EXPORT" | translate }}
         </button>
         <label
           class="btn btn-outline-success mb-0"
           for="importFile"
-          title="Importar configuración"
+          [title]="'COMMON.IMPORT' | translate"
         >
-          <i class="bi bi-upload"></i> Importar
+          <i class="bi bi-upload"></i> {{ "COMMON.IMPORT" | translate }}
         </label>
         <input
           type="file"
@@ -44,65 +49,65 @@
     @if (!stremioAuthKey()) {
     <div class="alert alert-warning d-flex align-items-center" role="alert">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      Debes iniciar sesión en Stremio para ver y editar los addons.
+      {{ "DASHBOARD.USER_INFO.LOGIN_REQUIRED" | translate }}
     </div>
-    }
-
-    @if (loading()) {
+    } @if (loading()) {
     <div class="d-flex justify-content-center py-4">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
+        <span class="visually-hidden">{{ "COMMON.LOADING" | translate }}</span>
       </div>
     </div>
-    }
-
-
-    @if (!loading()) {
-      @if (addons().length > 0) {
-        <ul class="list-group mb-3" cdkDropList (cdkDropListDropped)="drop($event)" aria-label="Lista de addons">
-          @for (addon of addons(); track addon.transportUrl; let i = $index) {
-            <li
-              class="list-group-item d-flex justify-content-between align-items-center"
-              cdkDrag
-              style="cursor: grab"
-            >
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-grip-vertical text-secondary"></i>
-                <img
-                  [src]="addon?.manifest?.logo || addon?.manifest?.icon"
-                  style="width: 28px; height: 28px; border-radius: 6px"
-                  [alt]="addon.manifest?.name || 'Addon'"
-                  (error)="onImageError($event)"
-                  *ngIf="addon?.manifest?.logo || addon?.manifest?.icon"
-                />
-                <strong>{{ addon.manifest?.name || addon.transportName }}</strong>
-              </div>
-              <div>
-                <button
-                  class="btn btn-sm btn-outline-primary me-2"
-                  (click)="openAddon(addon.transportUrl)"
-                  type="button"
-                >
-                  Abrir
-                </button>
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  (click)="deleteAddon(i, addon.manifest?.name || addon.transportName)"
-                  type="button"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </li>
-          }
-        </ul>
-      } @else {
-        <div class="text-center text-muted my-4" role="status">
-          <i class="bi bi-inbox fs-2"></i>
-          <p class="mt-2">No hay addons disponibles.</p>
+    } @if (!loading()) { @if (addons().length > 0) {
+    <ul
+      class="list-group mb-3"
+      cdkDropList
+      (cdkDropListDropped)="drop($event)"
+      [attr.aria-label]="'ADDONS.LIST_TITLE' | translate"
+    >
+      @for (addon of addons(); track addon.transportUrl; let i = $index) {
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center"
+        cdkDrag
+        style="cursor: grab"
+      >
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-grip-vertical text-secondary"></i>
+          <img
+            [src]="addon?.manifest?.logo || addon?.manifest?.icon"
+            style="width: 28px; height: 28px; border-radius: 6px"
+            [alt]="addon.manifest?.name || 'Addon'"
+            (error)="onImageError($event)"
+            *ngIf="addon?.manifest?.logo || addon?.manifest?.icon"
+          />
+          <strong>{{ addon.manifest?.name || addon.transportName }}</strong>
         </div>
+        <div>
+          <button
+            class="btn btn-sm btn-outline-primary me-2"
+            (click)="openAddon(addon.transportUrl)"
+            type="button"
+          >
+            {{ "COMMON.OPEN" | translate }}
+          </button>
+          <button
+            class="btn btn-sm btn-outline-danger"
+            (click)="
+              deleteAddon(i, addon.manifest?.name || addon.transportName)
+            "
+            type="button"
+          >
+            {{ "COMMON.DELETE" | translate }}
+          </button>
+        </div>
+      </li>
       }
-    }
+    </ul>
+    } @else {
+    <div class="text-center text-muted my-4" role="status">
+      <i class="bi bi-inbox fs-2"></i>
+      <p class="mt-2">{{ "ADDONS.NO_ADDONS" | translate }}</p>
+    </div>
+    } }
 
     <!-- Acciones principales -->
     <div class="mt-3 d-flex justify-content-between">
@@ -112,7 +117,7 @@
         [disabled]="!stremioAuthKey || loading()"
         type="button"
       >
-        Sincronizar con Stremio
+        {{ "COMMON.SYNC_STREMIO" | translate }}
       </button>
 
       <button
@@ -121,7 +126,8 @@
         [disabled]="addons().length === 0"
         type="button"
       >
-        Eliminar todos
+        {{ "COMMON.DELETE_ALL" | translate }}
       </button>
     </div>
   </div>
+</section>

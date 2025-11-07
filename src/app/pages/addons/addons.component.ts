@@ -1,23 +1,24 @@
-import { 
-  Component, 
-  EventEmitter, 
-  output, 
-  input, 
-  inject, 
-  signal, 
-  effect, 
-  OnInit, 
+import {
+  Component,
+  EventEmitter,
+  output,
+  input,
+  inject,
+  signal,
+  effect,
+  OnInit,
   ChangeDetectionStrategy
 } from '@angular/core';
 import { NotificationService } from '../../services/notification.service';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StremioService, StremioAddon } from '../../services/stremio.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-addons',
   standalone: true,
-  imports: [CommonModule, CdkDrag, CdkDropList],
+  imports: [CommonModule, CdkDrag, CdkDropList, TranslateModule],
   templateUrl: './addons.component.html',
   styleUrl: './addons.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,7 +30,8 @@ export class AddonsComponent implements OnInit {
   readonly refreshRequested = output<void>();
 
   private readonly stremio = inject(StremioService);
-  
+  private readonly translate = inject(TranslateService);
+
   readonly addons = signal<StremioAddon[]>([]);
   readonly loading = signal(false);
   readonly saving = signal(false);
@@ -63,14 +65,14 @@ export class AddonsComponent implements OnInit {
 
   async loadAddons(): Promise<void> {
     if (!this.stremioAuthKey()) return;
-    
+
     this.loading.set(true);
     try {
       const res = await this.stremio.getAddonCollection();
       this.addons.set(res?.addons || []);
     } catch (err) {
       console.error('Error loading addons:', err);
-  this.notification.error('Error al cargar addons. Verifica tu conexión.');
+      this.notification.error(this.translate.instant('MESSAGES.ADDON_LOAD_ERROR'));
       this.addons.set([]);
     } finally {
       this.loading.set(false);
@@ -94,20 +96,20 @@ export class AddonsComponent implements OnInit {
 
   deleteAddon(index: number, name?: string): void {
     const addonName = name || `Addon #${index + 1}`;
-    if (!confirm(`¿Eliminar "${addonName}"?`)) return;
+    if (!confirm(this.translate.instant('MESSAGES.CONFIRM_DELETE_ADDON', { name: addonName }))) return;
 
     const currentAddons = [...this.addons()];
     currentAddons.splice(index, 1);
     this.addons.set(currentAddons);
-    
-  this.notification.success(`"${addonName}" eliminado correctamente`);
+
+    this.notification.success(this.translate.instant('MESSAGES.ADDON_DELETED', { name: addonName }));
   }
 
   deleteAll(): void {
-    if (!confirm('¿Eliminar TODOS los addons? Esta acción no se puede deshacer.')) return;
-    
+    if (!confirm(this.translate.instant('MESSAGES.CONFIRM_DELETE_ALL'))) return;
+
     this.addons.set([]);
-  this.notification.success('Todos los addons han sido eliminados');
+    this.notification.success(this.translate.instant('MESSAGES.ALL_ADDONS_DELETED'));
   }
 
   // CDK Drag & Drop - Simple como antes
@@ -121,14 +123,14 @@ export class AddonsComponent implements OnInit {
     try {
       const result = await this.stremio.setAddonCollection(this.addons());
       if (result.success) {
-  this.notification.success('✅ Sincronizado correctamente con Stremio');
+        this.notification.success(this.translate.instant('MESSAGES.SYNC_SUCCESS'));
         this.refreshRequested.emit();
       } else {
         throw new Error(result.error || 'Error desconocido');
       }
     } catch (err) {
       console.error('Error saving to Stremio:', err);
-  this.notification.error('❌ Error al sincronizar con Stremio');
+      this.notification.error(this.translate.instant('MESSAGES.SYNC_ERROR'));
     } finally {
       this.saving.set(false);
     }
@@ -151,7 +153,7 @@ export class AddonsComponent implements OnInit {
       a.href = url;
       a.download = `stremio-addons-${dateStr}.json`;
       a.click();
-      this.notification.success('✅ Configuración exportada correctamente');
+      this.notification.success(this.translate.instant('MESSAGES.EXPORT_SUCCESS'));
     } finally {
       // Siempre limpiar el recurso
       URL.revokeObjectURL(url);
@@ -163,7 +165,7 @@ export class AddonsComponent implements OnInit {
     const file = input.files?.[0];
     if (!file) return;
     if (file.type !== 'application/json') {
-      this.notification.error('❌ Por favor selecciona un archivo JSON válido');
+      this.notification.error(this.translate.instant('MESSAGES.IMPORT_FILE_ERROR'));
       return;
     }
     try {
@@ -173,18 +175,20 @@ export class AddonsComponent implements OnInit {
         throw new Error('Formato de archivo inválido');
       }
       // Validar que cada addon tenga los campos mínimos requeridos
-      const validAddons = config.addons.filter((addon: any) => 
+      const validAddons = config.addons.filter((addon: any) =>
         addon && typeof addon === 'object' && addon.transportUrl && (addon.manifest || addon.transportName)
       );
       if (validAddons.length === 0) {
         throw new Error('El archivo no contiene addons válidos');
       }
-  this.addons.set(validAddons as StremioAddon[]);
+      this.addons.set(validAddons as StremioAddon[]);
       this.notification.success(`✅ Configuración importada: ${validAddons.length} addons cargados`);
       input.value = '';
     } catch (error) {
       console.error('Error importing config:', error);
-      this.notification.error(`❌ Error al importar: ${error instanceof Error ? (error as Error).message : 'Archivo inválido'}`);
+      this.notification.error(this.translate.instant('MESSAGES.IMPORT_ERROR', {
+        error: error instanceof Error ? (error as Error).message : 'Archivo inválido'
+      }));
       input.value = '';
     }
   }
