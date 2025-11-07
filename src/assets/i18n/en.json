@@ -89,11 +89,25 @@
     "ADDON_TITLE": "Addon {{name}}"
   },
   "LOGIN": {
-    "TITLE": "Login",
-    "USERNAME": "Username",
+    "TITLE": "Stremio Access",
+    "DESCRIPTION": "Enter your credentials or AuthKey",
+    "EMAIL": "Email",
+    "EMAIL_PLACEHOLDER": "your@email.com",
+    "EMAIL_REQUIRED": "Enter a valid email.",
     "PASSWORD": "Password",
+    "PASSWORD_PLACEHOLDER": "Your password",
+    "PASSWORD_REQUIRED": "Enter a password.",
+    "AUTH_KEY": "AuthKey",
+    "OPTIONAL": "optional",
+    "AUTH_KEY_PLACEHOLDER": "If you already have your AuthKey...",
+    "AUTH_KEY_HELP": "If you have your AuthKey, you can use it directly without email/password",
+    "AUTH_KEY_REQUIRED": "Enter authKey.",
+    "AUTH_KEY_USER": "AuthKey User",
     "SUBMIT": "Login",
-    "ERROR": "Invalid credentials"
+    "CONNECTING": "Connecting...",
+    "ERROR": "Login error",
+    "VALIDATION_ERROR": "You must enter authKey or valid email and password",
+    "PROVIDE_VALID_CREDENTIALS": "Provide valid email and password or authKey"
   },
   "BUTTONS": {
     "SAVE": "Save",

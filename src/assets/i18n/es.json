@@ -89,11 +89,25 @@
     "ADDON_TITLE": "Addon {{name}}"
   },
   "LOGIN": {
-    "TITLE": "Iniciar Sesión",
-    "USERNAME": "Usuario",
+    "TITLE": "Acceso a Stremio",
+    "DESCRIPTION": "Introduce tus credenciales o AuthKey",
+    "EMAIL": "Email",
+    "EMAIL_PLACEHOLDER": "tu@email.com",
+    "EMAIL_REQUIRED": "Ingresa un email válido.",
     "PASSWORD": "Contraseña",
-    "SUBMIT": "Iniciar Sesión",
-    "ERROR": "Credenciales inválidas"
+    "PASSWORD_PLACEHOLDER": "Tu contraseña",
+    "PASSWORD_REQUIRED": "Ingresa una contraseña.",
+    "AUTH_KEY": "AuthKey",
+    "OPTIONAL": "opcional",
+    "AUTH_KEY_PLACEHOLDER": "Si ya tienes tu AuthKey...",
+    "AUTH_KEY_HELP": "Si tienes tu AuthKey, puedes usarlo directamente sin email/contraseña",
+    "AUTH_KEY_REQUIRED": "Introduce authKey.",
+    "AUTH_KEY_USER": "Usuario AuthKey",
+    "SUBMIT": "Iniciar sesión",
+    "CONNECTING": "Conectando...",
+    "ERROR": "Error de login",
+    "VALIDATION_ERROR": "Debes ingresar authKey o email y contraseña válidos",
+    "PROVIDE_VALID_CREDENTIALS": "Proporciona email válido y contraseña o authKey"
   },
   "BUTTONS": {
     "SAVE": "Guardar",
