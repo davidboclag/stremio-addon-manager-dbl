@@ -8,7 +8,7 @@ package-lock.json
 /.vscode
 
 # Environment files (si contienen secrets)
-src/environments/*.ts
+# src/environments/*.ts
 
 # IDEs
 .idea/
