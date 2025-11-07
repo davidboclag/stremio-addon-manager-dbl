@@ -1,0 +1,19 @@
+# Node
+node_modules/
+package-lock.json
+
+# Angular build
+/dist
+/.angular
+/.vscode
+
+# Environment files (si contienen secrets)
+src/environments/*.ts
+
+# IDEs
+.idea/
+*.suo
+*.ntvs*
+*.vscode
+*.sw?
+.vercel

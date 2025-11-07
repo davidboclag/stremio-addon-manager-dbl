@@ -1,0 +1,16 @@
+{
+  "/stremio-api/*": {
+    "target": "https://api.strem.io/api",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/stremio-api": "" },
+    "logLevel": "debug"
+  },
+  "/rd-api/*": {
+    "target": "https://api.real-debrid.com/rest/1.0",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/rd-api": "" },
+    "logLevel": "debug"
+  }
+}

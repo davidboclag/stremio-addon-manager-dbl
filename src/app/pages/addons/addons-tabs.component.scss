@@ -1,0 +1,14 @@
+/* Estilos únicos para addons-tabs */
+
+.iframe-wrapper {
+  position: relative;
+  min-height: 300px;
+}
+
+.loader-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  z-index: 10;
+}
