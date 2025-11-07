@@ -16,7 +16,7 @@ import { DebridService } from './services/debrid.service';
       <nav class="navbar navbar-dark bg-secondary">
         <div class="container">
           <a class="navbar-brand fw-bold d-flex align-items-center">
-            <i class="bi bi-puzzle-fill me-2 fs-5"></i>
+            <span class="me-2 fs-4">🧩</span>
             Stremio Addon Manager DBL
           </a>
           
