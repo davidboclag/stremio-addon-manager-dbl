@@ -133,49 +133,49 @@ export interface AddonPreset {
 export const ADDON_PRESETS: Record<PresetType, AddonPreset> = {
   basic: {
     id: 'basic',
-    name: 'Configuración Básica',
-    description: 'Addons esenciales para uso general sin servicios premium',
+    name: 'PRESETS.BASIC.NAME',
+    description: 'PRESETS.BASIC.DESCRIPTION',
     icon: '🎬',
     addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'SubHero'],
     requiresToken: false,
     benefits: [
-      'Funciona sin y con Real-Debrid',
+      'PRESETS.BASIC.BENEFIT_1',
     ]
   },
   complete: {
     id: 'complete',
-    name: 'Configuración Completa',
-    description: 'Todos los addons principales para uso general sin servicios premium',
+    name: 'PRESETS.COMPLETE.NAME',
+    description: 'PRESETS.COMPLETE.DESCRIPTION',
     icon: '🎯',
     addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'SubHero'],
     requiresToken: false,
     benefits: [
-      'Funciona sin y con Real-Debrid',
+      'PRESETS.COMPLETE.BENEFIT_1',
     ]
   },
   premium: {
     id: 'premium',
-    name: 'Configuración Premium',
-    description: 'Todos los addons recomendados para la mejor experiencia',
+    name: 'PRESETS.PREMIUM.NAME',
+    description: 'PRESETS.PREMIUM.DESCRIPTION',
     icon: '💎',
     addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'SubHero'],
     requiresToken: false,
     benefits: [
-      'Mayor cobertura de contenido',
-      'Funciona sin y con Real-Debrid',
+      'PRESETS.PREMIUM.BENEFIT_1',
+      'PRESETS.PREMIUM.BENEFIT_2',
     ]
   },
   recommended: {
     id: 'recommended',
-    name: 'Recomendada',
-    description: 'Todos los addons recomendados para la mejor experiencia con Real-Debrid (Streaming instantáneo)',
+    name: 'PRESETS.RECOMMENDED.NAME',
+    description: 'PRESETS.RECOMMENDED.DESCRIPTION',
     icon: '📺',
     addonNames: ['Cinemeta', 'watchhub', 'Aiolists', 'Torrentio', 'Comet', 'MediaFusion', 'Peerflix', 'Jackettio', 'ThePirateBay+', 'Nuvio', 'Webstreamr', 'SubHero'],
     requiresToken: true,
     benefits: [
-      'Mayor cobertura de contenido',
-      'Streaming instantáneo',
-      'Menor uso de ancho de banda'
+      'PRESETS.RECOMMENDED.BENEFIT_1',
+      'PRESETS.RECOMMENDED.BENEFIT_2',
+      'PRESETS.RECOMMENDED.BENEFIT_3'
     ]
   }
 };

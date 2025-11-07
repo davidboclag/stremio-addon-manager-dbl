@@ -8,6 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StremioService } from '../../services/stremio.service';
 import { DebridService } from '../../services/debrid.service';
 import { PreferencesService, Language } from '../../services/preferences.service';
@@ -22,7 +23,7 @@ import type { DebridProviderType, PresetType } from '../../types';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddonsComponent, AddonTabsComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, AddonsComponent, AddonTabsComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +31,7 @@ import type { DebridProviderType, PresetType } from '../../types';
 export class DashboardComponent {
   private readonly router = inject(Router);
   private readonly notification = inject(NotificationService);
+  private readonly translate = inject(TranslateService);
 
   // Servicios inyectados
   readonly stremio = inject(StremioService);
@@ -78,7 +80,7 @@ export class DashboardComponent {
   // Computed signals para addons filtrados por idioma y preset
   readonly availablePresetAddons = computed(() => this.dashboardState.effectivePresetAddonsFilteredByLanguage());
   readonly unavailablePresetAddons = computed(() => this.dashboardState.unavailablePresetAddons());
-  readonly availablePresetAddonsNames = computed(() => 
+  readonly availablePresetAddonsNames = computed(() =>
     this.availablePresetAddons().map(addon => addon.name).join(", ")
   );
 
@@ -159,11 +161,11 @@ export class DashboardComponent {
   copyToken(): void {
     const token = this.debridService.token();
     if (!token) {
-      this.notification.error('No hay token');
+      this.notification.error(this.translate.instant('MESSAGES.NO_TOKEN'));
       return;
     }
     navigator.clipboard.writeText(token).then(() => {
-      this.notification.success('Token copiado');
+      this.notification.success(this.translate.instant('MESSAGES.TOKEN_COPIED'));
     });
   }
 
@@ -183,28 +185,14 @@ export class DashboardComponent {
     }
   }
 
-  /**
-   * Instala un preset específico
-   */
-  async installPreset(presetType: PresetType): Promise<void> {
-    const result = await this.installation.installPreset(
-      presetType,
-      this.includeAnimeAddons,
-      this.includeCinemetaAddons
-    );
-    if (result.success) {
-      setTimeout(() => this.reloadAddons(), 2000);
-    } else if (result.error) {
-      this.notification.error(result.error);
-    }
-  }
+
 
   /**
    * Resetea Stremio a la configuración de fábrica
    */
   async resetStremio(): Promise<void> {
     const confirmacion = window.confirm(
-      '¿Seguro que deseas borrar tu configuración actual de Stremio y volver al estado de fábrica?'
+      this.translate.instant('DASHBOARD.BUTTONS.CONFIRM_RESET')
     );
     if (!confirmacion) return;
     const result = await this.installation.resetStremio();
@@ -263,12 +251,7 @@ export class DashboardComponent {
     this.dashboardState.refreshAddons?.();
   }
 
-  /**
-   * Obtiene los nombres de addons filtrados
-   */
-  getFilteredAddonNames(): string[] {
-    return this.dashboardState.getFilteredAddonNames();
-  }
+
 
   /**
    * Toggle selection of a SubHero language code
@@ -302,5 +285,18 @@ export class DashboardComponent {
   subheroSelectedCount(): number {
     const arr = this.preferences.selectedSubheroLanguages && this.preferences.selectedSubheroLanguages();
     return Array.isArray(arr) ? arr.length : 0;
+  }
+
+  /**
+   * Gets the translated placeholder for the token input
+   */
+  getTokenPlaceholder(): string {
+    const service = this.debridService.currentService();
+    if (!service) return '';
+
+    const tokenLabel = this.translate.instant('DASHBOARD.DEBRID_SECTION.TOKEN_LABEL');
+    const charactersText = this.translate.instant('COMMON.CHARACTERS');
+
+    return `${tokenLabel} (${service.tokenLength} ${charactersText})`;
   }
 }

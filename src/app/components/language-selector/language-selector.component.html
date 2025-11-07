@@ -1,0 +1,37 @@
+<div class="dropdown">
+  <button
+    class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+    [attr.aria-label]="'LANGUAGE.SELECT' | translate"
+  >
+    <span class="me-2">{{ currentLanguage?.flag }}</span>
+    <span class="d-none d-md-inline me-2">{{ currentLanguage?.name | translate }}</span>
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end" role="menu">
+    <li class="dropdown-header">
+      {{ "LANGUAGE.SELECT" | translate }}
+    </li>
+
+    <li *ngFor="let language of availableLanguages">
+      <button
+        class="dropdown-item d-flex align-items-center"
+        [class.active]="currentLanguage?.code === language.code"
+        (click)="selectLanguage(language)"
+        type="button"
+        role="menuitem"
+        [attr.aria-label]="language.name | translate"
+      >
+        <span class="me-2">{{ language.flag }}</span>
+        <span class="flex-grow-1">{{ language.name | translate }}</span>
+        <i
+          *ngIf="currentLanguage?.code === language.code"
+          class="bi bi-check-circle-fill text-primary ms-2"
+          aria-hidden="true"
+        ></i>
+      </button>
+    </li>
+  </ul>
+</div>
