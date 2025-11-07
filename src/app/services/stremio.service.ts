@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environments/environment';
 
 
@@ -53,6 +54,7 @@ interface AddonFlags {
 @Injectable({ providedIn: 'root' })
 export class StremioService {
   private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
   private readonly apiBase = environment.stremioApiBase;
   
   private readonly _authKey = signal<string | null>(this.getStoredAuthKey());
@@ -92,9 +94,9 @@ export class StremioService {
         return { success: true, authKey };
       }
       
-      return { success: false, error: 'Credenciales inválidas' };
+      return { success: false, error: this.translate.instant('MESSAGES.INVALID_CREDENTIALS') };
     } catch {
-      return { success: false, error: 'Error de conexión' };
+      return { success: false, error: this.translate.instant('MESSAGES.CONNECTION_ERROR') };
     }
   }
 
@@ -140,7 +142,7 @@ export class StremioService {
     // Fallback: usar el email del login o placeholder
     const user: StremioUser = {
       authKey,
-      email: email || 'Email no disponible'
+      email: email || this.translate.instant('MESSAGES.EMAIL_NOT_AVAILABLE')
     };
     this.setUser(user);
   }
@@ -171,7 +173,7 @@ export class StremioService {
 
   async setAddonCollection(addons: StremioAddon[]): Promise<{ success: boolean; error?: string }> {
     const authKey = this._authKey();
-    if (!authKey) return { success: false, error: 'No autenticado' };
+    if (!authKey) return { success: false, error: this.translate.instant('MESSAGES.NOT_AUTHENTICATED') };
 
     try {
       const response = await this.http.post<{ result?: { success: boolean } }>(`${this.apiBase}/addonCollectionSet`, {
@@ -182,7 +184,7 @@ export class StremioService {
 
       return { success: response?.result?.success || false };
     } catch {
-      return { success: false, error: 'Error de conexión' };
+      return { success: false, error: this.translate.instant('MESSAGES.CONNECTION_ERROR') };
     }
   }
 

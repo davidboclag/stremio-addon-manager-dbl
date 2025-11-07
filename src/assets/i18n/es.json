@@ -26,7 +26,6 @@
     "LOGOUT": "Cerrar Sesión"
   },
   "DASHBOARD": {
-    "TITLE": "Instalador rápido de Addons Stremio",
     "WELCOME": "Bienvenido al Administrador de Complementos de Stremio",
     "DESCRIPTION": "Gestiona tus complementos de Stremio de manera eficiente",
     "DEBRID_SECTION": {
@@ -52,7 +51,6 @@
       "INCLUDE_ANIME_HELP": "Agregar \"Anime Kitsu\" y \"Animes' Season\" a la configuración seleccionada"
     },
     "BUTTONS": {
-      "INSTALL_PRESET": "Instalar {{preset}}",
       "FACTORY_RESET": "Volver al estado de fábrica",
       "CONFIRM_RESET": "¿Seguro que deseas borrar tu configuración actual de Stremio y volver al estado de fábrica?"
     },
@@ -71,7 +69,6 @@
     "ARIA": {
       "USER_ACTIONS": "Acciones de usuario",
       "LOGOUT": "Cerrar sesión",
-      "INSTALL_PRESET": "Instalar {{preset}}",
       "COPY_TOKEN": "Copiar token",
       "TOGGLE_CUSTOMIZABLE": "Mostrar/ocultar addons personalizables",
       "SUBHERO_ACTIONS": "SubHero actions"
@@ -122,7 +119,38 @@
     "SYNC_ERROR": "❌ Error al sincronizar con Stremio",
     "EXPORT_SUCCESS": "✅ Configuración exportada correctamente",
     "IMPORT_FILE_ERROR": "❌ Por favor selecciona un archivo JSON válido",
-    "IMPORT_ERROR": "❌ Error al importar: {{error}}"
+    "IMPORT_ERROR": "❌ Error al importar: {{error}}",
+    "INVALID_CREDENTIALS": "Credenciales inválidas",
+    "CONNECTION_ERROR": "Error de conexión",
+    "EMAIL_NOT_AVAILABLE": "Email no disponible",
+    "NOT_AUTHENTICATED": "No autenticado"
+  },
+  "PRESETS": {
+    "REQUIRE": "Requiere",
+    "REQUIRE_DEBRID": "Requiere un servicio Debrid",
+    "BASIC": {
+      "NAME": "Configuración Básica",
+      "DESCRIPTION": "Addons esenciales para uso general sin servicios premium",
+      "BENEFIT_1": "Funciona sin y con Real-Debrid"
+    },
+    "COMPLETE": {
+      "NAME": "Configuración Completa", 
+      "DESCRIPTION": "Todos los addons principales para uso general sin servicios premium",
+      "BENEFIT_1": "Funciona sin y con Real-Debrid"
+    },
+    "PREMIUM": {
+      "NAME": "Configuración Premium",
+      "DESCRIPTION": "Todos los addons recomendados para la mejor experiencia",
+      "BENEFIT_1": "Mayor cobertura de contenido",
+      "BENEFIT_2": "Funciona sin y con Real-Debrid"
+    },
+    "RECOMMENDED": {
+      "NAME": "Recomendada",
+      "DESCRIPTION": "Todos los addons recomendados para la mejor experiencia con Real-Debrid (Streaming instantáneo)",
+      "BENEFIT_1": "Mayor cobertura de contenido",
+      "BENEFIT_2": "Streaming instantáneo",
+      "BENEFIT_3": "Menor uso de ancho de banda"
+    }
   },
   "SETTINGS": {
     "TITLE": "Configuración",

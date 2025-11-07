@@ -10,17 +10,11 @@ import { LanguageService, Language } from '../../services/language.service';
   templateUrl: './language-selector.component.html'
 })
 export class LanguageSelectorComponent {
-  isDropdownOpen = false;
 
   constructor(private languageService: LanguageService) { }
 
-  toggleDropdown(): void {
-    this.isDropdownOpen = !this.isDropdownOpen;
-  }
-
   selectLanguage(language: Language): void {
     this.languageService.setLanguage(language.code);
-    this.isDropdownOpen = false;
   }
 
   get availableLanguages(): Language[] {

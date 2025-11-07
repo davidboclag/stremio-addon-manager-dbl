@@ -15,8 +15,8 @@ export class LanguageService {
   private readonly DEFAULT_LANGUAGE = 'en';
 
   private readonly languages: Language[] = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' }
+    { code: 'en', name: 'LANGUAGE.ENGLISH', flag: '🇺🇸' },
+    { code: 'es', name: 'LANGUAGE.SPANISH', flag: '🇪🇸' }
   ];
 
   private currentLanguage = this.DEFAULT_LANGUAGE;

@@ -26,7 +26,6 @@
     "LOGOUT": "Logout"
   },
   "DASHBOARD": {
-    "TITLE": "Quick Stremio Addon Installer",
     "WELCOME": "Welcome to Stremio Addon Manager",
     "DESCRIPTION": "Manage your Stremio add-ons efficiently",
     "DEBRID_SECTION": {
@@ -52,7 +51,6 @@
       "INCLUDE_ANIME_HELP": "Add \"Anime Kitsu\" and \"Animes' Season\" to the selected configuration"
     },
     "BUTTONS": {
-      "INSTALL_PRESET": "Install {{preset}}",
       "FACTORY_RESET": "Factory Reset",
       "CONFIRM_RESET": "Are you sure you want to delete your current Stremio configuration and return to factory settings?"
     },
@@ -71,7 +69,6 @@
     "ARIA": {
       "USER_ACTIONS": "User actions",
       "LOGOUT": "Logout",
-      "INSTALL_PRESET": "Install {{preset}}",
       "COPY_TOKEN": "Copy token",
       "TOGGLE_CUSTOMIZABLE": "Show/hide customizable addons",
       "SUBHERO_ACTIONS": "SubHero actions"
@@ -122,7 +119,38 @@
     "SYNC_ERROR": "❌ Error syncing with Stremio",
     "EXPORT_SUCCESS": "✅ Configuration exported successfully",
     "IMPORT_FILE_ERROR": "❌ Please select a valid JSON file",
-    "IMPORT_ERROR": "❌ Error importing: {{error}}"
+    "IMPORT_ERROR": "❌ Error importing: {{error}}",
+    "INVALID_CREDENTIALS": "Invalid credentials",
+    "CONNECTION_ERROR": "Connection error",
+    "EMAIL_NOT_AVAILABLE": "Email not available",
+    "NOT_AUTHENTICATED": "Not authenticated"
+  },
+  "PRESETS": {
+    "REQUIRE": "Requires",
+    "REQUIRE_DEBRID": "Requires a Debrid service",
+    "BASIC": {
+      "NAME": "Basic Configuration",
+      "DESCRIPTION": "Essential addons for general use without premium services",
+      "BENEFIT_1": "Works without and with Real-Debrid"
+    },
+    "COMPLETE": {
+      "NAME": "Complete Configuration",
+      "DESCRIPTION": "All main addons for general use without premium services", 
+      "BENEFIT_1": "Works without and with Real-Debrid"
+    },
+    "PREMIUM": {
+      "NAME": "Premium Configuration",
+      "DESCRIPTION": "All recommended addons for the best experience",
+      "BENEFIT_1": "Greater content coverage",
+      "BENEFIT_2": "Works without and with Real-Debrid"
+    },
+    "RECOMMENDED": {
+      "NAME": "Recommended",
+      "DESCRIPTION": "All recommended addons for the best experience with Real-Debrid (Instant streaming)",
+      "BENEFIT_1": "Greater content coverage",
+      "BENEFIT_2": "Instant streaming", 
+      "BENEFIT_3": "Lower bandwidth usage"
+    }
   },
   "SETTINGS": {
     "TITLE": "Settings",

@@ -1,21 +1,16 @@
-<div class="dropdown position-relative">
+<div class="dropdown">
   <button
-    class="btn btn-outline-light dropdown-toggle d-flex align-items-center"
+    class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center"
     type="button"
-    (click)="toggleDropdown()"
-    [attr.aria-expanded]="isDropdownOpen"
-    aria-haspopup="true"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
     [attr.aria-label]="'LANGUAGE.SELECT' | translate"
   >
     <span class="me-2">{{ currentLanguage?.flag }}</span>
-    <span class="d-none d-md-inline me-2">{{ currentLanguage?.name }}</span>
+    <span class="d-none d-md-inline me-2">{{ currentLanguage?.name | translate }}</span>
   </button>
 
-  <ul
-    class="dropdown-menu dropdown-menu-end position-absolute"
-    [class.show]="isDropdownOpen"
-    role="menu"
-  >
+  <ul class="dropdown-menu dropdown-menu-end" role="menu">
     <li class="dropdown-header">
       {{ "LANGUAGE.SELECT" | translate }}
     </li>
@@ -27,10 +22,10 @@
         (click)="selectLanguage(language)"
         type="button"
         role="menuitem"
-        [attr.aria-label]="language.name"
+        [attr.aria-label]="language.name | translate"
       >
         <span class="me-2">{{ language.flag }}</span>
-        <span class="flex-grow-1">{{ language.name }}</span>
+        <span class="flex-grow-1">{{ language.name | translate }}</span>
         <i
           *ngIf="currentLanguage?.code === language.code"
           class="bi bi-check-circle-fill text-primary ms-2"
