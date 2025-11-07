@@ -159,7 +159,7 @@
       "BENEFIT_2": "Funciona sin y con Real-Debrid"
     },
     "RECOMMENDED": {
-      "NAME": "Recomendada",
+      "NAME": "Configuración Recomendada",
       "DESCRIPTION": "Todos los addons recomendados para la mejor experiencia con Real-Debrid (Streaming instantáneo)",
       "BENEFIT_1": "Mayor cobertura de contenido",
       "BENEFIT_2": "Streaming instantáneo",
@@ -170,5 +170,24 @@
     "TITLE": "Configuración",
     "LANGUAGE": "Idioma",
     "PREFERENCES": "Preferencias"
+  },
+  "INSTALLATION": {
+    "PROCESSING": "Procesando {{name}}...",
+    "SENDING_CONFIG": "Enviando configuración a Stremio...",
+    "CONFIG_COMPLETED": "✅ Configuración completada correctamente.",
+    "CONFIG_ERROR": "❌ Error en la configuración",
+    "UNKNOWN_ERROR": "Error desconocido",
+    "LOGIN_REQUIRED": "Debes iniciar sesión correctamente primero.",
+    "LOGIN_REQUIRED_WARNING": "⚠️ Debes iniciar sesión correctamente primero.",
+    "RESETTING_STREMIO": "Reseteando Stremio",
+    "LOADING_FACTORY_CONFIG": "Cargando configuración de fábrica...",
+    "FACTORY_CONFIG_LOAD_ERROR": "No se pudo cargar la configuración de fábrica",
+    "SENDING_FACTORY_CONFIG": "Enviando configuración de fábrica a Stremio...",
+    "STREMIO_RESET_SUCCESS": "✅ Stremio reseteado correctamente.",
+    "STREMIO_RESET_ERROR": "❌ Error al resetear Stremio.",
+    "STREMIO_RESET_CONNECTION_ERROR": "Error de conexión al resetear Stremio.",
+    "DEBRID_SERVICE": "un servicio de debrid",
+    "TOKEN_REQUIRED": "⚠️ La configuración \"{{presetName}}\" requiere un token de {{serviceName}} válido.",
+    "PREPARING": "Preparando instalación..."
   }
 }
