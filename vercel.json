@@ -13,7 +13,8 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "develop": false
-    }
+      "develop": true
+    },
+    "productionBranch": "main"
   }
 }
