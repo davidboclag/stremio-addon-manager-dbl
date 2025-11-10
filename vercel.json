@@ -16,5 +16,8 @@
       "develop": true
     },
     "productionBranch": "main"
+  },
+  "github": {
+    "autoDeployment": true
   }
 }
