@@ -113,7 +113,9 @@
     "CONNECTING": "Conectando...",
     "ERROR": "Error de login",
     "VALIDATION_ERROR": "Debes ingresar authKey o email y contraseña válidos",
-    "PROVIDE_VALID_CREDENTIALS": "Proporciona email válido y contraseña o authKey"
+    "PROVIDE_VALID_CREDENTIALS": "Proporciona email válido y contraseña o authKey",
+    "REMEMBER_ME": "Recordarme",
+    "REMEMBER_ME_HELP": "Mantener sesión iniciada por 7 días"
   },
   "BUTTONS": {
     "SAVE": "Guardar",
