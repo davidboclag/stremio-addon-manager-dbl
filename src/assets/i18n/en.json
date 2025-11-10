@@ -113,7 +113,9 @@
     "CONNECTING": "Connecting...",
     "ERROR": "Login error",
     "VALIDATION_ERROR": "You must enter authKey or valid email and password",
-    "PROVIDE_VALID_CREDENTIALS": "Provide valid email and password or authKey"
+    "PROVIDE_VALID_CREDENTIALS": "Provide valid email and password or authKey",
+    "REMEMBER_ME": "Remember me",
+    "REMEMBER_ME_HELP": "Keep me logged in for 7 days"
   },
   "BUTTONS": {
     "SAVE": "Save",

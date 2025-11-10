@@ -7,6 +7,8 @@ export const authGuard = () => {
   const router = inject(Router);
 
   if (stremio.isAuthenticated()) {
+    // Renovar la expiración ya que el usuario está accediendo a una ruta protegida
+    stremio.renewSessionExpiration();
     return true;
   }
 

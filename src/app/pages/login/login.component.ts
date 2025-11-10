@@ -80,6 +80,23 @@ import { StremioService } from '../../services/stremio.service';
             </div>
           </div>
 
+          <div class="mb-3 form-check">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="rememberMe" 
+              formControlName="rememberMe"
+              [disabled]="loading()"
+            >
+            <label class="form-check-label" for="rememberMe">
+              <i class="bi bi-clock-history me-1"></i>
+              {{ "LOGIN.REMEMBER_ME" | translate }}
+            </label>
+            <div class="form-text">
+              {{ "LOGIN.REMEMBER_ME_HELP" | translate }}
+            </div>
+          </div>
+
           @if (error()) {
             <div class="alert alert-danger d-flex align-items-center" role="alert">
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -133,7 +150,8 @@ export class LoginComponent {
   readonly form = this.fb.group({
     email: ['', [Validators.email]],
     password: [''],
-    authKey: ['']
+    authKey: [''],
+    rememberMe: [false]
   }, { validators: this.loginValidator });
 
 
@@ -145,12 +163,12 @@ export class LoginComponent {
   async onSubmit(): Promise<void> {
     this.error.set('');
     if (this.loading()) return;
-    const { email, password, authKey } = this.form.value;
+    const { email, password, authKey, rememberMe } = this.form.value;
     const trimmedAuthKey = authKey?.trim();
     const trimmedEmail = email?.trim();
 
     if (trimmedAuthKey) {
-      await this.useAuthKey(trimmedAuthKey);
+      await this.useAuthKey(trimmedAuthKey, rememberMe || false);
       return;
     }
 
@@ -163,7 +181,7 @@ export class LoginComponent {
 
     this.loading.set(true);
     try {
-      const result = await this.stremio.login(trimmedEmail, password);
+      const result = await this.stremio.login(trimmedEmail, password, rememberMe || false);
       if (result.success) {
         await this.router.navigate(['/dashboard']);
       } else {
@@ -177,7 +195,7 @@ export class LoginComponent {
   }
 
 
-  async useAuthKey(authKey: string): Promise<void> {
+  async useAuthKey(authKey: string, rememberMe: boolean = false): Promise<void> {
     if (!authKey) {
       this.error.set(this.translate.instant('LOGIN.AUTH_KEY_REQUIRED'));
       this.form.get('authKey')?.markAsTouched();
@@ -186,11 +204,11 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set('');
     try {
-      await this.stremio.setAuthKeyAndFetchUser(authKey);
+      await this.stremio.setAuthKeyAndFetchUser(authKey, rememberMe);
       await this.router.navigate(['/dashboard']);
     } catch (error) {
       // Fallback: usar método anterior
-      this.stremio.setAuthKey(authKey);
+      this.stremio.setAuthKey(authKey, rememberMe);
       this.stremio.setUser({ authKey, email: this.translate.instant('LOGIN.AUTH_KEY_USER') });
       await this.router.navigate(['/dashboard']);
     } finally {
